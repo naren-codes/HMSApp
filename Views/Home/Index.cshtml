@@ -1,8 +1,50 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Main Content -->
+<div class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h1>Welcome to the Hospital Management System</h1>
+            <p class="lead">This platform streamlines hospital operations, patient management, appointment tracking, and more.</p>
+        </div>
+        <div class="col-md-6">
+            <img src="~/images/medical-banner.jpg" alt="Hospital System Image" class="img-fluid hero-image" onerror="this.onerror=null; this.src='https://via.placeholder.com/500x300/2c6eba/ffffff?text=Medical+Banner';">
+        </div>
+    </div>
+</div>
+
+<!-- Role Cards Section -->
+<div class="container my-5">
+    <div class="row justify-content-center text-center">
+        <div class="col-md-4 mb-4">
+            <div class="card p-4 shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title text-primary">Doctor</h4>
+                    <p class="card-text">Manage appointments, view patient history, streamline workflow.</p>
+                    <a href="#doctor" class="btn btn-primary">Get Started</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card p-4 shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title text-primary">Admin</h4>
+                    <p class="card-text">Manage system settings, users, and overall hospital administration.</p>
+                    <a asp-area="" asp-controller="Home" asp-action="Register" class="btn btn-primary">Get Started</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card p-4 shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title text-primary">Patient</h4>
+                    <p class="card-text">Book appointments, view medical history, manage your healthcare.</p>
+                    <a asp-area="" asp-controller="Account" asp-action="PatientLogin" class="btn btn-primary">Get Started</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

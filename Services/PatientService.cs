@@ -18,7 +18,7 @@ namespace HMSApp.Services
         public List<Patient> GetAllPatients() =>
             _context.Patient.ToList();
 
-        public Patient GetPatientById(int id) =>
+        public Patient? GetPatientById(int id) =>
             _context.Patient.FirstOrDefault(p => p.PatientId == id);
 
         public void AddPatient(Patient patient)

@@ -54,7 +54,6 @@ namespace HMSApp.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Optional: log validation errors
             var errors = ModelState.Values.SelectMany(v => v.Errors);
             foreach (var error in errors)
             {

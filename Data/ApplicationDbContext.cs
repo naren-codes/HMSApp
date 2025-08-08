@@ -11,5 +11,7 @@ namespace HMSApp.Data
         }
 
         public DbSet<Patient> Patient { get; set; }
+        public DbSet<User> User { get; set; }
+
     }
 }
