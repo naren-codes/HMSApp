@@ -22,13 +22,28 @@ public class AccountController : Controller
     public IActionResult Login(string username, string password)
     {
         var user = _context.User.FirstOrDefault(u => u.Username == username && u.Password == password);
+
         if (user != null)
         {
-            // You can set session or redirect to dashboard
-            return RedirectToAction("Index", "Home");
+            if (user.role == "patient")
+            {
+                // Set session or redirect to patient dashboard
+                return RedirectToAction("Index", "Home");
+            }
+            else if (user.role == "admin")
+            {
+                ViewBag.Error = "Admin login is not allowed here.";
+                return View();
+            }
+            else
+            {
+                ViewBag.Error = "Unauthorized role.";
+                return View();
+            }
         }
 
         ViewBag.Error = "Invalid username or password";
         return View();
     }
+
 }
