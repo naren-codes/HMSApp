@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HMSApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+476fbbe5fb236910fe5fd6bc84fe0d8403e2785e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e6409835d44daf03c1de54c1f29d5abe500b3eda")]
 [assembly: System.Reflection.AssemblyProductAttribute("HMSApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HMSApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
