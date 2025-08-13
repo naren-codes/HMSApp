@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+<div class="container my-5">
+    <h1 class="text-center mb-4 text-primary fw-bold">Admin Dashboard</h1>
+    <p class="text-center text-muted mb-5">Select a module to get started</p>
+
+    <div class="row g-4 justify-content-center">
+
+        <!-- Doctor Management Section -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-lg border-primary">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-heart-pulse-fill text-primary display-4 mb-3"></i>
+                    <h5 class="card-title fw-bold mb-2">Doctor Management</h5>
+                    <p class="card-text text-muted mb-4">
+                        View, add, and manage doctor details and their schedules.
+                    </p>
+                    <a href="@Url.Action("DoctorDetails", "Admin")" class="btn btn-primary btn-lg card-link-btn">
+                        <i class="bi bi-arrow-right-circle me-2"></i>Go to Doctors
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient Management Section -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-lg border-success">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-person-lines-fill text-success display-4 mb-3"></i>
+                    <h5 class="card-title fw-bold mb-2">Patient Management</h5>
+                    <p class="card-text text-muted mb-4">
+                        Access detailed patient records and their complete medical history.
+                    </p>
+                    <a href="@Url.Action("Index", "Patient")" class="btn btn-success btn-lg card-link-btn">
+                        <i class="bi bi-arrow-right-circle me-2"></i>Go to Patients
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
