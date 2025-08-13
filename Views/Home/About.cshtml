@@ -1,0 +1,255 @@
+@{
+    ViewData["Title"] = "About Us";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    :root{
+        --brand-primary:#0b3b74;   /* Navy */
+        --brand-accent:#17a2b8;    /* Teal */
+        --brand-muted:#6c7a91;     /* Muted text */
+        --hero-text:#f5f7fb;       /* Light text */
+        --section-bg:#f6f8fb;      /* Section background */
+        --card-border:#e6ebf2;     /* Light border */
+    }
+
+    /* Page background */
+    body { background: radial-gradient(1200px 600px at 10% -10%, #eef3fb 0%, transparent 60%), radial-gradient(1000px 500px at 110% 10%, #eef6ff 0%, transparent 60%) #ffffff; }
+
+    /* Hero */
+    .hero-section { position:relative; color:var(--hero-text); padding:100px 0; margin-bottom:0; overflow:hidden; }
+    .hero-section::before{ content:""; position:absolute; inset:0; background:
+        linear-gradient(180deg, rgba(11,59,116,.88), rgba(23,162,184,.75)),
+        url('https://source.unsplash.com/1600x900/?hospital,medical');
+        background-size:cover; background-position:center; filter:contrast(105%) saturate(105%);
+        z-index:-1; }
+    .hero-kicker{ background:rgba(255,255,255,.9); color:var(--brand-primary) !important; }
+    .hero-section h1{ font-weight:800; letter-spacing:.2px; }
+    .hero-section .lead{ color:#fdfefe; text-shadow:0 1px 1px rgba(0,0,0,.25); font-weight:500; }
+
+    /* Breadcrumbs */
+    .breadcrumb-wrap { background:var(--section-bg); border-bottom:1px solid var(--card-border); }
+
+    /* Sections */
+    .section { padding: 3rem 0; }
+    .content-section { background:#fff; padding:40px; border-radius:16px; border:1px solid var(--card-border); box-shadow:0 10px 30px rgba(11,59,116,.06); }
+    .content-section h3{ position:relative; }
+    .content-section h3::after{ content:""; display:block; width:56px; height:4px; background:linear-gradient(90deg, var(--brand-primary), var(--brand-accent)); border-radius:2px; margin-top:8px; }
+
+    /* Feature Cards */
+    .feature-card { border-radius:12px; transition:transform .2s ease, box-shadow .2s ease; border:1px solid var(--card-border); }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(13,110,253,.15); }
+
+    /* Departments */
+    .dept-card { transition: transform .2s ease, box-shadow .2s ease; border-radius:12px; border:1px solid var(--card-border); }
+    .dept-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(13,110,253,.15); }
+
+    /* Timeline */
+    .timeline { position: relative; }
+    .timeline::before{ content:""; position:absolute; left:20px; top:0; bottom:0; width:2px; background:#e9ecef; }
+    .timeline-item{ position:relative; padding-left:60px; margin-bottom:1.25rem; }
+    .timeline-item .dot{ position:absolute; left:12px; top:2px; width:16px; height:16px; border-radius:50%; background:#0d6efd; }
+
+    /* FAQ */
+    .accordion-button:not(.collapsed) { background:#e7f1ff; color:#0a58ca; }
+</style>
+
+<section class="hero-section text-center">
+    <div class="container">
+        <span class="badge hero-kicker mb-3">About HMS</span>
+        <h1 class="display-5 mb-3">Caring for Your Health, Always</h1>
+        <p class="lead mb-0">We combine compassionate care with cutting-edge technology to deliver outstanding outcomes.</p>
+    </div>
+</section>
+
+<div class="breadcrumb-wrap py-2">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">About</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="container section">
+    <div class="content-section mb-4">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <h2 class="mb-3 text-primary">Our Story & Commitment</h2>
+                <p>
+                    Our mission is simple yet profound: to deliver high?quality, patient?centered healthcare with unwavering integrity and continuous innovation. We strive to be a trusted partner in your health journey, focusing on personalized care that respects your unique needs and values.
+                </p>
+                <p class="mb-0">
+                    Every decision we make—from advanced treatments to warm, human interactions—is rooted in this mission. True healing embraces medical excellence, empathy, and understanding.
+                </p>
+            </div>
+            <div class="col-lg-5 text-center">
+                <img src="~/images/doctor-team.jpg" alt="Doctors Team" class="img-fluid shadow-sm rounded" onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=Doctors+Team';">
+            </div>
+        </div>
+    </div>
+
+    <!-- Care Pillars -->
+    <div class="mb-4">
+        <h3 class="mb-3">Our Care Pillars</h3>
+        <div class="row g-3">
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="feature-card h-100 p-3 bg-white">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-heart-pulse text-danger fs-2 me-3"></i>
+                        <div>
+                            <h5 class="mb-1">Patient?First</h5>
+                            <p class="mb-0 text-muted">Personalized treatment plans focused on your goals and comfort.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="feature-card h-100 p-3 bg-white">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-cpu text-primary fs-2 me-3"></i>
+                        <div>
+                            <h5 class="mb-1">Technology?Enabled</h5>
+                            <p class="mb-0 text-muted">Modern diagnostics and digital records for efficient, safe care.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="feature-card h-100 p-3 bg-white">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-shield-check text-success fs-2 me-3"></i>
+                        <div>
+                            <h5 class="mb-1">Quality & Safety</h5>
+                            <p class="mb-0 text-muted">Strict protocols and continuous improvement at every step.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="feature-card h-100 p-3 bg-white">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-clock-history text-warning fs-2 me-3"></i>
+                        <div>
+                            <h5 class="mb-1">Timely Access</h5>
+                            <p class="mb-0 text-muted">Convenient appointments and coordinated care across teams.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vision -->
+    <div class="content-section mb-4">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7 order-lg-2">
+                <h2 class="mb-3 text-primary">Our Vision</h2>
+                <p>
+                    We envision HMS as a leading healthcare institution, globally recognized for excellence in medical care, research, and education. We continuously embrace new technologies to push the boundaries of healthcare and foster a healthier community.
+                </p>
+                <p class="mb-0">Beyond treating illness, we promote wellness, prevent disease, and empower individuals through education.</p>
+            </div>
+            <div class="col-lg-5 order-lg-1 text-center">
+                <img src="~/images/modern-interior.jpg" alt="Modern Hospital Interior" class="img-fluid shadow-sm rounded" onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=Hospital+Interior';">
+            </div>
+        </div>
+    </div>
+
+    <!-- Departments -->
+    <div class="mb-4">
+        <h3 class="mb-3">Departments We Cover</h3>
+        <div class="row g-3">
+            @foreach (var dept in new[]{
+                ("Cardiology","bi-heart-pulse","Advanced heart care and diagnostics."),
+                ("Neurology","bi-cpu","Comprehensive neuro care and rehab."),
+                ("Orthopedics","bi-bandaid","Joint, bone, and sports injury care."),
+                ("Pediatrics","bi-emoji-smile","Complete children’s health services."),
+                ("Oncology","bi-bezier2","Integrated cancer care & therapy."),
+                ("Gynecology","bi-gender-female","Women’s health and maternity.")})
+            {
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="dept-card border p-3 h-100 bg-white">
+                        <div class="d-flex align-items-start">
+                            <i class="bi @dept.Item2 fs-2 text-primary me-3"></i>
+                            <div>
+                                <h5 class="mb-1">@dept.Item1</h5>
+                                <p class="mb-0 text-muted">@dept.Item3</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Care Pathway -->
+    <div class="content-section mb-4">
+        <h3 class="mb-3">Your Care Pathway</h3>
+        <div class="timeline">
+            <div class="timeline-item">
+                <span class="dot"></span>
+                <h5 class="mb-1">1. Book Appointment</h5>
+                <p class="mb-0 text-muted">Choose your doctor and preferred time through our booking portal.</p>
+            </div>
+            <div class="timeline-item">
+                <span class="dot"></span>
+                <h5 class="mb-1">2. Consultation & Diagnosis</h5>
+                <p class="mb-0 text-muted">Meet your specialist and undergo required assessments.</p>
+            </div>
+            <div class="timeline-item">
+                <span class="dot"></span>
+                <h5 class="mb-1">3. Personalized Treatment Plan</h5>
+                <p class="mb-0 text-muted">A coordinated plan tailored to your needs and lifestyle.</p>
+            </div>
+            <div class="timeline-item">
+                <span class="dot"></span>
+                <h5 class="mb-1">4. Follow?up & Support</h5>
+                <p class="mb-0 text-muted">Ongoing monitoring, education, and support for long?term wellbeing.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="content-section">
+        <h3 class="mb-3">Frequently Asked Questions</h3>
+        <div class="accordion" id="faqAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="q1h">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#q1" aria-expanded="true" aria-controls="q1">
+                        How do I book an appointment?
+                    </button>
+                </h2>
+                <div id="q1" class="accordion-collapse collapse show" aria-labelledby="q1h" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">You can book online via the Patient panel or call our front desk 24/7.</div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="q2h">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q2" aria-expanded="false" aria-controls="q2">
+                        Do you support cashless insurance claims?
+                    </button>
+                </h2>
+                <div id="q2" class="accordion-collapse collapse" aria-labelledby="q2h" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">Yes, we partner with major insurers. Please bring your policy details and ID.</div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="q3h">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q3" aria-expanded="false" aria-controls="q3">
+                        What are your emergency care hours?
+                    </button>
+                </h2>
+                <div id="q3" class="accordion-collapse collapse" aria-labelledby="q3h" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">Emergency services are available 24/7 with on-call specialists.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+}
