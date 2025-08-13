@@ -1,7 +1,10 @@
 wwwroot\css\site.css
 wwwroot\favicon.ico
+wwwroot\images\doctor-team.jpg
 wwwroot\images\favicon.png
+wwwroot\images\logo.png
 wwwroot\images\medical-banner.jpg
+wwwroot\images\modern-interior.jpg
 wwwroot\images\placeholder.txt
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
