@@ -1,11 +1,5 @@
 wwwroot\css\site.css
 wwwroot\favicon.ico
-wwwroot\images\doctor-team.jpg
-wwwroot\images\favicon.png
-wwwroot\images\logo.png
-wwwroot\images\medical-banner.jpg
-wwwroot\images\modern-interior.jpg
-wwwroot\images\placeholder.txt
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
@@ -64,3 +58,9 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
+wwwroot\images\favicon.png
+wwwroot\images\medical-banner.jpg
+wwwroot\images\placeholder.txt
+wwwroot\images\doctor-team.jpg
+wwwroot\images\logo.png
+wwwroot\images\modern-interior.jpg

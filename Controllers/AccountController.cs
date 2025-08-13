@@ -23,7 +23,6 @@ public class AccountController : Controller
     {
         return View();
     }
-
     [HttpPost]
     public IActionResult LoginPatient(string username, string password)
     {
@@ -33,23 +32,22 @@ public class AccountController : Controller
         {
             if (user.role == "patient")
             {
-                // Set session or redirect to patient dashboard
                 return RedirectToAction("Index", "Home");
             }
             else if (user.role == "admin")
             {
                 ViewBag.Error = "Admin login is not allowed here.";
-                return View();
+                return View("PatientLogin");
             }
             else
             {
                 ViewBag.Error = "Unauthorized role.";
-                return View();
+                return View("PatientLogin");
             }
         }
 
         ViewBag.Error = "Invalid username or password";
-        return View();
+        return View("PatientLogin");
     }
 
     [HttpPost]
@@ -61,13 +59,12 @@ public class AccountController : Controller
         {
             if (user.role == "admin")
             {
-                // You can optionally store session info here
                 return RedirectToAction("Index", "Admin");
             }
             else if (user.role == "patient")
             {
                 ViewBag.Error = "Patient login is not allowed here.";
-                return View("AdminLogin"); // Return to the correct login view
+                return View("AdminLogin");
             }
             else
             {
@@ -78,10 +75,6 @@ public class AccountController : Controller
 
         ViewBag.Error = "Invalid username or password";
         return View("AdminLogin");
-    }
-    public IActionResult Index()
-    {
-        return View(); // This will look for Views/Admin/Index.cshtml
     }
 
 }
