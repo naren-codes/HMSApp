@@ -2,7 +2,14 @@
     ViewData["Title"] = "Login";
 }
 
-<h2>Login</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2 class="mb-0">Login</h2>
+                </div>
+                <div class="card-body">
 
 <form asp-action="LoginPatient" method="post">
     <div class="form-group">
@@ -13,10 +20,17 @@
         <label>Password</label>
         <input type="password" name="password" class="form-control" required />
     </div>
-    <button type="submit" class="btn btn-primary">Login</button>
+    <div class="d-flex justify-content-center mt-3">
+        <button type="submit" class="btn btn-primary">Login</button>
+    </div>
 </form>
 
 @if (ViewBag.Error != null)
 {
     <div class="text-danger mt-2">@ViewBag.Error</div>
 }
+</div>
+</div>
+</div>
+</div>
+</div>

@@ -23,6 +23,10 @@ public class AccountController : Controller
     {
         return View();
     }
+    public IActionResult DoctorLogin()
+    {
+        return View();
+    }
 
     [HttpPost]
     public IActionResult LoginPatient(string username, string password)
@@ -79,9 +83,31 @@ public class AccountController : Controller
         ViewBag.Error = "Invalid username or password";
         return View("AdminLogin");
     }
-    public IActionResult Index()
+    [HttpPost]
+    public IActionResult LoginDoctor(string username, string password)
     {
-        return View(); // This will look for Views/Admin/Index.cshtml
-    }
+        var user = _context.User.FirstOrDefault(u => u.Username == username && u.Password == password);
 
+        if (user != null)
+        {
+            if (user.role == "doctor")
+            {
+                // You can optionally store session info here
+                return RedirectToAction("Index", "Home");
+            }
+            else if (user.role == "patient")
+            {
+                ViewBag.Error = "Patient login is not allowed here.";
+                return View("AdminLogin"); // Return to the correct login view
+            }
+            else
+            {
+                ViewBag.Error = "Unauthorized role.";
+                return View("AdminLogin");
+            }
+        }
+
+        ViewBag.Error = "Invalid username or password";
+        return View("AdminLogin");
+    }
 }
