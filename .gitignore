@@ -1,1 +1,21 @@
+
+# Visual Studio solution files
+# *.sln
+
+# Visual Studio user-specific files
 .vs/
+
+# Build artifacts
+bin/
+obj/
+
+# Common build and NuGet files
+*.dll
+*.nupkg
+
+# Temporary files and caches
+*.suo
+*.user
+*.userprefs
+appsettings.json
+appsettings.Development.json
