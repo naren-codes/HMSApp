@@ -1,7 +1,9 @@
 ﻿using HMSApp.Models;
 using HMSApp.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace HMSApp.Controllers
 {
@@ -75,5 +77,9 @@ namespace HMSApp.Controllers
             _patientService.DeletePatient(id);
             return RedirectToAction("Index");
         }
+
+
+
+
     }
 }

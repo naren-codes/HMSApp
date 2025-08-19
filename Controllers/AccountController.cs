@@ -1,113 +1,77 @@
 ﻿using HMSApp.Models;
-using HMSApp.Data;
+using HMSApp.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 
 public class AccountController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly AccountService _accountService;
+    private readonly PatientService _patientService;
 
-    public AccountController(ApplicationDbContext context)
+    public AccountController(AccountService accountService, PatientService patientService)
     {
-        _context = context;
+        _accountService = accountService;
+        _patientService = patientService;
     }
 
     [HttpGet]
-    public IActionResult PatientLogin()
-    {
-        return View();
-    }
+    public IActionResult PatientLogin() => View();
 
     [HttpGet]
-    public IActionResult AdminLogin()
+    public IActionResult AdminLogin() => View();
+
+    [HttpGet]
+    public IActionResult DoctorLogin() => View();
+
+    private IActionResult HandleLogin(string username, string password, string expectedRole, string redirectController)
     {
-        return View();
-    }
-    public IActionResult DoctorLogin()
-    {
-        return View();
+        var user = _accountService.Authenticate(username, password);
+
+        if (user != null)
+        {
+            if (user.role?.ToLower() == expectedRole.ToLower())
+            {
+                // HttpContext.Session.SetString("Username", user.Username); // Optional
+                return RedirectToAction("Index", redirectController);
+            }
+            else
+            {
+                ViewBag.Error = $"{expectedRole} login is not allowed here.";
+                return View($"{expectedRole}Login");
+            }
+        }
+
+        ViewBag.Error = "Invalid username or password";
+        return View($"{expectedRole}Login");
     }
 
     [HttpPost]
     public IActionResult LoginPatient(string username, string password)
     {
-        var user = _context.User.FirstOrDefault(u => u.Username == username && u.Password == password);
-
-        if (user != null)
-        {
-            if (user.role == "patient")
-            {
-                // Set session or redirect to patient dashboard
-                return RedirectToAction("Index", "Home");
-            }
-            else if (user.role == "admin")
-            {
-                ViewBag.Error = "Admin login is not allowed here.";
-                return View();
-            }
-            else
-            {
-                ViewBag.Error = "Unauthorized role.";
-                return View();
-            }
-        }
-
-        ViewBag.Error = "Invalid username or password";
-        return View();
+        return HandleLogin(username, password, "patient", "Home");
     }
 
     [HttpPost]
     public IActionResult LoginAdmin(string username, string password)
     {
-        var user = _context.User.FirstOrDefault(u => u.Username == username && u.Password == password);
-
-        if (user != null)
-        {
-            if (user.role == "admin")
-            {
-                // You can optionally store session info here
-                return RedirectToAction("Index", "Admin");
-            }
-            else if (user.role == "patient")
-            {
-                ViewBag.Error = "Patient login is not allowed here.";
-                return View("AdminLogin"); // Return to the correct login view
-            }
-            else
-            {
-                ViewBag.Error = "Unauthorized role.";
-                return View("AdminLogin");
-            }
-        }
-
-        ViewBag.Error = "Invalid username or password";
-        return View("AdminLogin");
+        return HandleLogin(username, password, "admin", "Admin");
     }
+
     [HttpPost]
     public IActionResult LoginDoctor(string username, string password)
     {
-        var user = _context.User.FirstOrDefault(u => u.Username == username && u.Password == password);
+        return HandleLogin(username, password, "doctor", "Doctor");
+    }
 
-        if (user != null)
+
+    [HttpPost]
+    public IActionResult Register(Patient model)
+    {
+        if (ModelState.IsValid)
         {
-            if (user.role == "doctor")
-            {
-                // You can optionally store session info here
-                return RedirectToAction("Index", "Home");
-            }
-            else if (user.role == "patient")
-            {
-                ViewBag.Error = "Patient login is not allowed here.";
-                return View("AdminLogin"); // Return to the correct login view
-            }
-            else
-            {
-                ViewBag.Error = "Unauthorized role.";
-                return View("AdminLogin");
-            }
+            _accountService.RegisterPatient(model);
+            return RedirectToAction("Login");
         }
 
-        ViewBag.Error = "Invalid username or password";
-        return View("AdminLogin");
+        return View(model);
     }
 }

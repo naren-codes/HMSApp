@@ -24,5 +24,11 @@ namespace HMSApp.Models
         public string? Address { get; set; }
 
         public string? MedicalHistory { get; set; }
+
+
+        public string? Username { get; set; }
+        public string? Password { get; set; }
+
     }
 }
+

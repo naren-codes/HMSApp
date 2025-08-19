@@ -1,36 +1,89 @@
-﻿@{
-    ViewData["Title"] = "Login";
+﻿@model HMSApp.Models.Patient
+@{
+    ViewData["Title"] = "Login or Register";
 }
 
 <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8 col-sm-10">
-            <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white text-center">
-                    <h2 class="mb-0">Login</h2>
+    <div class="row">
+        <!-- Login Panel -->
+        <div class="col-md-6">
+            <h3>Sign In</h3>
+            <form asp-action="LoginPatient" method="post">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input name="username" class="form-control" required />
                 </div>
-                <div class="card-body">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input name="password" type="password" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Login</button>
+                @if (ViewBag.Error != null)
+                {
+                    <div class="text-danger mt-2">@ViewBag.Error</div>
+                }
+            </form>
+        </div>
 
-<form asp-action="LoginPatient" method="post">
-    <div class="form-group">
-        <label>Username</label>
-        <input type="text" name="username" class="form-control" required />
-    </div>
-    <div class="form-group">
-        <label>Password</label>
-        <input type="password" name="password" class="form-control" required />
-    </div>
-    <div class="d-flex justify-content-center mt-3">
-        <button type="submit" class="btn btn-primary">Login</button>
-    </div>
-</form>
+        <!-- Register Panel -->
+        <div class="col-md-6">
+            <h3>Register as Patient</h3>
+            <form asp-action="Register" method="post">
+                <div class="form-group">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
 
-@if (ViewBag.Error != null)
-{
-    <div class="text-danger mt-2">@ViewBag.Error</div>
+                <div class="form-group">
+                    <label asp-for="DateOfBirth"></label>
+                    <input asp-for="DateOfBirth" class="form-control" type="date" />
+                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Gender"></label>
+                    <select asp-for="Gender" class="form-control">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span asp-validation-for="Gender" class="text-danger"></span>
+                </div>
+
+
+                <div class="form-group">
+                    <label asp-for="ContactNumber"></label>
+                    <input asp-for="ContactNumber" class="form-control" />
+                    <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Address"></label>
+                    <textarea asp-for="Address" class="form-control"></textarea>
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Username">Username</label>
+                    <input asp-for="Username" class="form-control" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Password">Password</label>
+                    <input asp-for="Password" type="password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success mt-2">Register</button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-</div>
-</div>
-</div>
-</div>
-</div>

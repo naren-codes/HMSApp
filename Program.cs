@@ -13,6 +13,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // 🔧 Register PatientService for Dependency Injection
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<DoctorService>();
+builder.Services.AddScoped<AccountService>();
+
 
 
 var app = builder.Build();

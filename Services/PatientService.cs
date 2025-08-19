@@ -2,13 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using HMSApp.Data;
+using System;
 
 namespace HMSApp.Services
 {
     public class PatientService
     {
         private readonly ApplicationDbContext _context;
+
+        public object Patient { get; internal set; }
 
         public PatientService(ApplicationDbContext context)
         {
@@ -29,7 +33,7 @@ namespace HMSApp.Services
 
         public void UpdatePatient(Patient patient)
         {
-            _context.Patient.Update(patient); 
+            _context.Patient.Update(patient);
             _context.SaveChanges();
         }
 
@@ -42,5 +46,9 @@ namespace HMSApp.Services
                 _context.SaveChanges();
             }
         }
+
+
+
+
     }
 }
