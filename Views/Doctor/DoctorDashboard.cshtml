@@ -1,65 +1,23 @@
 ﻿@{
+    var doctorUsername = Context.Session.GetString("doctorUsername");
+    if (string.IsNullOrEmpty(doctorUsername))
+    {
+        Context.Response.Redirect("/Account/DoctorLogin");
+    }
+    ViewData["DoctorUsername"] = doctorUsername;
     ViewData["Title"] = "Doctor Dashboard";
-    Layout = "_Layout"; // assumes shared layout exists
-    var doctorName = ViewBag.DoctorName as string ?? "(Name)";
+    Layout = "_Layout"; 
 }
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
-<style>
-    :root {
-        --dd-bg: #f5f7fb;
-        --dd-primary-grad: linear-gradient(135deg,#4f67ff,#6aa8ff);
-        --dd-accent-grad: linear-gradient(135deg,#6366f1,#a855f7);
-        --dd-green-grad: linear-gradient(135deg,#16a34a,#4ade80);
-        --dd-orange-grad: linear-gradient(135deg,#f59e0b,#fbbf24);
-        --dd-red-grad: linear-gradient(135deg,#dc2626,#f87171);
-        --dd-card-radius: 1rem;
-        --dd-shadow: 0 4px 12px rgba(0,0,0,.08);
-        --dd-shadow-hover: 0 8px 22px rgba(0,0,0,.12);
-        --dd-blur: saturate(180%) blur(6px);
-    }
-    body { background: var(--dd-bg); }
-    .dd-header-bar { background: var(--dd-primary-grad); border-radius: var(--dd-card-radius); padding: 1.7rem 2.2rem; color:#fff; box-shadow: var(--dd-shadow); position: relative; overflow:hidden; }
-    .dd-header-bar:before { content:""; position:absolute; right:-60px; top:-60px; width:190px; height:190px; background:rgba(255,255,255,.16); border-radius:50%; }
-    .dd-header-bar:after { content:""; position:absolute; right=40px; top=10px; width=130px; height=130px; background=rgba(255,255,255,.08); border-radius:50%; }
-    .stat-card { border:0; border-radius: var(--dd-card-radius); color:#fff; position:relative; overflow:hidden; box-shadow: var(--dd-shadow); transition:.25s; backdrop-filter: var(--dd-blur); }
-    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--dd-shadow-hover); }
-    .stat-card .icon-bg { position:absolute; right:12px; bottom:8px; font-size:3.3rem; opacity:.25; }
-    .stat-value { font-size:2.35rem; font-weight:600; line-height:1; }
-    .mini-label { font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; opacity:.85; font-weight:600; }
-    .card.dd-panel { border:0; border-radius: var(--dd-card-radius); box-shadow: var(--dd-shadow); overflow:hidden; }
-    .card.dd-panel .card-header { background:transparent; border:0; padding:1.15rem 1.25rem .4rem; }
-    .card.dd-panel .card-title { font-weight:600; letter-spacing:.5px; }
-    .table-custom thead th { font-size:.65rem; text-transform:uppercase; letter-spacing:.08em; font-weight:600; }
-    .table-custom tbody tr:hover { background:#eef3fb; cursor:pointer; }
-    .table-custom tbody td { vertical-align: middle; font-size:.85rem; }
-    .table-custom tbody tr.selected-row { outline:2px solid #2563eb; background:#e0ecff !important; }
-    .badge-status { font-size:.6rem; letter-spacing:.05em; padding:.35em .55em; }
-    .availability-badge { font-size:.7rem; padding:.42em .65em; }
-    .profile-block { background: var(--dd-accent-grad); color:#fff; border-radius: var(--dd-card-radius); position:relative; padding:1.3rem 1.25rem 1.1rem; box-shadow: var(--dd-shadow); }
-    .profile-block .profile-avatar { width:64px; height:64px; border-radius:50%; background:rgba(255,255,255,.22); display:flex; align-items:center; justify-content:center; font-size:1.55rem; font-weight:600; }
-    .profile-overlay-shape { position:absolute; left:-30px; bottom:-30px; width:150px; height:150px; background:rgba(255,255,255,.1); border-radius:50%; }
-    .pill-switch label { cursor:pointer; }
-    .nav-quick { display:flex; gap:.55rem; flex-wrap:wrap; }
-    .gradient-border { position:relative; }
-    .gradient-border:before { content:""; position:absolute; inset:0; padding:1px; border-radius: var(--dd-card-radius); background:linear-gradient(135deg,#93c5fd,#6366f1,#a855f7); -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask-composite:exclude; }
-    .floating-action { position:fixed; bottom:20px; right:20px; z-index:1000; }
-    .floating-action .btn { border-radius: 50%; width:56px; height:56px; display:flex; align-items:center; justify-content:center; box-shadow: var(--dd-shadow); }
-    .placeholder-box { background:#f1f5f9; border:2px dashed #cbd5e1; border-radius:.75rem; padding:1.25rem; text-align:center; font-size:.9rem; color:#64748b; }
-    .timeline { position:relative; padding-left:1rem; margin:0; list-style:none; }
-    .timeline:before { content:""; position:absolute; left:6px; top:0; bottom:0; width:2px; background:#e2e8f0; }
-    .timeline-item { position:relative; padding-left:1.5rem; margin-bottom:.9rem; }
-    .timeline-item:before { content:""; position:absolute; left:0; top:4px; width:12px; height:12px; border:2px solid #6366f1; background:#fff; border-radius:50%; }
-    .subtle-sep { height:1px; background:linear-gradient(90deg,transparent,#dbe4f0,transparent); margin:1.25rem 0; }
-    .mini-hint { font-size:.65rem; text-transform:uppercase; letter-spacing:.12em; color:#64748b; font-weight:600; }
-</style>
+<link rel="stylesheet" href="~/css/doctor-dashboard.css" asp-append-version="true" />
 
 <div class="container-fluid py-4">
     <div class="dd-header-bar mb-4">
         <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
             <div>
                 <h2 class="fw-bold mb-1"><i class="bi bi-heart-pulse-fill me-2"></i>Doctor Dashboard</h2>
-                <div class="small opacity-75">Welcome, Dr. @doctorName.</div>
+                <div class="small opacity-75">Welcome, <span class="doctor-name-inline">Dr. @ViewData["DoctorUsername"]</span>.</div>
             </div>
             <div class="nav-quick">
                 <a class="btn btn-sm btn-light px-3" href="#appointments"><i class="bi bi-calendar-event me-1"></i>Appointments</a>
@@ -69,7 +27,6 @@
         </div>
     </div>
 
-    <!-- KPIs -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
             <div class="stat-card p-3" style="background:var(--dd-primary-grad)">
@@ -103,7 +60,6 @@
 
     <div class="row g-4">
         <div class="col-lg-8">
-            <!-- Appointments Panel -->
             <div id="appointments" class="card dd-panel mb-4 gradient-border">
                 <div class="card-header pb-0">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
@@ -142,7 +98,6 @@
                 </div>
             </div>
 
-            <!-- Prescription Composer -->
             <div id="prescriptions" class="card dd-panel mb-4">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0"><i class="bi bi-file-medical me-2 text-primary"></i>New Prescription</h5>
@@ -171,7 +126,6 @@
                 </div>
             </div>
 
-            <!-- Recent Prescriptions -->
             <div class="card dd-panel mb-4">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0"><i class="bi bi-collection me-2 text-primary"></i>Recent Prescriptions</h5>
@@ -183,7 +137,6 @@
                 </div>
             </div>
 
-            <!-- Activity / Timeline Placeholder -->
             <div class="card dd-panel">
                 <div class="card-header pb-0">
                     <h5 class="card-title mb-0"><i class="bi bi-activity me-2 text-primary"></i>Recent Activity</h5>
@@ -196,26 +149,23 @@
             </div>
         </div>
 
-        <!-- Right Column -->
         <div class="col-lg-4">
-            <!-- Profile / Availability -->
             <div id="profile" class="profile-block mb-4">
                 <div class="profile-overlay-shape"></div>
                 <div class="d-flex align-items-center gap-3 mb-3">
                     <div class="profile-avatar"><i class="bi bi-person"></i></div>
                     <div>
-                        <div class="fw-semibold fs-5" id="doctorName">Dr. @doctorName</div>
+                        <div class="fw-semibold fs-5" id="doctorName">Dr. @ViewData["DoctorUsername"]</div>
                         <div class="opacity-75 small" id="doctorSpecialization">Specialization</div>
                     </div>
                 </div>
                 <div class="mb-2">
                     <span class="badge bg-success availability-badge" id="availabilityBadge"><i class="bi bi-check-circle me-1"></i>Available</span>
                 </div>
-                <div class="small opacity-75"> Contact: <span id="doctorContact">--</span></div>
+                <div class="small opacity-75">Contact: <span id="doctorContact">--</span></div>
                 <div class="small opacity-75 mb-3">Schedule: <span id="doctorSchedule">--</span></div>
             </div>
 
-            <!-- Notifications -->
             <div class="card dd-panel mb-4">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0"><i class="bi bi-bell me-2 text-primary"></i>Notifications</h5>
@@ -228,7 +178,6 @@
                 </div>
             </div>
 
-            <!-- Availability Quick Toggle -->
             <div class="card dd-panel mb-4">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0"><i class="bi bi-toggle-on me-2 text-primary"></i>Availability</h5>
@@ -243,7 +192,6 @@
                 </div>
             </div>
 
-            <!-- Quick Tips / Help -->
             <div class="card dd-panel">
                 <div class="card-header pb-0">
                     <h5 class="card-title mb-0"><i class="bi bi-lightbulb me-2 text-warning"></i>Quick Tips</h5>
@@ -260,12 +208,8 @@
     </div>
 </div>
 
-<!-- Floating Quick Action -->
 <div class="floating-action">
     <button class="btn btn-primary" title="New Prescription"><i class="bi bi-plus-lg"></i></button>
 </div>
 
-@section Scripts {
-    <script>
-    </script>
-}
+@section Scripts { }

@@ -25,43 +25,32 @@ public class AccountController : Controller
     private IActionResult HandleLogin(string username, string password, string expectedRole, string redirectController)
     {
         var user = _accountService.Authenticate(username, password);
-
-        if (user != null)
+        if (user != null && user.role?.ToLower() == expectedRole.ToLower())
         {
-            if (user.role?.ToLower() == expectedRole.ToLower())
-            {
-                // HttpContext.Session.SetString("Username", user.Username); // Optional
-                return RedirectToAction("Index", redirectController);
-            }
-            else
-            {
-                ViewBag.Error = $"{expectedRole} login is not allowed here.";
-                return View($"{expectedRole}Login");
-            }
+            return RedirectToAction("Index", redirectController);
         }
-
-        ViewBag.Error = "Invalid username or password";
+        ViewBag.Error = user == null ? "Invalid username or password" : $"{expectedRole} login is not allowed here.";
         return View($"{expectedRole}Login");
     }
 
     [HttpPost]
-    public IActionResult LoginPatient(string username, string password)
-    {
-        return HandleLogin(username, password, "patient", "Home");
-    }
+    public IActionResult LoginPatient(string username, string password) => HandleLogin(username, password, "patient", "Home");
 
     [HttpPost]
-    public IActionResult LoginAdmin(string username, string password)
-    {
-        return HandleLogin(username, password, "admin", "Admin");
-    }
+    public IActionResult LoginAdmin(string username, string password) => HandleLogin(username, password, "admin", "Admin");
 
     [HttpPost]
-    public IActionResult LoginDoctor(string username, string password)
+    public IActionResult LoginDoctor(string username, string password, string userType)
     {
-        return HandleLogin(username, password, "doctor", "Doctor");
+        var user = _accountService.Authenticate(username, password);
+        if (user != null && user.role?.ToLower() == "doctor")
+        {
+            HttpContext.Session.SetString("doctorUsername", username);
+            return RedirectToAction("DoctorDashboard", "Doctor");
+        }
+        ViewBag.Error = "Invalid login credentials.";
+        return View("DoctorLogin");
     }
-
 
     [HttpPost]
     public IActionResult Register(Patient model)
@@ -71,7 +60,6 @@ public class AccountController : Controller
             _accountService.RegisterPatient(model);
             return RedirectToAction("Login");
         }
-
         return View(model);
     }
 }

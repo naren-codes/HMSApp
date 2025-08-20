@@ -1,0 +1,60 @@
+:root {
+    --dd-bg: #f5f7fb;
+    --dd-primary-grad: linear-gradient(135deg,#4f67ff,#6aa8ff);
+    --dd-accent-grad: linear-gradient(135deg,#6366f1,#a855f7);
+    --dd-green-grad: linear-gradient(135deg,#16a34a,#4ade80);
+    --dd-orange-grad: linear-gradient(135deg,#f59e0b,#fbbf24);
+    --dd-red-grad: linear-gradient(135deg,#dc2626,#f87171);
+    --dd-card-radius: 1rem;
+    --dd-shadow: 0 4px 12px rgba(0,0,0,.08);
+    --dd-shadow-hover: 0 8px 22px rgba(0,0,0,.12);
+    --dd-blur: saturate(180%) blur(6px);
+}
+
+body { background: var(--dd-bg); }
+
+.dd-header-bar { background: var(--dd-primary-grad); border-radius: var(--dd-card-radius); padding: 1.7rem 2.2rem; color: #fff; box-shadow: var(--dd-shadow); position: relative; overflow: hidden; }
+.dd-header-bar:before { content: ""; position: absolute; right: -60px; top: -60px; width: 190px; height: 190px; background: rgba(255,255,255,.16); border-radius: 50%; }
+.dd-header-bar:after { content: ""; position: absolute; right: 40px; top: 10px; width: 130px; height: 130px; background: rgba(255,255,255,.08); border-radius: 50%; }
+
+.stat-card { border: 0; border-radius: var(--dd-card-radius); color: #fff; position: relative; overflow: hidden; box-shadow: var(--dd-shadow); transition: .25s; backdrop-filter: var(--dd-blur); }
+.stat-card:hover { transform: translateY(-4px); box-shadow: var(--dd-shadow-hover); }
+.stat-card .icon-bg { position: absolute; right: 12px; bottom: 8px; font-size: 3.3rem; opacity: .25; }
+
+.stat-value { font-size: 2.35rem; font-weight: 600; line-height: 1; }
+.mini-label { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; opacity: .85; font-weight: 600; }
+
+.card.dd-panel { border: 0; border-radius: var(--dd-card-radius); box-shadow: var(--dd-shadow); overflow: hidden; }
+.card.dd-panel .card-header { background: transparent; border: 0; padding: 1.15rem 1.25rem .4rem; }
+.card.dd-panel .card-title { font-weight: 600; letter-spacing: .5px; }
+
+.table-custom thead th { font-size: .65rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+.table-custom tbody tr:hover { background: #eef3fb; cursor: pointer; }
+.table-custom tbody td { vertical-align: middle; font-size: .85rem; }
+.table-custom tbody tr.selected-row { outline: 2px solid #2563eb; background: #e0ecff !important; }
+
+.badge-status { font-size: .6rem; letter-spacing: .05em; padding: .35em .55em; }
+.availability-badge { font-size: .7rem; padding: .42em .65em; }
+
+.profile-block { background: var(--dd-accent-grad); color: #fff; border-radius: var(--dd-card-radius); position: relative; padding: 1.3rem 1.25rem 1.1rem; box-shadow: var(--dd-shadow); }
+.profile-block .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,.22); display: flex; align-items: center; justify-content: center; font-size: 1.55rem; font-weight: 600; }
+.profile-overlay-shape { position: absolute; left: -30px; bottom: -30px; width: 150px; height: 150px; background: rgba(255,255,255,.1); border-radius: 50%; }
+
+.pill-switch label { cursor: pointer; }
+.nav-quick { display: flex; gap: .55rem; flex-wrap: wrap; }
+
+.gradient-border { position: relative; }
+.gradient-border:before { content: ""; position: absolute; inset: 0; padding: 1px; border-radius: var(--dd-card-radius); background: linear-gradient(135deg,#93c5fd,#6366f1,#a855f7); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+
+.floating-action { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+.floating-action .btn { border-radius: 50%; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; box-shadow: var(--dd-shadow); }
+
+.placeholder-box { background: #f1f5f9; border: 2px dashed #cbd5e1; border-radius: .75rem; padding: 1.25rem; text-align: center; font-size: .9rem; color: #64748b; }
+
+.timeline { position: relative; padding-left: 1rem; margin: 0; list-style: none; }
+.timeline:before { content: ""; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: #e2e8f0; }
+.timeline-item { position: relative; padding-left: 1.5rem; margin-bottom: .9rem; }
+.timeline-item:before { content: ""; position: absolute; left: 0; top: 4px; width: 12px; height: 12px; border: 2px solid #6366f1; background: #fff; border-radius: 50%; }
+
+.subtle-sep { height: 1px; background: linear-gradient(90deg, transparent, #dbe4f0, transparent); margin: 1.25rem 0; }
+.mini-hint { font-size: .65rem; text-transform: uppercase; letter-spacing: .12em; color: #64748b; font-weight: 600; }

@@ -1,0 +1,46 @@
+:root{
+    --brand-primary:#0b3b74;   /* Navy */
+    --brand-accent:#17a2b8;    /* Teal */
+    --brand-muted:#6c7a91;     /* Muted text */
+    --hero-text:#f5f7fb;       /* Light text */
+    --section-bg:#f6f8fb;      /* Section background */
+    --card-border:#e6ebf2;     /* Light border */
+}
+
+/* Page background */
+body { background: radial-gradient(1200px 600px at 10% -10%, #eef3fb 0%, transparent 60%), radial-gradient(1000px 500px at 110% 10%, #eef6ff 0%, transparent 60%) #ffffff; }
+
+/* Hero */
+.hero-section { position:relative; color:var(--hero-text); padding:100px 0; margin-bottom:0; overflow:hidden; }
+.hero-section::before{ content:""; position:absolute; inset:0; background:
+    linear-gradient(180deg, rgba(11,59,116,.88), rgba(23,162,184,.75)),
+    url('https://source.unsplash.com/1600x900/?healthcare,hospital');
+    background-size:cover; background-position:center; filter:contrast(105%) saturate(105%);
+    z-index:-1; }
+.hero-kicker{ background:rgba(255,255,255,.9); color:var(--brand-primary) !important; }
+.hero-section h1{ font-weight:1000; letter-spacing:.2px;text-decoration:underline }
+.hero-section .lead{ color:#fdfefe; text-shadow:0 1px 1px rgba(0,0,0,.25); font-weight:500; }
+
+/* Breadcrumbs */
+.breadcrumb-wrap { background:var(--section-bg); border-bottom:1px solid var(--card-border); }
+
+/* Sections */
+.content-section { background:#fff; padding:40px; border-radius:16px; border:1px solid var(--card-border); box-shadow:0 10px 30px rgba(11,59,116,.06); }
+.content-section h3{ position:relative; }
+.content-section h3::after{ content:""; display:block; width:56px; height:4px; background:linear-gradient(90deg, var(--brand-primary), var(--brand-accent)); border-radius:2px; margin-top:8px; }
+
+/* Contact info */
+.contact-info-item { display:flex; align-items:flex-start; gap:12px; margin-bottom:16px; }
+.contact-info-item .icon-badge{ width:42px; height:42px; border-radius:50%; display:inline-grid; place-items:center; background:linear-gradient(145deg,#f2f6fd,#e8eef9); border:1px solid var(--card-border); color:var(--brand-primary); }
+.contact-info-item i { font-size:1.1rem; }
+.contact-info-item h5{ margin-bottom:.25rem; }
+.contact-info-item p, .contact-info-item a{ color:var(--brand-muted); }
+
+/* Form */
+.form-control{ border-radius:10px; border:1px solid var(--card-border); }
+.form-control:focus{ border-color:var(--brand-accent); box-shadow:0 0 0 .25rem rgba(23,162,184,.15); }
+.btn-primary{ background:linear-gradient(180deg, var(--brand-accent), #1294a7); border:0; box-shadow:0 6px 16px rgba(23,162,184,.25); }
+.btn-primary:hover{ filter:brightness(.95); }
+
+/* CTA strip */
+.cta-strip{ background:linear-gradient(90deg, rgba(11,59,116,.06), rgba(23,162,184,.06)); border:1px dashed var(--card-border); border-radius:12px; padding:18px 20px; }
