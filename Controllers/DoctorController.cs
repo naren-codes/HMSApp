@@ -22,4 +22,24 @@ public class DoctorController : Controller
     {
         return View();
     }
+
+    // GET: Doctor/Create
+    [HttpGet]
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    // POST: Doctor/Create
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Create(Doctor doctor)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(doctor);
+        }
+        _doctorService.AddDoctor(doctor);
+        return RedirectToAction(nameof(Index));
+    }
 }
