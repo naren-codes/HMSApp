@@ -3,57 +3,7 @@
 }
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<style>
-    :root{
-        --brand-primary:#0b3b74;   /* Navy */
-        --brand-accent:#17a2b8;    /* Teal */
-        --brand-muted:#6c7a91;     /* Muted text */
-        --hero-text:#f5f7fb;       /* Light text */
-        --section-bg:#f6f8fb;      /* Section background */
-        --card-border:#e6ebf2;     /* Light border */
-    }
-
-    /* Page background */
-    body { background: radial-gradient(1200px 600px at 10% -10%, #eef3fb 0%, transparent 60%), radial-gradient(1000px 500px at 110% 10%, #eef6ff 0%, transparent 60%) #ffffff; }
-
-    /* Hero */
-    .hero-section { position:relative; color:var(--hero-text); padding:100px 0; margin-bottom:0; overflow:hidden; }
-    .hero-section::before{ content:""; position:absolute; inset:0; background:
-        linear-gradient(180deg, rgba(11,59,116,.88), rgba(23,162,184,.75)),
-        url('https://source.unsplash.com/1600x900/?hospital,medical');
-        background-size:cover; background-position:center; filter:contrast(105%) saturate(105%);
-        z-index:-1; }
-    .hero-kicker{ background:rgba(255,255,255,.9); color:var(--brand-primary) !important; }
-    .hero-section h1{ font-weight:1000; letter-spacing:.2px; text-decoration:underline}
-    .hero-section .lead{ color:#fdfefe; text-shadow:0 1px 1px rgba(0,0,0,.25); font-weight:500; }
-
-    
-    .breadcrumb-wrap { background:var(--section-bg); border-bottom:1px solid var(--card-border); }
-
-    
-    .section { padding: 3rem 0; }
-    .content-section { background:#fff; padding:40px; border-radius:16px; border:1px solid var(--card-border); box-shadow:0 10px 30px rgba(11,59,116,.06); }
-    .content-section h3{ position:relative; }
-    .content-section h3::after{ content:""; display:block; width:56px; height:4px; background:linear-gradient(90deg, var(--brand-primary), var(--brand-accent)); border-radius:2px; margin-top:8px; }
-
-    /* Feature Cards */
-    .feature-card { border-radius:12px; transition:transform .2s ease, box-shadow .2s ease; border:1px solid var(--card-border); }
-    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(13,110,253,.15); }
-
-    /* Departments */
-    .dept-card { transition: transform .2s ease, box-shadow .2s ease; border-radius:12px; border:1px solid var(--card-border); }
-    .dept-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(13,110,253,.15); }
-
-    /* Timeline */
-    .timeline { position: relative; }
-    .timeline::before{ content:""; position:absolute; left:20px; top:0; bottom:0; width:2px; background:#e9ecef; }
-    .timeline-item{ position:relative; padding-left:60px; margin-bottom:1.25rem; }
-    .timeline-item .dot{ position:absolute; left:12px; top:2px; width:16px; height:16px; border-radius:50%; background:#0d6efd; }
-
-    /* FAQ */
-    .accordion-button:not(.collapsed) { background:#e7f1ff; color:#0a58ca; }
-</style>
+<link rel="stylesheet" href="~/css/about.css" asp-append-version="true" />
 
 <section class="hero-section text-center">
     <div class="container">
@@ -72,7 +22,7 @@
                     Our mission is simple yet profound: to deliver high?quality, patient?centered healthcare with unwavering integrity and continuous innovation. We strive to be a trusted partner in your health journey, focusing on personalized care that respects your unique needs and values.
                 </p>
                 <p class="mb-0">
-                    Every decision we make—from advanced treatments to warm, human interactions—is rooted in this mission. True healing embraces medical excellence, empathy, and understanding.
+                    Every decision we make?from advanced treatments to warm, human interactions?is rooted in this mission. True healing embraces medical excellence, empathy, and understanding.
                 </p>
             </div>
             <div class="col-lg-5 text-center">
@@ -156,9 +106,9 @@
                 ("Cardiology","bi-heart-pulse","Advanced heart care and diagnostics."),
                 ("Neurology","bi-cpu","Comprehensive neuro care and rehab."),
                 ("Orthopedics","bi-bandaid","Joint, bone, and sports injury care."),
-                ("Pediatrics","bi-emoji-smile","Complete children’s health services."),
+                ("Pediatrics","bi-emoji-smile","Complete children?s health services."),
                 ("Oncology","bi-bezier2","Integrated cancer care & therapy."),
-                ("Gynecology","bi-gender-female","Women’s health and maternity.")})
+                ("Gynecology","bi-gender-female","Women?s health and maternity.")})
             {
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="dept-card border p-3 h-100 bg-white">
