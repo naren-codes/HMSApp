@@ -59,7 +59,18 @@ public class AccountController : Controller
     [HttpPost]
     public IActionResult LoginDoctor(string username, string password)
     {
-        return HandleLogin(username, password, "doctor", "Doctor");
+        var user = _accountService.Authenticate(username, password);
+        if (user != null)
+        {
+            if (user.role?.ToLower() == "doctor")
+            {
+                return RedirectToAction("DoctorDashboard", "Doctor", new { u = username });
+            }
+            ViewBag.Error = "doctor login is not allowed here.";
+            return View("DoctorLogin");
+        }
+        ViewBag.Error = "Invalid username or password";
+        return View("DoctorLogin");
     }
 
 
