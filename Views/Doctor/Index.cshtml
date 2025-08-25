@@ -1,48 +1,76 @@
 ﻿@model IEnumerable<HMSApp.Models.Doctor>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Doctors";
 }
-
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-
-@if (!Model.Any())
-{
-    <div class="alert alert-info">
-        No doctors found.
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-primary m-0"><i class="bi bi-heart-pulse me-2"></i>Doctors</h2>
+        <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Add Doctor</a>
     </div>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.First().Name)</th>
-                <th>@Html.DisplayNameFor(model => model.First().Specialization)</th>
-                <th>@Html.DisplayNameFor(model => model.First().ContactNumber)</th>
-                <th>@Html.DisplayNameFor(model => model.First().AvailabilitySchedule)</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="row mb-3 g-2">
+                <div class="col-md-4 col-sm-6">
+                    <input id="doctorSearch" type="text" class="form-control" placeholder="Search by name / specialization / contact" />
+                </div>
+            </div>
+
+            @if (!Model.Any())
             {
-                <tr>
-                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Specialization)</td>
-                    <td>@Html.DisplayFor(modelItem => item.ContactNumber)</td>
-                    <td>@Html.DisplayFor(modelItem => item.AvailabilitySchedule)</td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.DoctorId">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.DoctorId">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.DoctorId">Delete</a>
-                    </td>
-                </tr>
+                <div class="alert alert-info mb-0">
+                    <i class="bi bi-info-circle me-1"></i>No doctors found.
+                </div>
             }
-        </tbody>
-    </table>
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle" id="doctorTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Specialization</th>
+                                <th>Contact</th>
+                                <th>Username</th>
+                                <th style="width:220px" class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Specialization</td>
+                                <td>@item.ContactNumber</td>
+                                <td>@item.Username</td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Details" asp-route-id="@item.DoctorId" class="btn btn-outline-secondary">Details</a>
+                                        <a asp-action="Edit" asp-route-id="@item.DoctorId" class="btn btn-outline-primary">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@item.DoctorId" class="btn btn-outline-danger">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function(){
+            $('#doctorSearch').on('input', function(){
+                var term = $(this).val().toString().toLowerCase();
+                $('#doctorTable tbody tr').each(function(){
+                    var text = $(this).text().toLowerCase();
+                    $(this).toggle(text.indexOf(term) > -1);
+                });
+            });
+        });
+    </script>
 }

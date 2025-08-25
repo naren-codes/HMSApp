@@ -21,6 +21,20 @@ namespace HMSApp.Controllers
 
         public IActionResult DoctorDashboard()
         {
+            var doctorId = HttpContext.Session.GetInt32("DoctorId");
+            if (doctorId == null)
+            {
+                return RedirectToAction("DoctorLogin", "Account");
+            }
+            var doctor = _context.Doctor.FirstOrDefault(d => d.DoctorId == doctorId);
+            if (doctor == null)
+            {
+                return RedirectToAction("DoctorLogin", "Account");
+            }
+            ViewData["DoctorName"] = doctor.Name;
+            ViewData["DoctorSpecialization"] = doctor.Specialization;
+            ViewData["DoctorContact"] = doctor.ContactNumber;
+            ViewData["DoctorSchedule"] = doctor.AvailabilitySchedule;
             return View();
         }
         // GET: Doctor
@@ -47,18 +61,13 @@ namespace HMSApp.Controllers
             return View(doctor);
         }
 
-        // GET: Doctor/Create
         public IActionResult Create()
         {
             return View();
         }
-
-        // POST: Doctor/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DoctorId,Name,Specialization,ContactNumber,AvailabilitySchedule")] Doctor doctor)
+        public async Task<IActionResult> Create([Bind("DoctorId,Name,Specialization,ContactNumber,AvailabilitySchedule,Username,Password")] Doctor doctor)
         {
             if (ModelState.IsValid)
             {
@@ -86,11 +95,9 @@ namespace HMSApp.Controllers
         }
 
         // POST: Doctor/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DoctorId,Name,Specialization,ContactNumber,AvailabilitySchedule")] Doctor doctor)
+        public async Task<IActionResult> Edit(int id, [Bind("DoctorId,Name,Specialization,ContactNumber,AvailabilitySchedule,Username,Password")] Doctor doctor)
         {
             if (id != doctor.DoctorId)
             {
