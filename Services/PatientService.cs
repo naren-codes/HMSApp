@@ -12,8 +12,6 @@ namespace HMSApp.Services
     {
         private readonly ApplicationDbContext _context;
 
-        public object Patient { get; internal set; }
-
         public PatientService(ApplicationDbContext context)
         {
             _context = context;
@@ -47,8 +45,15 @@ namespace HMSApp.Services
             }
         }
 
-
-
+        public async Task<List<Appointment>> GetPatientAppointmentsAsync(int patientId)
+        {
+            // This is the corrected code. It fetches appointments from the database
+            // where the PatientId matches the provided patientId.
+            return await _context.Appointment
+                                 .Where(a => a.PatientId == patientId)
+                                 .OrderByDescending(a => a.AppointmentDate)
+                                 .ToListAsync();
+        }
 
     }
 }

@@ -14,5 +14,6 @@ namespace HMSApp.Services
         }
         public List<Doctor> GetAllDoctors() =>
             _context.Doctor.ToList();
+
     }
 }

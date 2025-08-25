@@ -1,0 +1,131 @@
+﻿@model IEnumerable<HMSApp.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Patient Dashboard";
+    Layout = "_Layout";
+}
+
+<link href="~/css/patient-dashboard.css" rel="stylesheet" asp-append-version="true" />
+
+
+<div class="container-fluid py-4">
+    <div class="dd-header-bar mb-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div>
+                <h2 class="fw-bold mb-1 text-light"><i class="bi bi-person-fill"></i> Patient Dashboard</h2>
+                <div class="small opacity-75">Welcome, <span class="patient-name-inline">@ViewData["PatientName"]</span>.</div>
+            </div>
+            <div class="nav-quick">
+                <a class="btn btn-sm btn-light px-3" href="#appointments"><i class="bi bi-calendar-event me-1"></i>Appointments</a>
+                <a class="btn btn-sm btn-light px-3" href="#prescriptions"><i class="bi bi-capsule-pill me-1"></i>Prescriptions</a>
+                <a class="btn btn-sm btn-light px-3" href="#profile"><i class="bi bi-person-badge me-1"></i>Profile</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container main-content">
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="stat-card p-3 dd-header-bar">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-calendar-plus-fill display-4 text-info mb-3"></i>
+                        <h5 class="card-title fw-bold">Book an Appointment</h5>
+                        <p class="card-text text-muted">
+                            Schedule a new appointment with a doctor easily.
+                        </p>
+                        <a asp-controller="Patient" asp-action="PatientAppointment" class="btn btn-info text-white mt-3">Book Now</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="stat-card p-3" style="background:var(--dd-green-grad)">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-clock-history display-4 text-success mb-3"></i>
+                        <h5 class="card-title fw-bold">Appointment History</h5>
+                        <p class="card-text text-muted">
+                            View your past and upcoming appointments.
+                        </p>
+                        <a asp-controller="Appointment" asp-action="History" class="btn btn-success mt-3">View History</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card dd-panel">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title"><i class="bi bi-calendar-date me-2"></i>Today's & Upcoming Appointments</h5>
+                    <div class="d-none d-md-block">
+                        <span class="badge rounded-pill bg-primary me-1">Upcoming</span>
+                        <span class="badge rounded-pill bg-light text-dark border me-1">All</span>
+                        <span class="badge rounded-pill bg-light text-dark border">Completed</span>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    @if (Model != null && Model.Any(a => a.Status == "Upcoming"))
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>TIME</th>
+                                        <th>PATIENT NAME</th>
+                                        <th>DOCTOR ID</th>
+                                        <th>STATUS</th>
+                                        <th>REASON</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appointment in Model.Where(a => a.Status == "Upcoming").OrderBy(a => a.AppointmentDate).ThenBy(a => a.TimeSlot).Take(5))
+                                    {
+                                        <tr>
+                                            <td>@appointment.TimeSlot</td>
+                                            <td>@ViewData["PatientName"]</td>
+                                            <td>Dr. @appointment.DoctorId</td>
+                                            <td><span class="badge bg-info">@appointment.Status</span></td>
+                                            <td>Consultation</td>
+                                            <td>
+                                                <a href="@Url.Action("Details", "Appointment", new { id = appointment.AppointmentId })" class="btn btn-sm btn-outline-primary">View</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-light text-center" role="alert">
+                            <i class="bi bi-info-circle display-6 text-muted my-3"></i>
+                            <p class="mb-0">No upcoming appointments available.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="stat-card patient-card-profile p-3 h-100">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="bi bi-person-circle-fill text-white mb-2"></i>
+                    <h5>@ViewData["PatientName"]</h5>
+                    <p class="text-white-50">Registered Patient</p>
+                    <div class="availability-badge available my-2">
+                        <i class="bi bi-check-circle-fill me-1"></i>Available
+                    </div>
+                    <hr class="border-white-50 w-100 my-2">
+                    <p class="text-white-50 small mb-1"><i class="bi bi-telephone-fill me-1"></i>Contact: --</p>
+                    <p class="text-white-50 small"><i class="bi bi-calendar-event-fill me-1"></i>Schedule: --</p>
+                    <a asp-controller="Patient" asp-action="Profile" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+

@@ -26,7 +26,11 @@ namespace HMSApp.Services
                 DateOfBirth = model.DateOfBirth,
                 Gender = model.Gender,
                 ContactNumber = model.ContactNumber,
-                Address = model.Address
+                Address = model.Address,
+                Username=model.Username,
+                Password = model.Password,
+                Role=model.Role
+
             };
             _context.Patient.Add(patient);
             _context.SaveChanges();
@@ -41,5 +45,6 @@ namespace HMSApp.Services
             _context.User.Add(user);
             _context.SaveChanges();
         }
+
     }
 }

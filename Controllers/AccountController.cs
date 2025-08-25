@@ -34,7 +34,20 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public IActionResult LoginPatient(string username, string password) => HandleLogin(username, password, "patient", "Home");
+    public IActionResult LoginPatient(string username, string password)
+    {
+        var user = _accountService.Authenticate(username, password);
+
+        if (user != null && user.role?.ToLower() == "patient")
+        {
+            HttpContext.Session.SetInt32("UserId", user.userId); 
+            return RedirectToAction("Dashboard", "Patient");
+        }
+
+        ViewBag.Error = "Invalid login credentials.";
+        return View("PatientLogin");
+    }
+
 
     [HttpPost]
     public IActionResult LoginAdmin(string username, string password) => HandleLogin(username, password, "admin", "Admin");
@@ -61,5 +74,11 @@ public class AccountController : Controller
             return RedirectToAction("Login");
         }
         return View(model);
+    }
+    [HttpGet]
+    public IActionResult Logout()
+    {
+        HttpContext.Session.Clear();
+        return RedirectToAction("DoctorLogin");
     }
 }

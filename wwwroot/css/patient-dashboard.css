@@ -1,0 +1,137 @@
+﻿:root {
+    --dd-bg: #f5f7fb;
+    --dd-primary-grad: linear-gradient(135deg, #4f67ff, #6aa8ff);
+    --dd-accent-grad: linear-gradient(135deg, #6366f1, #a855f7);
+    --dd-green-grad: linear-gradient(135deg, #16a34a, #4ade80);
+    --dd-orange-grad: linear-gradient(135deg, #f59e0b, #fbbf24);
+    --dd-red-grad: linear-gradient(135deg, #dc2626, #f87171);
+    --dd-card-radius: 1rem;
+    --dd-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+    --dd-shadow-hover: 0 8px 22px rgba(0, 0, 0, .12);
+    --dd-blur: saturate(180%) blur(6px);
+}
+
+body {
+    background: var(--dd-bg);
+}
+
+/* Header Bar Styling */
+.dd-header-bar {
+    background: var(--dd-primary-grad);
+    border-radius: var(--dd-card-radius);
+    padding: 1.7rem 2.2rem;
+    color: #fff;
+    box-shadow: var(--dd-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+    .dd-header-bar:before {
+        content: "";
+        position: absolute;
+        right: -60px;
+        top: -60px;
+        width: 190px;
+        height: 190px;
+        background: rgba(255, 255, 255, .16);
+        border-radius: 50%;
+    }
+
+    .dd-header-bar:after {
+        content: "";
+        position: absolute;
+        right: 40px;
+        top: 10px;
+        width: 130px;
+        height: 130px;
+        background: rgba(255, 255, 255, .08);
+        border-radius: 50%;
+    }
+
+/* Stat Cards Styling */
+.stat-card {
+    border: 0;
+    border-radius: var(--dd-card-radius);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--dd-shadow);
+    transition: .25s;
+}
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--dd-shadow-hover);
+    }
+
+    .stat-card .icon-bg {
+        position: absolute;
+        right: 12px;
+        bottom: 8px;
+        font-size: 3.3rem;
+        opacity: .25;
+    }
+
+.stat-value {
+    font-size: 2.35rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.mini-label {
+    font-size: .72rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    opacity: .85;
+    font-weight: 600;
+}
+
+/* Patient-specific card styling with gradients */
+.patient-card-book {
+    background: var(--dd-primary-grad);
+}
+
+.patient-card-history {
+    background: var(--dd-green-grad);
+}
+
+.patient-card-profile {
+    background: var(--dd-accent-grad);
+    color: #fff;
+}
+
+    .patient-card-profile .bi-person-circle-fill {
+        font-size: 3rem;
+    }
+
+    .patient-card-profile .availability-badge {
+        font-size: .7rem;
+        padding: .42em .65em;
+        border-radius: var(--dd-card-radius);
+        background: rgba(255, 255, 255, .2);
+    }
+
+/* Main Content Layout */
+.card.dd-panel {
+    border: 0;
+    border-radius: var(--dd-card-radius);
+    box-shadow: var(--dd-shadow);
+    overflow: hidden;
+}
+
+.table-custom thead th {
+    font-size: .65rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 600;
+}
+
+.table-custom tbody tr:hover {
+    background: #eef3fb;
+    cursor: pointer;
+}
+
+.table-custom tbody td {
+    vertical-align: middle;
+    font-size: .85rem;
+}

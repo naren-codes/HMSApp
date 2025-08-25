@@ -4,9 +4,8 @@
 }
 
 <div class="container mt-5">
-    <div class="row">
-        <!-- Login Panel -->
-        <div class="col-md-6">
+    <div class="row justify-content-center">
+        <div id="loginPanel" class="col-md-6">
             <h3>Sign In</h3>
             <form asp-action="LoginPatient" method="post">
                 <div class="form-group">
@@ -23,10 +22,11 @@
                     <div class="text-danger mt-2">@ViewBag.Error</div>
                 }
             </form>
+            <hr />
+            <p>Don't have an account? <a href="#" id="showRegisterBtn" class="btn btn-link">Register here</a></p>
         </div>
 
-        <!-- Register Panel -->
-        <div class="col-md-6">
+        <div id="registerPanel" class="col-md-6" style="display: none;">
             <h3>Register as Patient</h3>
             <form asp-action="Register" method="post">
                 <div class="form-group">
@@ -34,13 +34,11 @@
                     <input asp-for="Name" class="form-control" />
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
-
                 <div class="form-group">
                     <label asp-for="DateOfBirth"></label>
                     <input asp-for="DateOfBirth" class="form-control" type="date" />
                     <span asp-validation-for="DateOfBirth" class="text-danger"></span>
                 </div>
-
                 <div class="form-group">
                     <label asp-for="Gender"></label>
                     <select asp-for="Gender" class="form-control">
@@ -51,39 +49,54 @@
                     </select>
                     <span asp-validation-for="Gender" class="text-danger"></span>
                 </div>
-
-
                 <div class="form-group">
                     <label asp-for="ContactNumber"></label>
                     <input asp-for="ContactNumber" class="form-control" />
                     <span asp-validation-for="ContactNumber" class="text-danger"></span>
                 </div>
-
                 <div class="form-group">
                     <label asp-for="Address"></label>
-                    <textarea asp-for="Address" class="form-control"></textarea>
+<textarea asp-for="Address" class="form-control"></textarea>
                     <span asp-validation-for="Address" class="text-danger"></span>
                 </div>
-
                 <div class="form-group">
                     <label asp-for="Username">Username</label>
                     <input asp-for="Username" class="form-control" />
                     <span asp-validation-for="Username" class="text-danger"></span>
                 </div>
-
                 <div class="form-group">
                     <label asp-for="Password">Password</label>
                     <input asp-for="Password" type="password" class="form-control" />
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
-
                 <button type="submit" class="btn btn-success mt-2">Register</button>
-            </form>
 
+                <hr />
+                <p>Already have an account? <a href="#" id="showLoginBtn" class="btn btn-link">Sign in</a></p>
+            </form>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#showRegisterBtn').on('click', function(e) {
+                e.preventDefault();
+                $('#loginPanel').hide();
+                $('#registerPanel').show();
+            });
+
+            $('#showLoginBtn').on('click', function(e) {
+                e.preventDefault();
+                $('#loginPanel').show();
+                $('#registerPanel').hide();
+            });
+        });
+    </script>
 }

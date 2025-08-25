@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HMSApp.Models
 {
@@ -25,10 +26,9 @@ namespace HMSApp.Models
 
         public string? MedicalHistory { get; set; }
 
-
         public string? Username { get; set; }
         public string? Password { get; set; }
+        public string? Role { get; set; } = "Patient";
 
     }
 }
-
