@@ -7,5 +7,8 @@
         public string? Specialization { get; set; }
         public string? ContactNumber { get; set; }
         public string? AvailabilitySchedule { get; set; }
+        public string? Username { get; set; }
+        public string? Password { get; set; }
+        public string? Role { get; set; } = "Doctor";
     }
 }

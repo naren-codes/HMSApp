@@ -1,42 +1,36 @@
 ﻿@model HMSApp.Models.Doctor
-
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Doctor Details";
 }
-
-<h1>Details</h1>
-
-<div>
-    <h4>Doctor</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Specialization)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Specialization)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ContactNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ContactNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AvailabilitySchedule)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AvailabilitySchedule)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.DoctorId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-info text-white d-flex align-items-center">
+                    <h4 class="m-0"><i class="bi bi-person-badge me-2"></i>Doctor Details</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Name</dt>
+                        <dd class="col-sm-8">@Model.Name</dd>
+                        <dt class="col-sm-4">Specialization</dt>
+                        <dd class="col-sm-8">@Model.Specialization</dd>
+                        <dt class="col-sm-4">Contact</dt>
+                        <dd class="col-sm-8">@Model.ContactNumber</dd>
+                        <dt class="col-sm-4">Username</dt>
+                        <dd class="col-sm-8">@Model.Username</dd>
+                        <dt class="col-sm-4">Availability</dt>
+                        <dd class="col-sm-8">@Model.AvailabilitySchedule</dd>
+                    </dl>
+                </div>
+                <div class="card-footer bg-light d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+                    <div class="d-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model?.DoctorId" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+                        <a asp-action="Delete" asp-route-id="@Model?.DoctorId" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
