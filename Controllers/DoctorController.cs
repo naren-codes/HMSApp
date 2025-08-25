@@ -157,5 +157,24 @@ namespace HMSApp.Controllers
         {
             return _context.Doctor.Any(e => e.DoctorId == id);
         }
+
+    // GET: Doctor/Create
+    [HttpGet]
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    // POST: Doctor/Create
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Create(Doctor doctor)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(doctor);
+        }
+        _doctorService.AddDoctor(doctor);
+        return RedirectToAction(nameof(Index));
     }
 }

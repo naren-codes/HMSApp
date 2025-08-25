@@ -15,5 +15,11 @@ namespace HMSApp.Services
         public List<Doctor> GetAllDoctors() =>
             _context.Doctor.ToList();
 
+        // Add new method to create a doctor
+        public void AddDoctor(Doctor doctor)
+        {
+            _context.Doctor.Add(doctor);
+            _context.SaveChanges();
+        }
     }
 }
