@@ -32,7 +32,7 @@ namespace HMSApp.Services
 
             };
             _context.Patient.Add(patient);
-            //_context.SaveChanges();
+            _context.SaveChanges();
 
             var user = new User
             {

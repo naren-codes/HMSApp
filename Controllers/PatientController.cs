@@ -105,7 +105,7 @@ namespace HMSApp.Controllers
             }
 
             // Pass the patient's name to the view.
-            ViewData["PatientName"] = patient.Name.ToUpper();
+            ViewData["PatientName"] = char.ToUpper(patient.Name[0]) + patient.Name.Substring(1);
 
             // Now, get the appointments using the correct PatientId.
             var appointments = await _patientService.GetPatientAppointmentsAsync(patient.PatientId);

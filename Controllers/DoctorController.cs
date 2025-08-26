@@ -69,10 +69,38 @@ namespace HMSApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DoctorId,Name,Specialization,ContactNumber,AvailabilitySchedule,Username,Password")] Doctor doctor)
         {
+            if (string.IsNullOrWhiteSpace(doctor.Role))
+            {
+                doctor.Role = "Doctor";
+            }
+
+
+            if (!string.IsNullOrWhiteSpace(doctor.Username))
+            {
+                bool usernameExists = await _context.User.AnyAsync(u => u.Username == doctor.Username) ||
+                                       await _context.Doctor.AnyAsync(d => d.Username == doctor.Username);
+                if (usernameExists)
+                {
+                    ModelState.AddModelError("Username", "Username already exists.");
+                }
+            }
             if (ModelState.IsValid)
             {
+
                 _context.Add(doctor);
                 await _context.SaveChangesAsync();
+                if (!string.IsNullOrWhiteSpace(doctor.Username) && !string.IsNullOrWhiteSpace(doctor.Password))
+                {
+                    var user = new User
+                    {
+                        Username = doctor.Username,
+                        Password = doctor.Password,
+                        role = doctor.Role ?? "Doctor"
+                    };
+                    _context.User.Add(user);
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
             return View(doctor);

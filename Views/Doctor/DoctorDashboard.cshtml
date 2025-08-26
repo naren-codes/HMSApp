@@ -1,5 +1,9 @@
 ﻿@{
     var doctorName = ViewData["DoctorName"] as string;
+    if (!string.IsNullOrEmpty(doctorName))
+    {
+        doctorName = char.ToUpper(doctorName[0]) + (doctorName.Length > 1 ? doctorName.Substring(1) : string.Empty);
+    }
     if (string.IsNullOrEmpty(doctorName))
     {
         Context.Response.Redirect("/Account/DoctorLogin");
@@ -169,11 +173,3 @@
         <button class="btn btn-primary" title="New Prescription" onclick="document.getElementById('new-prescription').scrollIntoView({behavior:'smooth'})"><i class="bi bi-plus-lg"></i></button>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        $(function(){
-            // All logic currently server-driven; placeholder for future jQuery enhancements.
-        });
-    </script>
-}
