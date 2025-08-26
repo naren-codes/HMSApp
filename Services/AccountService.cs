@@ -19,7 +19,6 @@ namespace HMSApp.Services
 
         public void RegisterPatient(Patient model)
         {
-            // Save Patient
             var patient = new Patient
             {
                 Name = model.Name,
@@ -35,16 +34,39 @@ namespace HMSApp.Services
             _context.Patient.Add(patient);
             _context.SaveChanges();
 
-            // Save User
             var user = new User
             {
                 Username = model.Username,
                 Password = model.Password,
-                role = "Patient"
+                role = model.Role
             };
             _context.User.Add(user);
             _context.SaveChanges();
         }
 
+        public void RegisterDoctor(Doctor model)
+        {
+            var doctor = new Doctor
+            {
+                Name = model.Name,
+                Specialization = model.Specialization,
+                ContactNumber = model.ContactNumber,
+                AvailabilitySchedule = model.AvailabilitySchedule,
+                Username = model.Username,
+                Password = model.Password,
+                Role = model.Role
+            };
+            _context.Doctor.Add(doctor);
+            _context.SaveChanges();
+
+            var user = new User
+            {
+                Username = model.Username,
+                Password = model.Password,
+                role = model.Role
+            };
+            _context.User.Add(user);
+            _context.SaveChanges();
+        }
     }
 }
