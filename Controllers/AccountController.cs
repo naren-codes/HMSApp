@@ -47,7 +47,7 @@ public class AccountController : Controller
 
         if (user != null && user.role?.ToLower() == "patient")
         {
-            HttpContext.Session.SetInt32("UserId", user.userId); 
+            HttpContext.Session.SetString("Username", user.Username);
             return RedirectToAction("Dashboard", "Patient");
         }
 
@@ -77,8 +77,14 @@ public class AccountController : Controller
         return View("DoctorLogin");
     }
 
+    [HttpGet]
+    public IActionResult PatientRegister()
+    {
+        return View();
+    }
+
     [HttpPost]
-    public IActionResult Register(Patient model)
+    public IActionResult PatientRegister(Patient model)
     {
         if (ModelState.IsValid)
         {

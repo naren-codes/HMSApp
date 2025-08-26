@@ -6,74 +6,40 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div id="loginPanel" class="col-md-6">
-            <h3>Sign In</h3>
-            <form asp-action="LoginPatient" method="post">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input name="username" class="form-control" required />
+            <div class="card">
+                <div class="card-header text-center bg-primary text-white">
+                    <h3>Patient Login</h3>
                 </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input name="password" type="password" class="form-control" required />
-                </div>
-                <button type="submit" class="btn btn-primary mt-2">Login</button>
-                @if (ViewBag.Error != null)
-                {
-                    <div class="text-danger mt-2">@ViewBag.Error</div>
-                }
-            </form>
-            <hr />
-            <p>Don't have an account? <a href="#" id="showRegisterBtn" class="btn btn-link">Register here</a></p>
-        </div>
+                <div class="card-body">
+                    <form asp-action="LoginPatient" method="post">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input name="username" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input name="password" type="password" class="form-control" required />
+                        </div>
+                        @* <form asp-action="LoginPatient" method="post">
+                            <div class="d-flex justify-content-between mt-3">
+                                <button type="submit" class="btn btn-primary">Login</button>
+                                <a asp-controller="Account" asp-action="PatientRegister" class="btn btn-secondary">Register</a>
+                            </div>
 
-        <div id="registerPanel" class="col-md-6" style="display: none;">
-            <h3>Register as Patient</h3>
-            <form asp-action="Register" method="post">
-                <div class="form-group">
-                    <label asp-for="Name"></label>
-                    <input asp-for="Name" class="form-control" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
+                            @if (ViewBag.Error != null)
+                            {
+                                <div class="text-danger mt-2">@ViewBag.Error</div>
+                            }
+                        </form> *@
+                        <br />
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">SignIn</button>
+                            <a asp-action="PatientRegister" class="btn btn-secondary ms-2">Register</a>
+                        </div>
+                       </form>
+                       
                 </div>
-                <div class="form-group">
-                    <label asp-for="DateOfBirth"></label>
-                    <input asp-for="DateOfBirth" class="form-control" type="date" />
-                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Gender"></label>
-                    <select asp-for="Gender" class="form-control">
-                        <option value="">Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <span asp-validation-for="Gender" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ContactNumber"></label>
-                    <input asp-for="ContactNumber" class="form-control" />
-                    <span asp-validation-for="ContactNumber" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Address"></label>
-<textarea asp-for="Address" class="form-control"></textarea>
-                    <span asp-validation-for="Address" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Username">Username</label>
-                    <input asp-for="Username" class="form-control" />
-                    <span asp-validation-for="Username" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Password">Password</label>
-                    <input asp-for="Password" type="password" class="form-control" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-                <button type="submit" class="btn btn-success mt-2">Register</button>
-
-                <hr />
-                <p>Already have an account? <a href="#" id="showLoginBtn" class="btn btn-link">Sign in</a></p>
-            </form>
+            </div>
         </div>
     </div>
 </div>
@@ -82,7 +48,6 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
