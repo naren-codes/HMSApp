@@ -2,6 +2,7 @@
 using HMSApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using HMSApp.Data;
+using Microsoft.EntityFrameworkCore;
 
 public class AccountController : Controller
 {
@@ -82,7 +83,9 @@ public class AccountController : Controller
         if (ModelState.IsValid)
         {
             _accountService.RegisterPatient(model);
-            return RedirectToAction("Login");
+            TempData["SuccessMessage"] = "Registration successful! You can now sign in.";
+
+            return RedirectToAction("PatientLogin");
         }
         return View(model);
     }
