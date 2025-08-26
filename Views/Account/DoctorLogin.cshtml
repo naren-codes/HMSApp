@@ -31,7 +31,7 @@
                             <input type="password" class="form-control" id="password" name="password" required>
                         </div>
                         <div class="text-center mt-3">
-                            <button type="submit" class="btn btn-primary btn-block" id="doctorLoginBtn">Login</button>
+                            <button type="submit" class="btn btn-primary btn-block">Login</button>
 
                         </div>
                     </form>
@@ -40,16 +40,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        $(function () {
-            $('#doctorLoginBtn').on('click', function () {
-                var u = $.trim($('#username').val());
-                if (u) {
-                    localStorage.setItem('doctorUsername', u);
-                }
-            });
-        });
-    </script>
-}
