@@ -81,22 +81,36 @@ namespace HMSApp.Controllers
             _patientService.DeletePatient(id);
             return RedirectToAction("Index");
         }
+
+        // File: PatientController.cs
+
         public async Task<IActionResult> Dashboard()
         {
-            // Get the UserId from the session.
-            int? userId = HttpContext.Session.GetInt32("UserId");
+            // Get the username from the session.
+            var username = HttpContext.Session.GetString("Username");
 
-            if (userId == null)
+            if (string.IsNullOrEmpty(username))
             {
                 // Redirect if the user is not logged in.
                 return RedirectToAction("PatientLogin", "Account");
             }
-            var patient = _patientService.GetPatientById(userId.Value);
-            ViewData["PatientName"] = patient?.Name ?? "Guest";
-            // The Patient and User models are separate. Assuming Patient.PatientId is the same as User.Id.
-            // If they are different, you'd need a way to find the Patient's ID from the User's ID.
-            var appointments = await _patientService.GetPatientAppointmentsAsync(userId.Value);
 
+            // Find the patient record using the username.
+            var patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
+
+            if (patient == null)
+            {
+                // Handle case where patient record is not found for the user.
+                return RedirectToAction("PatientLogin", "Account");
+            }
+
+            // Pass the patient's name to the view.
+            ViewData["PatientName"] = char.ToUpper(patient.Name[0]) + patient.Name.Substring(1);
+
+            // Now, get the appointments using the correct PatientId.
+            var appointments = await _patientService.GetPatientAppointmentsAsync(patient.PatientId);
+
+            // Pass the appointments to the view.
             return View(appointments);
         }
 

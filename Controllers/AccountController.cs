@@ -26,9 +26,6 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult DoctorLogin() => View();
 
-    [HttpGet]
-    public IActionResult DoctorRegister() => View();
-
     private IActionResult HandleLogin(string username, string password, string expectedRole, string redirectController)
     {
         var user = _accountService.Authenticate(username, password);
@@ -43,16 +40,31 @@ public class AccountController : Controller
     [HttpPost]
     public IActionResult LoginPatient(string username, string password)
     {
+        // Step 1: Authenticate the user against the `User` table using the AccountService.
         var user = _accountService.Authenticate(username, password);
 
         if (user != null && user.role?.ToLower() == "patient")
         {
-            HttpContext.Session.SetInt32("UserId", user.userId); 
+            // Step 2: If authentication is successful, use the username to find the corresponding patient record in the `Patient` table.
+            // FIX: The original code was incorrectly searching the `Doctor` or `User` table for a patient.
+            var patient = _context.Patient.FirstOrDefault(p => p.Username == username);
+
+            if (patient != null)
+            {
+                // Step 3: If a patient record is found, store the username in the session.
+                HttpContext.Session.SetString("Username", user.Username);
+            }
+
+            // Step 4: Redirect to the patient's dashboard.
             return RedirectToAction("Dashboard", "Patient");
         }
 
+        // If authentication fails or the user is not a patient, show an error.
         ViewBag.Error = "Invalid login credentials.";
         return View("PatientLogin");
+
+
+
     }
 
 
@@ -77,8 +89,14 @@ public class AccountController : Controller
         return View("DoctorLogin");
     }
 
+    [HttpGet]
+    public IActionResult PatientRegister()
+    {
+        return View();
+    }
+
     [HttpPost]
-    public IActionResult Register(Patient model)
+    public IActionResult PatientRegister(Patient model)
     {
         if (ModelState.IsValid)
         {
@@ -90,16 +108,6 @@ public class AccountController : Controller
         return View(model);
     }
 
-    [HttpPost]
-    public IActionResult RegisterDoctor(Doctor model)
-    {
-        if (ModelState.IsValid)
-        {
-            _accountService.RegisterDoctor(model);
-            return RedirectToAction("DoctorLogin");
-        }
-        return View("DoctorRegister", model);
-    }
 
     [HttpGet]
     public IActionResult Logout()
