@@ -1,0 +1,44 @@
+﻿@model HMSApp.Models.Patient
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container my-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0"><i class="bi bi-person-fill"></i> Patient Profile</h2>
+        </div>
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Personal Information</h4>
+                    <hr>
+                    <dl class="row">
+                        <dt class="col-sm-4">Name</dt>
+                        <dd class="col-sm-8">@Model.Name</dd>
+
+                        <dt class="col-sm-4">Date of Birth</dt>
+                        <dd class="col-sm-8">@Model.DateOfBirth.ToShortDateString()</dd>
+
+                        <dt class="col-sm-4">Gender</dt>
+                        <dd class="col-sm-8">@Model.Gender</dd>
+
+                        <dt class="col-sm-4">Contact</dt>
+                        <dd class="col-sm-8">@Model.ContactNumber</dd>
+
+                        <dt class="col-sm-4">Address</dt>
+                        <dd class="col-sm-8">@Model.Address</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a asp-action="Dashboard" asp-controller="Patient" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* You may need to add a link to Bootstrap Icons in your main _Layout.cshtml file *@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

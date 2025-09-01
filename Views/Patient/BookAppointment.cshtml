@@ -1,0 +1,147 @@
+﻿@model HMSApp.Models.Appointment
+@{
+    ViewData["Title"] = "Book Appointment";
+    var today = DateTime.Today.ToString("yyyy-MM-dd");
+    Layout = "_Layout";
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+<link rel="stylesheet" href="~/css/book-appointment.css" asp-append-version="true" />
+
+<div class="ba-wrapper my-4 book-appointment-page ba-fade-in">
+    <div class="ba-hero mb-5">
+        <div>
+            <h1 class="ba-title mb-3"><i class="bi bi-calendar2-plus me-2"></i>Book Appointment</h1>
+            <p class="ba-sub mb-0">Request a new appointment. Provide the details and submit. You can monitor the status of this request from your dashboard once created.</p>
+        </div>
+        <div class="ba-status-box">
+            <div class="ba-status-icon"><i class="bi bi-clipboard2-pulse"></i></div>
+            <div>
+                <div class="small text-white-50 mb-1">Default Status</div>
+                <span class="badge bg-warning text-dark"><i class="bi bi-clock-history me-1"></i>Pending</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="ba-card mb-5">
+        <div class="ba-card-header">
+            <h5><i class="bi bi-journal-medical text-primary"></i><span>New Appointment Request</span></h5>
+        </div>
+        <div class="card-body px-4 px-lg-5 pb-5 pt-2">
+            <form asp-action="BookAppointment" method="post" class="ba-form" novalidate>
+                <div class="ba-section-title">Patient Info</div>
+                <div class="form-grid">
+                    <div class="field">
+                        <label class="required">Patient Name</label>
+                        <input name="PatientName" value="@ViewBag.PatientName" class="form-control" required />
+                    </div>
+                    <div class="field">
+                        <label class="required">Select Doctor</label>
+                        <select asp-for="DoctorId" asp-items="ViewBag.Doctors" required>
+                            <option value="">Choose a doctor</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="ba-divider"></div>
+                <div class="ba-section-title">Appointment Details</div>
+                <div class="form-grid">
+                    <div class="field">
+                        <label class="required">Appointment Date</label>
+                        <input asp-for="AppointmentDate" id="AppointmentDate" type="date" min="@today" value="@today" required />
+                    </div>
+                    <div class="field">
+                        <label class="required">Time Slot (up to 9:30 PM)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-clock"></i></span>
+                            <select asp-for="TimeSlot" id="TimeSlot" class="form-select" required>
+                                <option value="">Select a time</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Status</label>
+                        <select asp-for="Status">
+                            <option value="Pending" selected>Pending</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="ba-section-title">Patient Description</div>
+                <div class="form-grid">
+                    <div class="field" style="grid-column:1 / -1;">
+                        <label>Describe the problem / symptoms (max 500 characters)</label>
+                        <textarea asp-for="PatientDescription" name="PatientDescription" class="form-control" rows="4" maxlength="500" placeholder="E.g. Persistent headache for 3 days, mild fever..."></textarea>
+                        <div class="text-end mt-1 small" id="descCounter">0 / 500</div>
+                    </div>
+                </div>
+
+                <div class="ba-actions">
+                    <button type="submit" class="btn btn-primary ba-btn-pill ba-btn-shadow flex-fill"><i class="bi bi-check2-circle me-2"></i>Submit Request</button>
+                    <a asp-action="Dashboard" class="btn btn-outline-secondary ba-btn-pill px-4 flex-fill"><i class="bi bi-x-circle me-2"></i>Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function(){
+            const START_HOUR_DEFAULT = 9;
+            const END_HOUR = 21;
+            const END_MINUTE = 30;
+            const SLOT_MIN = 30;
+            const $date = $('#AppointmentDate');
+            const $time = $('#TimeSlot');
+
+            function pad(n){ return n.toString().padStart(2,'0'); }
+            function to12(h){ const suf = h>=12?'PM':'AM'; let hh = h%12; if(hh===0) hh=12; return {hh,suf}; }
+            function roundForward(dt){
+                const r = dt.getMinutes() % SLOT_MIN;
+                if(r){ dt.setMinutes(dt.getMinutes() + (SLOT_MIN - r)); }
+                if(dt.getMinutes()===60){ dt.setMinutes(0); dt.setHours(dt.getHours()+1); }
+                return dt;
+            }
+            function format(slotStart){
+                const end = new Date(slotStart.getTime()+SLOT_MIN*60000);
+                const fmt = d=>{ const {hh,suf}=to12(d.getHours()); return `${hh}:${pad(d.getMinutes())} ${suf}`; };
+                return `${fmt(slotStart)} - ${fmt(end)}`;
+            }
+            function buildSlots(){
+                if(!$date.val()) return;
+                const sel = new Date($date.val()+'T00:00:00');
+                const now = new Date();
+                let cursor = new Date(sel.getTime());
+                cursor.setHours(START_HOUR_DEFAULT,0,0,0);
+                if(sel.toDateString()===now.toDateString()){
+                    cursor = roundForward(new Date(now.getTime()));
+                }
+                const dayEnd = new Date(sel.getTime());
+                dayEnd.setHours(END_HOUR, END_MINUTE,0,0);
+                if(cursor >= dayEnd){
+                    $time.empty().append($('<option/>').val('').text('No time slots available'));
+                    return;
+                }
+                $time.empty().append($('<option/>').val('').text('Select a time'));
+                while(true){
+                    const slotEnd = new Date(cursor.getTime()+SLOT_MIN*60000);
+                    if(slotEnd > dayEnd) break;
+                    const text = format(cursor);
+                    $time.append($('<option/>').val(text).text(text));
+                    cursor.setMinutes(cursor.getMinutes()+SLOT_MIN);
+                }
+                if($time.children().length===1){
+                    $time.append($('<option/>').prop('disabled',true).text('No time slots available'));
+                }
+            }
+            $date.on('change', buildSlots);
+            buildSlots();
+
+            const $desc = $('[name=PatientDescription]');
+            const $counter = $('#descCounter');
+            $desc.on('input', function(){
+                $counter.text(this.value.length + ' / 500');
+            });
+        });
+    </script>
+}

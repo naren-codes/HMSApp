@@ -1,0 +1,127 @@
+﻿@model IEnumerable<HMSApp.Models.Appointment>
+@{
+    ViewData["Title"] = "Appointment History";
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+<link rel="stylesheet" href="~/css/appointment-history.css" asp-append-version="true" />
+
+<div class="container my-4 appointment-history-page">
+
+    <div class="hero-header">
+        <h1 class="mb-2"><i class="bi bi-clock-history me-3"></i>Appointment History</h1>
+        <p class="lead mb-0">Review your past, present, and future appointments. Use the filters to navigate your history.</p>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="d-flex justify-content-start mb-4">
+            <ul class="nav nav-pills filter-pills" id="appointment-filter">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-filter="upcoming">Upcoming</a>
+                </li>
+                <li class="nav-item mx-2">
+                    <a class="nav-link active" href="#" data-filter="all">All</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-filter="completed">Completed</a>
+                </li>
+            </ul>
+        </div>
+
+        <div id="appointment-list">
+            @foreach (var appt in Model)
+            {
+                var statusClass = appt.Status.ToLower() switch
+                {
+                    "confirmed" => "bg-success",
+                    "pending" => "bg-warning text-dark",
+                    "cancelled" => "bg-danger",
+                    "completed" => "bg-secondary",
+                    _ => "bg-info"
+                };
+
+                <div class="appointment-card" data-status="@appt.Status.ToLower()">
+                    <div class="card-header-flex">
+                        <div class="doctor-info">Dr. @appt.DoctorName</div>
+                        <span class="badge @statusClass">@appt.Status</span>
+                    </div>
+                    <div class="appointment-details">
+                        <div class="detail-item">
+                            <i class="bi bi-calendar-event icon"></i>
+                            <strong>Date:</strong> @appt.AppointmentDate.ToString("dd MMMM yyyy")
+                        </div>
+                        <div class="detail-item">
+                            <i class="bi bi-clock icon"></i>
+                            <strong>Time:</strong> @appt.TimeSlot
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(appt.PatientDescription))
+                        {
+                            <div class="detail-item" style="grid-column: 1 / -1;">
+                                <i class="bi bi-file-earmark-text icon"></i>
+                                <strong>Symptoms:</strong> @appt.PatientDescription
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="bi bi-calendar-x"></i>
+            <h5>No Appointments Found</h5>
+            <p class="text-muted">You haven't booked any appointments yet.</p>
+            <a asp-controller="Patient" asp-action="BookAppointment" class="btn btn-primary mt-3">
+                <i class="bi bi-plus-circle me-1"></i>Book Your First Appointment
+            </a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // --- Tab Filtering Logic ---
+            const filterPills = $('#appointment-filter .nav-link');
+            const appointmentCards = $('#appointment-list .appointment-card');
+
+            function filterAppointments(filter) {
+                filterPills.removeClass('active');
+                $(`[data-filter="${filter}"]`).addClass('active');
+
+                appointmentCards.hide();
+
+                let cardsToShow;
+                switch (filter) {
+                    case 'upcoming':
+                        cardsToShow = appointmentCards.filter('[data-status="pending"], [data-status="confirmed"]');
+                        break;
+                    case 'completed':
+                        cardsToShow = appointmentCards.filter('[data-status="completed"]');
+                        break;
+                    case 'all':
+                    default:
+                        cardsToShow = appointmentCards;
+                        break;
+                }
+
+                if (cardsToShow.length > 0) {
+                     cardsToShow.fadeIn(300);
+                }
+            }
+
+            filterPills.on('click', function (e) {
+                e.preventDefault();
+                const filterValue = $(this).data('filter');
+                filterAppointments(filterValue);
+            });
+
+            // --- Initial Load ---
+            // Trigger the default filter ('all') on page load
+            filterAppointments('all');
+        });
+    </script>
+}

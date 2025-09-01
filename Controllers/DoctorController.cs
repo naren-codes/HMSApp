@@ -18,7 +18,26 @@ namespace HMSApp.Controllers
         {
             _context = context;
         }
+        public async Task<IActionResult> Profile()
+        {
 
+            var doctorId = HttpContext.Session.GetInt32("DoctorId");
+
+            if (doctorId == null)
+            {
+
+                return RedirectToAction("Login", "Account");
+            }
+
+            var doctor = await _context.Doctor.FindAsync(doctorId);
+
+            if (doctor == null)
+            {
+
+                return NotFound();
+            }
+            return View(doctor);
+        }
         public IActionResult DoctorDashboard()
         {
             var doctorId = HttpContext.Session.GetInt32("DoctorId");
@@ -31,11 +50,64 @@ namespace HMSApp.Controllers
             {
                 return RedirectToAction("DoctorLogin", "Account");
             }
+
             ViewData["DoctorName"] = doctor.Name;
             ViewData["DoctorSpecialization"] = doctor.Specialization;
             ViewData["DoctorContact"] = doctor.ContactNumber;
             ViewData["DoctorSchedule"] = doctor.AvailabilitySchedule;
-            return View();
+
+            var appointmentsQuery = _context.Appointment
+                .Where(a => a.DoctorName == doctor.Name)
+                .OrderBy(a => a.AppointmentDate)
+                .ThenBy(a => a.TimeSlot);
+
+            var appointments = appointmentsQuery.ToList();
+            var today = DateTime.Today;
+            ViewData["TotalAppointments"] = appointments.Count;
+            ViewData["UpcomingAppointments"] = appointments.Count(a => a.AppointmentDate.Date >= today);
+            ViewData["PendingAppointments"] = appointments.Count(a => a.Status == "Pending");
+            ViewData["TodayAppointments"] = appointments.Count(a => a.AppointmentDate.Date == today);
+
+            return View(appointments);
+        }
+
+        // New: Create bill and mark appointment completed
+        [HttpPost]
+        public async Task<IActionResult> CompleteAppointmentAndCreateBill([FromBody] CompleteBillRequest request)
+        {
+            if (request == null) return BadRequest("Invalid data (empty body)");
+            if (request.appointmentId <= 0) return BadRequest("Invalid appointment id");
+            var appointment = await _context.Appointment.FirstOrDefaultAsync(a => a.AppointmentId == request.appointmentId);
+            if (appointment == null) return NotFound("Appointment not found");
+
+            try
+            {
+                appointment.Status = "Completed";
+                var bill = new Bill
+                {
+                    PatientId = appointment.PatientId,
+                    PatientName = appointment.PatientName,
+                    Prescription = request.prescription,
+                    TotalAmount = request.totalAmount,
+                    PaymentStatus = "Unpaid", // changed from Pending to satisfy DB CHECK constraint
+                    BillDate = DateTime.UtcNow
+                };
+                _context.Bill.Add(bill);
+                await _context.SaveChangesAsync();
+                return Ok(new { success = true, billId = bill.BillId });
+            }
+            catch (Exception ex)
+            {
+                var root = ex.InnerException?.Message ?? ex.Message;
+                return StatusCode(500, $"Error saving bill: {root}");
+            }
+        }
+
+        public class CompleteBillRequest
+        {
+            public int appointmentId { get; set; }
+            public decimal totalAmount { get; set; }
+            public string? prescription { get; set; }
         }
         // GET: Doctor
         public async Task<IActionResult> Index()
