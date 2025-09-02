@@ -16,6 +16,10 @@ body { background: var(--dd-bg); }
 .dd-header-bar { background: var(--dd-primary-grad); border-radius: var(--dd-card-radius); padding: 1.7rem 2.2rem; color: #fff; box-shadow: var(--dd-shadow); position: relative; overflow: hidden; }
 .dd-header-bar:before { content: ""; position: absolute; right: -60px; top: -60px; width: 190px; height: 190px; background: rgba(255,255,255,.16); border-radius: 50%; }
 .dd-header-bar:after { content: ""; position: absolute; right: 40px; top: 10px; width: 130px; height: 130px; background: rgba(255,255,255,.08); border-radius: 50%; }
+    .dd-header-bar::before,
+    .dd-header-bar::after {
+        display: none !important;
+    }
 
 .stat-card { border: 0; border-radius: var(--dd-card-radius); color: #fff; position: relative; overflow: hidden; box-shadow: var(--dd-shadow); transition: .25s; backdrop-filter: var(--dd-blur); }
 .stat-card:hover { transform: translateY(-4px); box-shadow: var(--dd-shadow-hover); }
