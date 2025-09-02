@@ -56,22 +56,35 @@ namespace HMSApp.Controllers
             ViewData["DoctorContact"] = doctor.ContactNumber;
             ViewData["DoctorSchedule"] = doctor.AvailabilitySchedule;
 
-            var appointmentsQuery = _context.Appointment
+            var allAppointments = _context.Appointment
                 .Where(a => a.DoctorName == doctor.Name)
                 .OrderBy(a => a.AppointmentDate)
-                .ThenBy(a => a.TimeSlot);
+                .ThenBy(a => a.TimeSlot)
+                .ToList();
 
-            var appointments = appointmentsQuery.ToList();
             var today = DateTime.Today;
-            ViewData["TotalAppointments"] = appointments.Count;
-            ViewData["UpcomingAppointments"] = appointments.Count(a => a.AppointmentDate.Date >= today);
-            ViewData["PendingAppointments"] = appointments.Count(a => a.Status == "Pending");
-            ViewData["TodayAppointments"] = appointments.Count(a => a.AppointmentDate.Date == today);
+            var pendingAppointmentsList = allAppointments
+                .Where(a => string.Equals(a.Status, "Pending", StringComparison.OrdinalIgnoreCase))
+                .ToList();
 
-            return View(appointments);
+            var upcomingAppointmentsList = allAppointments
+                .Where(a => (a.AppointmentDate.Date >= today && !string.Equals(a.Status, "Completed", StringComparison.OrdinalIgnoreCase))
+                            || string.Equals(a.Status, "Pending", StringComparison.OrdinalIgnoreCase))
+                .DistinctBy(a => a.AppointmentId)
+                .OrderBy(a => a.AppointmentDate)
+                .ThenBy(a => a.TimeSlot)
+                .ToList();
+
+            ViewData["TotalAppointments"] = allAppointments.Count; 
+            ViewData["UpcomingAppointments"] = upcomingAppointmentsList.Count; // adjusted logic
+            ViewData["PendingAppointments"] = pendingAppointmentsList.Count; 
+            ViewData["TodayAppointments"] = allAppointments.Count(a => a.AppointmentDate.Date == today);
+
+            // Initial table shows upcoming (with all pending included)
+            return View(upcomingAppointmentsList);
         }
 
-        // New: Create bill and mark appointment completed
+        
         [HttpPost]
         public async Task<IActionResult> CompleteAppointmentAndCreateBill([FromBody] CompleteBillRequest request)
         {
@@ -89,7 +102,7 @@ namespace HMSApp.Controllers
                     PatientName = appointment.PatientName,
                     Prescription = request.prescription,
                     TotalAmount = request.totalAmount,
-                    PaymentStatus = "Unpaid", // changed from Pending to satisfy DB CHECK constraint
+                    PaymentStatus = "Unpaid", 
                     BillDate = DateTime.UtcNow
                 };
                 _context.Bill.Add(bill);
@@ -109,13 +122,13 @@ namespace HMSApp.Controllers
             public decimal totalAmount { get; set; }
             public string? prescription { get; set; }
         }
-        // GET: Doctor
+       
         public async Task<IActionResult> Index()
         {
             return View(await _context.Doctor.ToListAsync());
         }
 
-        // GET: Doctor/Details/5
+       
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -263,6 +276,51 @@ namespace HMSApp.Controllers
         private bool DoctorExists(int id)
         {
             return _context.Doctor.Any(e => e.DoctorId == id);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AppointmentsData(string filter = "upcoming")
+        {
+            var doctorId = HttpContext.Session.GetInt32("DoctorId");
+            if (doctorId == null) return Unauthorized();
+            var doctor = await _context.Doctor.FirstOrDefaultAsync(d => d.DoctorId == doctorId);
+            if (doctor == null) return NotFound();
+
+            var today = DateTime.Today;
+            var query = _context.Appointment.AsNoTracking()
+                .Where(a => a.DoctorName == doctor.Name);
+
+            switch (filter?.ToLowerInvariant())
+            {
+                case "pending":
+                    query = query.Where(a => a.Status == "Pending");
+                    break;
+                case "completed":
+                    query = query.Where(a => a.Status == "Completed");
+                    break;
+                case "all":
+                    query = query.Where(a => a.Status == "Pending" || a.Status == "Completed");
+                    break;
+                case "upcoming":
+                default:
+                    query = query.Where(a => (a.AppointmentDate.Date >= today && a.Status != "Completed") || a.Status == "Pending");
+                    break;
+            }
+
+            var list = await query
+                .OrderBy(a => a.AppointmentDate)
+                .ThenBy(a => a.TimeSlot)
+                .Select(a => new {
+                    a.AppointmentId,
+                    a.AppointmentDate,
+                    a.TimeSlot,
+                    a.PatientName,
+                    a.Status,
+                    a.PatientDescription,
+                    a.PatientId
+                }).ToListAsync();
+
+            return Json(list);
         }
     }
 }
