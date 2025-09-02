@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace HMSApp.Controllers
@@ -20,20 +21,24 @@ namespace HMSApp.Controllers
             _context = context;
         }
 
+        // Admin-facing list of all patients
         public IActionResult Index()
         {
             var patients = _patientService.GetAllPatients();
             return View(patients);
         }
 
+        // Admin-facing patient details
         public IActionResult Details(int id)
         {
             var patient = _patientService.GetPatientById(id);
             return View(patient);
         }
 
+        // Admin-facing create patient form (GET)
         public IActionResult Create() => View();
 
+        // Admin-facing create patient form (POST)
         [HttpPost]
         public IActionResult Create(Patient patient)
         {
@@ -45,12 +50,14 @@ namespace HMSApp.Controllers
             return View(patient);
         }
 
+        // Admin-facing edit patient form (GET)
         public IActionResult Edit(int id)
         {
             var patient = _patientService.GetPatientById(id);
             return View(patient);
         }
 
+        // Admin-facing edit patient form (POST)
         [HttpPost]
         public IActionResult Edit(Patient patient)
         {
@@ -59,22 +66,17 @@ namespace HMSApp.Controllers
                 _patientService.UpdatePatient(patient);
                 return RedirectToAction("Index");
             }
-
-            var errors = ModelState.Values.SelectMany(v => v.Errors);
-            foreach (var error in errors)
-            {
-                System.Diagnostics.Debug.WriteLine(error.ErrorMessage);
-            }
-
             return View(patient);
         }
 
+        // Admin-facing delete confirmation page (GET)
         public IActionResult Delete(int id)
         {
             var patient = _patientService.GetPatientById(id);
             return View(patient);
         }
 
+        // Admin-facing delete confirmation (POST)
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
@@ -82,37 +84,122 @@ namespace HMSApp.Controllers
             return RedirectToAction("Index");
         }
 
-        // File: PatientController.cs
-
+        // Patient-facing dashboard
         public async Task<IActionResult> Dashboard()
         {
-            // Get the username from the session.
             var username = HttpContext.Session.GetString("Username");
-
             if (string.IsNullOrEmpty(username))
             {
-                // Redirect if the user is not logged in.
                 return RedirectToAction("PatientLogin", "Account");
             }
 
-            // Find the patient record using the username.
             var patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
-
             if (patient == null)
             {
-                // Handle case where patient record is not found for the user.
                 return RedirectToAction("PatientLogin", "Account");
             }
 
-            // Pass the patient's name to the view.
             ViewData["PatientName"] = char.ToUpper(patient.Name[0]) + patient.Name.Substring(1);
-
-            // Now, get the appointments using the correct PatientId.
             var appointments = await _patientService.GetPatientAppointmentsAsync(patient.PatientId);
-
-            // Pass the appointments to the view.
             return View(appointments);
         }
 
+        // Patient-facing "Book Appointment" page (GET)
+        public IActionResult BookAppointment()
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+                return RedirectToAction("PatientLogin", "Account");
+
+            var patient = _context.Patient.FirstOrDefault(p => p.Username == username);
+            if (patient == null)
+                return RedirectToAction("PatientLogin", "Account");
+
+            ViewBag.PatientName = patient.Name;
+            ViewBag.Doctors = _context.Doctor
+                .Select(d => new SelectListItem { Value = d.DoctorId.ToString(), Text = d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization})" : d.Name })
+                .ToList();
+            return View();
+        }
+
+        // Patient-facing "Book Appointment" form submission (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult BookAppointment(Appointment model, string PatientDescription, string PatientName)
+        {
+            var username = HttpContext.Session.GetString("Username");
+            var patient = _context.Patient.FirstOrDefault(p => p.Username == username);
+            if (patient == null)
+                return RedirectToAction("PatientLogin", "Account");
+
+            model.PatientId = patient.PatientId;
+            model.PatientName = string.IsNullOrWhiteSpace(PatientName) ? patient.Name : PatientName.Trim();
+            model.PatientDescription = PatientDescription;
+            model.Status = "Pending";
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.PatientName = model.PatientName;
+                ViewBag.Doctors = _context.Doctor
+                    .Select(d => new SelectListItem { Value = d.DoctorId.ToString(), Text = d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization})" : d.Name })
+                    .ToList();
+                return View(model);
+            }
+
+            var doctor = _context.Doctor.FirstOrDefault(d => d.DoctorId == model.DoctorId);
+            model.DoctorName = doctor?.Name;
+
+            _context.Appointment.Add(model);
+            _context.SaveChanges();
+
+            return RedirectToAction(nameof(BookingConfirmation), new { id = model.AppointmentId });
+        }
+
+        // Patient-facing confirmation page after booking
+        public IActionResult BookingConfirmation(int id)
+        {
+            var appt = _context.Appointment.FirstOrDefault(a => a.AppointmentId == id);
+            return View(appt);
+        }
+
+        // Patient-facing appointment history page
+        public async Task<IActionResult> AppointmentHistory()
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("PatientLogin", "Account");
+            }
+
+            var patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
+            if (patient == null)
+            {
+                return RedirectToAction("PatientLogin", "Account");
+            }
+            var appointments = await _context.Appointment
+                                             .Where(a => a.PatientId == patient.PatientId)
+                                             .OrderByDescending(a => a.AppointmentDate)
+                                             .ToListAsync();
+            return View(appointments);
+        }
+
+        // Patient-facing profile page
+        public async Task<IActionResult> Profile()
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
+            if (patient == null)
+            {
+                return NotFound();
+            }
+
+            return View(patient);
+        }
     }
 }
+

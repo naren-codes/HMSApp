@@ -47,6 +47,10 @@ body {
         background: rgba(255, 255, 255, .08);
         border-radius: 50%;
     }
+    .dd-header-bar::before,
+    .dd-header-bar::after {
+        display: none !important;
+    }
 
 /* Stat Cards Styling */
 .stat-card {
