@@ -1,0 +1,50 @@
+﻿@model HMSApp.Models.MriAppointment
+
+@{
+    ViewData["Title"] = "Appointment Confirmed";
+    Layout = "_Layout";
+}
+
+<link href="~/css/patient-dashboard.css" rel="stylesheet" asp-append-version="true" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<div class="container-fluid py-4">
+    <div class="dd-header-bar mb-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div>
+                <h2 class="fw-bold mb-1 text-light"><i class="bi bi-check-circle-fill"></i> Appointment Confirmed</h2>
+                <div class="small opacity-75">Thank you for booking your scan.</div>
+            </div>
+            <div class="nav-quick">
+                <a class="btn btn-sm btn-light px-3" asp-controller="Patient" asp-action="Dashboard"><i class="bi bi-arrow-left me-1"></i>Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container main-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card dd-panel shadow-sm text-center">
+                    <div class="card-body p-5">
+                        <i class="bi bi-check-circle display-1 text-success mb-4"></i>
+                        <p class="card-text text-muted mb-4">
+                            You will receive a confirmation email with all the details shortly.
+                        </p>
+
+                        <div class="card bg-light p-4 text-start rounded-4">
+                            <h5 class="fw-bold mb-3">Your Appointment Details:</h5>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><i class="bi bi-calendar-event me-2 text-primary"></i> <strong>Date:</strong> @Model.AppointmentDate.ToString("dd MMM, yyyy")</li>
+                                <li class="mb-2"><i class="bi bi-building-fill me-2 text-primary"></i> <strong>Lab:</strong> @Model.LabName</li>
+                                <li class="mb-2"><i class="bi bi-person-fill me-2 text-primary"></i> <strong>Patient Name:</strong> @Model.PatientName</li>
+                                <li class="mb-2"><i class="bi bi-clock-history me-2 text-primary"></i> <strong>Status:</strong> <span class="badge bg-success">Confirmed</span></li>
+                            </ul>
+                        </div>
+
+                        <a asp-controller="Patient" asp-action="Dashboard" class="btn btn-primary mt-4">Go to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

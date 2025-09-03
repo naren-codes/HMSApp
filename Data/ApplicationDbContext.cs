@@ -13,6 +13,8 @@ namespace HMSApp.Data
         public DbSet<Appointment> Appointment { get; set; }
         public DbSet<Bill> Bill { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<MriAppointment> MriAppointment { get; set; }
 
+        
     }
 }

@@ -191,6 +191,31 @@ namespace HMSApp.Controllers
             return View(appointments);
         }
 
+        public IActionResult BookScan()
+        {
+            return View();
+        }
+
+        public IActionResult Mri()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Mri(MriAppointment appointment)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.MriAppointment.Add(appointment);
+                _context.SaveChanges();
+
+                return RedirectToAction("Dashboard");
+            }
+
+            return View(appointment);
+        }
+
+
 
     }
 }
