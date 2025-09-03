@@ -108,20 +108,31 @@
             </div>
         </div>
         <div class="col-lg-4">
-            <div class="stat-card patient-card-profile p-3 h-100">
+            <div id="profile-card" class="stat-card patient-card-profile p-3 h-100" data-url="@Url.Action("Profile","Patient")" style="cursor: pointer;">
                 <div class="d-flex flex-column align-items-center">
                     <i class="bi bi-person-circle text-white mb-2" style="font-size: 4rem;"></i>
                     <h5 class="text-white">@ViewData["PatientName"]</h5>
                     <p class="text-white-50">Registered Patient</p>
-                    <div class="availability-badge available my-2">
-                        <i class="bi bi-check-circle-fill me-1"></i>Available
-                    </div>
+
                     <hr class="border-light w-100 my-2 opacity-25">
-                    <p class="text-white-50 small mb-1"><i class="bi bi-telephone-fill me-1"></i>Contact: --</p>
-                    <p class="text-white-50 small"><i class="bi bi-calendar-event-fill me-1"></i>Schedule: --</p>
-                    <a asp-controller="Patient" asp-action="Profile" class="stretched-link"></a>
+
+                    <p class="text-white-50 small mb-1 w-100 text-start"><i class="bi bi-gender-ambiguous me-2"></i>Gender: @ViewData["PatientGender"]</p>
+                    <p class="text-white-50 small mb-1 w-100 text-start"><i class="bi bi-telephone-fill me-2"></i>Contact: @ViewData["PatientContact"]</p>
+                    <p class="text-white-50 small w-100 text-start"><i class="bi bi-geo-alt-fill me-2"></i>Address: @ViewData["PatientAddress"]</p>
+
+                    
                 </div>
             </div>
         </div>
     </div>
 </div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#profile-card').on('click', function() {
+                // This line finds the URL from the data-url attribute and navigates to it
+                window.location.href = $(this).data('url');
+            });
+        });
+    </script>
+}

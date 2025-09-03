@@ -38,6 +38,35 @@ namespace HMSApp.Controllers
             }
             return View(doctor);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProfile(Doctor doctor)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(doctor);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!DoctorExists(doctor.DoctorId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                // After a successful save, redirect back to the profile page.
+                return RedirectToAction(nameof(DoctorDashboard));
+            }
+            // If the form data is not valid, return to the form with errors.
+            return View("Profile", doctor);
+        }
+
         public IActionResult DoctorDashboard()
         {
             var doctorId = HttpContext.Session.GetInt32("DoctorId");
