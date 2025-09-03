@@ -98,6 +98,10 @@ namespace HMSApp.Controllers
             {
                 return RedirectToAction("PatientLogin", "Account");
             }
+            ViewData["PatientName"] = char.ToUpper(patient.Name[0]) + patient.Name.Substring(1);
+            ViewData["PatientContact"] = patient.ContactNumber ?? "N/A";
+            ViewData["PatientAddress"] = patient.Address ?? "N/A";
+            ViewData["PatientGender"] = patient.Gender ?? "N/A";
 
             ViewData["PatientName"] = char.ToUpper(patient.Name[0]) + patient.Name.Substring(1);
             var appointments = await _patientService.GetPatientAppointmentsAsync(patient.PatientId);
@@ -200,6 +204,39 @@ namespace HMSApp.Controllers
 
             return View(patient);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProfile(Patient patient)
+        {
+            // The [Bind] attribute is a security best practice to prevent over-posting.
+            // We only bind the fields that are actually on the form.
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Using the service to update is good practice.
+                    _patientService.UpdatePatient(patient);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    // This handles a rare case where the data might have been deleted by another user
+                    // between the time the patient loaded the page and saved it.
+                    if (_patientService.GetPatientById(patient.PatientId) == null)
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                // After a successful save, redirect back to the profile page to show the updated info.
+                return RedirectToAction(nameof(Dashboard));
+            }
+           
+            return View("Profile", patient);
+        }
+
     }
 }
 
