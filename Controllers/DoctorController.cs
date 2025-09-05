@@ -7,10 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HMSApp.Data;
 using HMSApp.Models;
+using Microsoft.AspNetCore.Http; // for session
 
 namespace HMSApp.Controllers
 {
-    public class DoctorController : Controller
+    public partial class DoctorController : Controller
     {
         private readonly ApplicationDbContext _context;
 
@@ -22,7 +23,7 @@ namespace HMSApp.Controllers
         {
 
             var doctorId = HttpContext.Session.GetInt32("DoctorId");
-
+            
             if (doctorId == null)
             {
 
@@ -124,14 +125,26 @@ namespace HMSApp.Controllers
 
             try
             {
-                appointment.Status = "Completed";
+                appointment.Status = "Completed"; // mark appointment completed
+                var prescriptionText = request.prescription;
+                if (request.onSpot)
+                {
+                    const string spotTag = "[ON-SPOT]";
+                    if (string.IsNullOrWhiteSpace(prescriptionText)) prescriptionText = spotTag;
+                    else if (!prescriptionText.Contains(spotTag)) prescriptionText += "\n" + spotTag;
+                }
+                // Update appointment PatientDescription so patient dashboard shows the doctor-entered notes/prescription
+                if (!string.IsNullOrWhiteSpace(prescriptionText))
+                {
+                    appointment.PatientDescription = prescriptionText;
+                }
                 var bill = new Bill
                 {
                     PatientId = appointment.PatientId,
                     PatientName = appointment.PatientName,
-                    Prescription = request.prescription,
+                    Prescription = prescriptionText,
                     TotalAmount = request.totalAmount,
-                    PaymentStatus = "Unpaid", 
+                    PaymentStatus = "Unpaid",
                     BillDate = DateTime.UtcNow
                 };
                 _context.Bill.Add(bill);
@@ -150,6 +163,7 @@ namespace HMSApp.Controllers
             public int appointmentId { get; set; }
             public decimal totalAmount { get; set; }
             public string? prescription { get; set; }
+            public bool onSpot { get; set; } // new flag
         }
        
         public async Task<IActionResult> Index()
@@ -350,6 +364,43 @@ namespace HMSApp.Controllers
                 }).ToListAsync();
 
             return Json(list);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Payments()
+        {
+            var doctorId = HttpContext.Session.GetInt32("DoctorId");
+            if (doctorId == null) return RedirectToAction("DoctorLogin", "Account");
+            var doctor = await _context.Doctor.FirstOrDefaultAsync(d => d.DoctorId == doctorId);
+            if (doctor == null) return RedirectToAction("DoctorLogin", "Account");
+
+            var doctorName = doctor.Name;
+            var patientIds = await _context.Appointment
+                .Where(a => a.DoctorName == doctorName)
+                .Select(a => a.PatientId)
+                .Distinct()
+                .ToListAsync();
+
+            var bills = await _context.Bill
+                .Where(b => patientIds.Contains(b.PatientId) && b.PaymentStatus.StartsWith("Paid"))
+                .OrderByDescending(b => b.BillDate)
+                .Take(200)
+                .ToListAsync();
+
+            ViewData["DoctorName"] = doctor.Name;
+            return View("Payments", bills);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PayBill(int billId)
+        {
+       
+            var doctorId = HttpContext.Session.GetInt32("DoctorId");
+            if (doctorId == null) return RedirectToAction("DoctorLogin", "Account");
+            var bill = await _context.Bill.FirstOrDefaultAsync(b => b.BillId == billId);
+            if (bill == null) return NotFound();
+            ViewData["DoctorMode"] = true;
+            return View("~/Views/Patient/Payment.cshtml", bill);
         }
     }
 }

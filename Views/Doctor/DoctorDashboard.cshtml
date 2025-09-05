@@ -97,6 +97,8 @@
 
                     <a class="btn btn-sm btn-light px-3" asp-controller="Doctor" asp-action="Profile"><i class="bi bi-person-badge me-1"></i>Profile</a>
 
+                    <a class="btn btn-sm btn-light px-3" asp-controller="Doctor" asp-action="Payments"><i class="bi bi-cash-stack me-1"></i>View Payments</a>
+
                 </div>
 
                 <a href="/Account/Logout" class="btn btn-sm btn-outline-danger" id="logoutBtn"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
@@ -452,13 +454,6 @@
 
                     </div>
 
-                    <div class="mb-3">
-
-                        <label class="form-label">Payment Status</label>
-
-                        <input type="text" class="form-control" value="Unpaid" readonly />
-
-                    </div>
 
                 </form>
 
@@ -471,7 +466,7 @@
             <div class="modal-footer">
 
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-
+                <button type="button" class="btn btn-success" id="generateAndPayBtn"><i class="bi bi-lightning-charge me-1"></i>Generate & Pay</button>
                 <button type="button" class="btn btn-primary" id="saveBillBtn">Save Bill</button>
 
             </div>
@@ -674,6 +669,28 @@
 
             });
 
+        });
+
+        $('#generateAndPayBtn').on('click', function(){
+            var apptId = parseInt($('#billAppointmentId').val()||'0');
+            if(!apptId) return;
+            var prescription = $.trim($('#billPrescription').val());
+            var totalAmount = parseFloat($('#billTotalAmount').val()||'0');
+            if(isNaN(totalAmount) || totalAmount < 0){ $('#billError').text('Enter a valid amount before generating.').removeClass('d-none'); return; }
+            $.ajax({
+                url:'/Doctor/CompleteAppointmentAndCreateBill',
+                method:'POST',
+                contentType:'application/json',
+                data: JSON.stringify({ appointmentId: apptId, prescription: prescription, totalAmount: totalAmount, onSpot: true }),
+                success:function(resp){
+                    if(resp && resp.success){
+                       window.location.href = '/Doctor/PayBill?billId=' + resp.billId;
+                    } else {
+                       $('#billError').text('Failed to generate bill').removeClass('d-none');
+                    }
+                },
+                error:function(xhr){ $('#billError').text('Generate failed: '+ (xhr.responseText||'')).removeClass('d-none'); }
+            });
         });
 
     });

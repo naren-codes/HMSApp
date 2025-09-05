@@ -26,10 +26,9 @@ namespace HMSApp.Services
                 Gender = model.Gender,
                 ContactNumber = model.ContactNumber,
                 Address = model.Address,
-                Username=model.Username,
+                Username = model.Username,
                 Password = model.Password,
-                Role=model.Role
-
+                Role = model.Role ?? "Patient"
             };
             _context.Patient.Add(patient);
             _context.SaveChanges();
@@ -38,7 +37,7 @@ namespace HMSApp.Services
             {
                 Username = model.Username,
                 Password = model.Password,
-                role = model.Role
+                role = model.Role ?? "Patient"
             };
             _context.User.Add(user);
             _context.SaveChanges();
@@ -54,7 +53,7 @@ namespace HMSApp.Services
                 AvailabilitySchedule = model.AvailabilitySchedule,
                 Username = model.Username,
                 Password = model.Password,
-                Role = model.Role
+                Role = model.Role ?? "Doctor"
             };
             _context.Doctor.Add(doctor);
             _context.SaveChanges();
@@ -63,7 +62,7 @@ namespace HMSApp.Services
             {
                 Username = model.Username,
                 Password = model.Password,
-                role = model.Role
+                role = model.Role ?? "Doctor"
             };
             _context.User.Add(user);
             _context.SaveChanges();
