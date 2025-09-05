@@ -133,11 +133,13 @@ namespace HMSApp.Controllers
                     if (string.IsNullOrWhiteSpace(prescriptionText)) prescriptionText = spotTag;
                     else if (!prescriptionText.Contains(spotTag)) prescriptionText += "\n" + spotTag;
                 }
-                // Update appointment PatientDescription so patient dashboard shows the doctor-entered notes/prescription
+                
+                // Store the prescription in the Appointment table's prescription column
                 if (!string.IsNullOrWhiteSpace(prescriptionText))
                 {
-                    appointment.PatientDescription = prescriptionText;
+                    appointment.Prescription = prescriptionText;
                 }
+                
                 var bill = new Bill
                 {
                     PatientId = appointment.PatientId,
@@ -359,7 +361,7 @@ namespace HMSApp.Controllers
                     a.TimeSlot,
                     a.PatientName,
                     a.Status,
-                    a.PatientDescription,
+                    a.Symptoms, // Changed from PatientDescription to Symptoms
                     a.PatientId
                 }).ToListAsync();
 

@@ -42,8 +42,15 @@
                         </div>
                         <div class="ah-detail-item">
                             <i class="bi bi-file-earmark-medical icon"></i>
-                            <strong>Prescription:</strong> @(string.IsNullOrWhiteSpace(appointment.PatientDescription) ? "N/A" : appointment.PatientDescription)
+                            <strong>Symptoms:</strong> @(string.IsNullOrWhiteSpace(appointment.Symptoms) ? "N/A" : appointment.Symptoms)
                         </div>
+                        @if (!string.IsNullOrWhiteSpace(appointment.Prescription))
+                        {
+                            <div class="ah-detail-item">
+                                <i class="bi bi-prescription2 icon"></i>
+                                <strong>Prescription:</strong> @appointment.Prescription
+                            </div>
+                        }
                     </div>
                 </div>
             }

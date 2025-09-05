@@ -19,7 +19,6 @@
                 <a class="btn btn-sm btn-light px-3" asp-controller="Patient" asp-action="AppointmentHistory"><i class="bi bi-calendar-event me-1"></i>Appointments</a>
                 <a class="btn btn-sm btn-light px-3" href="#"><i class="bi bi-capsule-pill me-1"></i>Prescriptions</a>
                 <a class="btn btn-sm btn-light px-3" asp-controller="Patient" asp-action="Profile"><i class="bi bi-person-badge me-1"></i>Profile</a>
-                
             </div>
         </div>
     </div>
@@ -52,8 +51,8 @@
             </div>
         </div>
     </div>
-    <div class="row g-4">
-        <div class="col-lg-8">
+    <div class="row g-4 dasboard-layout">
+        <div class="col-lg-8 appointments-container">
             <div class="card dd-panel shadow-sm">
                 <div class="card-header bg-white fw-bold d-flex align-items-center" style="font-size: 1.1rem;">
                     <i class="bi bi-calendar-day me-2 fs-5 text-primary"></i>
@@ -72,6 +71,7 @@
                                         <th scope="col">Symptoms</th>
                                         <th scope="col">Status</th>
                                         <th scope="col">Amount</th>
+                                        <th scope="col">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -79,26 +79,45 @@
                                     {
                                         var appt = row.Appointment;
                                         var bill = row.Bill;
-                                        var paymentStatus = bill?.PaymentStatus ?? "Unpaid";
+                                        var statusLower = (appt.Status ?? "").ToLower();
+                                        var paymentStatus = bill?.PaymentStatus ?? (statusLower == "completed" ? "Unpaid" : null);
                                         <tr>
                                             <td class="ps-4">@appt.AppointmentDate.ToString("dd MMM, yyyy")</td>
                                             <td>Dr. @appt.DoctorName</td>
                                             <td>@appt.TimeSlot</td>
-                                            <td>@(string.IsNullOrWhiteSpace(appt.PatientDescription) ? "N/A" : appt.PatientDescription)</td>
+                                            <td>@(string.IsNullOrWhiteSpace(appt.Prescription) ? "N/A" : appt.Prescription)</td>
                                             <td>
-                                                @if (paymentStatus == "Paid")
+                                                @if (statusLower == "pending")
+                                                {
+                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                }
+                                                else if (statusLower == "completed" && paymentStatus != "Paid")
                                                 {
                                                     <span class="badge bg-success">Completed</span>
                                                 }
-                                                else
+                                                else if (paymentStatus == "Paid")
                                                 {
-                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                    <span class="badge bg-danger">Paid</span>
                                                 }
                                             </td>
                                             <td>
                                                 @if (bill != null)
                                                 {
                                                     <span class="fw-semibold">₹@bill.TotalAmount.ToString("0.00")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted small">--</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (bill != null && bill.PaymentStatus != "Paid")
+                                                {
+                                                    <a class="btn btn-sm btn-success" asp-action="Pay" asp-route-billId="@bill.BillId">Pay Now</a>
+                                                }
+                                                else if (bill?.PaymentStatus == "Paid")
+                                                {
+                                                    <span class="badge bg-danger">Paid</span>
                                                 }
                                                 else
                                                 {
@@ -121,8 +140,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
-            <div id="profile-card" class="stat-card patient-card-profile p-3 h-100" data-url="@Url.Action("Profile","Patient")" style="cursor: pointer;">
+        <div class="col-lg-4 profile-container">
+            <div id="profile-card" class="stat-card patient-card-profile p-3" data-url="@Url.Action("Profile", "Patient")" style="cursor: pointer;">
                 <div class="d-flex flex-column align-items-center">
                     <i class="bi bi-person-circle text-white mb-2" style="font-size: 4rem;"></i>
                     <h5 class="text-white">@ViewData["PatientName"]</h5>
@@ -134,7 +153,7 @@
                     <p class="text-white-50 small mb-1 w-100 text-start"><i class="bi bi-telephone-fill me-2"></i>Contact: @ViewData["PatientContact"]</p>
                     <p class="text-white-50 small w-100 text-start"><i class="bi bi-geo-alt-fill me-2"></i>Address: @ViewData["PatientAddress"]</p>
 
-                    
+
                 </div>
             </div>
         </div>

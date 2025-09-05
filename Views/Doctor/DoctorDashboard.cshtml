@@ -211,7 +211,7 @@
 
                                     <th>Status</th>
 
-                                    <th>Reason</th>
+                                    <th>Symptoms</th>
 
                                     <th class="text-center" style="width:160px;">Actions</th>
 
@@ -257,7 +257,7 @@
 
                                             <td><span class="badge text-bg-@statusClass">@a.Status</span></td>
 
-                                            <td class="small">@a.PatientDescription</td>
+                                            <td class="small">@(string.IsNullOrWhiteSpace(a.Symptoms) ? "N/A" : a.Symptoms)</td>
 
                                             <td class="text-center">
 
@@ -536,7 +536,7 @@
 
                     + '<td><span class="badge text-bg-'+statusClass+'">'+a.status+'</span></td>'
 
-                    + '<td class="small">'+(a.patientDescription||'')+'</td>'
+                    + '<td class="small">'+(a.symptoms||'N/A')+'</td>'
 
                     + '<td class="text-center"><div class="btn-group btn-group-sm" role="group">'
 
@@ -558,7 +558,7 @@
 
                 var norm = $.map(data, function(r){
 
-                    return { appointmentId:r.appointmentId??r.AppointmentId, appointmentDate:r.appointmentDate??r.AppointmentDate, timeSlot:r.timeSlot??r.TimeSlot, patientName:r.patientName??r.PatientName, status:r.status??r.Status, patientDescription:r.patientDescription??r.PatientDescription, patientId:r.patientId??r.PatientId };
+                    return { appointmentId:r.appointmentId??r.AppointmentId, appointmentDate:r.appointmentDate??r.AppointmentDate, timeSlot:r.timeSlot??r.TimeSlot, patientName:r.patientName??r.PatientName, status:r.status??r.Status, symptoms:r.symptoms??r.Symptoms, patientId:r.patientId??r.PatientId };
 
                 });
 

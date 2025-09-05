@@ -4,24 +4,30 @@
     var today = DateTime.Today.ToString("yyyy-MM-dd");
     Layout = "_Layout";
 }
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
-<link rel="stylesheet" href="~/css/book-appointment.css" asp-append-version="true" />
 
-<div class="ba-wrapper my-4 book-appointment-page ba-fade-in">
-    <div class="ba-hero mb-5">
-        <div>
-            <h1 class="ba-title mb-3"><i class="bi bi-calendar2-plus me-2"></i>Book Appointment</h1>
-            <p class="ba-sub mb-0">Request a new appointment. Provide the details and submit. You can monitor the status of this request from your dashboard once created.</p>
-        </div>
-        <div class="ba-status-box">
-            <div class="ba-status-icon"><i class="bi bi-clipboard2-pulse"></i></div>
+<!-- Link to both dashboard CSS (for the header) and this page's specific CSS -->
+<link href="~/css/patient-dashboard.css" rel="stylesheet" asp-append-version="true" />
+<link href="~/css/book-appointment.css" rel="stylesheet" asp-append-version="true" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+
+<div class="container-fluid py-4 book-appointment-page">
+
+    <!-- This header now matches your Patient Dashboard exactly -->
+    <div class="dd-header-bar mb-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
             <div>
-                <div class="small text-white-50 mb-1">Default Status</div>
-                <span class="badge bg-warning text-dark"><i class="bi bi-clock-history me-1"></i>Pending</span>
+                <h2 class="fw-bold mb-1 text-light"><i class="bi bi-calendar2-plus"></i> Book Appointment</h2>
+                <div class="small opacity-75">Request a new appointment with a doctor.</div>
+            </div>
+            <div class="nav-quick">
+                <a class="btn btn-sm btn-light px-3" asp-controller="Patient" asp-action="AppointmentHistory"><i class="bi bi-calendar-event me-1"></i>Appointments</a>
+                <a class="btn btn-sm btn-light px-3" href="#"><i class="bi bi-capsule-pill me-1"></i>Prescriptions</a>
+                <a class="btn btn-sm btn-light px-3" asp-controller="Patient" asp-action="Profile"><i class="bi bi-person-badge me-1"></i>Profile</a>
             </div>
         </div>
     </div>
 
+    <!-- The rest of your form remains unchanged -->
     <div class="ba-card mb-5">
         <div class="ba-card-header">
             <h5><i class="bi bi-journal-medical text-primary"></i><span>New Appointment Request</span></h5>
@@ -36,7 +42,7 @@
                     </div>
                     <div class="field">
                         <label class="required">Select Doctor</label>
-                        <select asp-for="DoctorId" asp-items="ViewBag.Doctors" required>
+                        <select asp-for="DoctorId" asp-items="ViewBag.Doctors" class="form-select" required>
                             <option value="">Choose a doctor</option>
                         </select>
                     </div>
@@ -47,10 +53,10 @@
                 <div class="form-grid">
                     <div class="field">
                         <label class="required">Appointment Date</label>
-                        <input asp-for="AppointmentDate" id="AppointmentDate" type="date" min="@today" value="@today" required />
+                        <input asp-for="AppointmentDate" id="AppointmentDate" type="date" min="@today" value="@today" class="form-control" required />
                     </div>
                     <div class="field">
-                        <label class="required">Time Slot (up to 9:30 PM)</label>
+                        <label class="required">Time Slot</label>
                         <div class="input-group">
                             <span class="input-group-text bg-white"><i class="bi bi-clock"></i></span>
                             <select asp-for="TimeSlot" id="TimeSlot" class="form-select" required>
@@ -58,19 +64,14 @@
                             </select>
                         </div>
                     </div>
-                    <div class="field">
-                        <label>Status</label>
-                        <select asp-for="Status">
-                            <option value="Pending" selected>Pending</option>
-                        </select>
-                    </div>
                 </div>
 
+                <div class="ba-divider"></div>
                 <div class="ba-section-title">Patient Description</div>
                 <div class="form-grid">
                     <div class="field" style="grid-column:1 / -1;">
                         <label>Describe the problem / symptoms (max 500 characters)</label>
-                        <textarea asp-for="PatientDescription" name="PatientDescription" class="form-control" rows="4" maxlength="500" placeholder="E.g. Persistent headache for 3 days, mild fever..."></textarea>
+<textarea asp-for="Prescription" name="PatientDescription" class="form-control" rows="4" maxlength="500" placeholder="E.g. Persistent headache for 3 days, mild fever..."></textarea>
                         <div class="text-end mt-1 small" id="descCounter">0 / 500</div>
                     </div>
                 </div>
@@ -85,6 +86,7 @@
 </div>
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         $(function(){
             const START_HOUR_DEFAULT = 9;
