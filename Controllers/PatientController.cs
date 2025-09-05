@@ -27,6 +27,42 @@ namespace HMSApp.Controllers
             var patients = _patientService.GetAllPatients();
             return View(patients);
         }
+        public async Task<IActionResult> AppointmentHistory()
+        {
+            // Step 1: Get the username from the session to identify the logged-in patient.
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+            {
+                // If not logged in, redirect to the login page.
+                return RedirectToAction("PatientLogin", "Account");
+            }
+
+            // Step 2: Find the patient's record in the database using their username.
+            var patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
+            if (patient == null)
+            {
+                // If no patient profile is found, they should log in again.
+                return RedirectToAction("PatientLogin", "Account");
+            }
+
+            // Step 3: Fetch all appointments for this patient using your existing PatientService.
+            var appointments = await _patientService.GetPatientAppointmentsAsync(patient.PatientId);
+
+            // Step 4: Sort the appointments to show the most recent ones first.
+            var sortedAppointments = appointments
+                .OrderByDescending(a => a.AppointmentDate)
+                .ThenByDescending(a => a.TimeSlot)
+                .ToList();
+
+            // Step 5: Pass the final sorted list of appointments to the view.
+            return View(sortedAppointments);
+        }
+        private int GetCurrentPatientId()
+        {
+            // Example: Getting the ID from a session variable.
+            // Your implementation may be different.
+            return HttpContext.Session.GetInt32("PatientId") ?? 0;
+        }
 
         // Admin-facing patient details
         public IActionResult Details(int id)
@@ -175,7 +211,7 @@ namespace HMSApp.Controllers
             return View();
         }
 
-        // Patient-facing "Book Appointment" form submission (POST)
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult BookAppointment(Appointment model, string PatientDescription, string PatientName)
@@ -278,7 +314,7 @@ namespace HMSApp.Controllers
                 return RedirectToAction("Bill", new { billId });
             }
 
-            const string offlineTag = "[OFFLINE PAYMENT]";
+            const string offlineTag = "";
             if (mode == "Online")
             {
                 if (string.IsNullOrWhiteSpace(upiId))

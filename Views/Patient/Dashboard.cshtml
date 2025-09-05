@@ -72,7 +72,6 @@
                                         <th scope="col">Symptoms</th>
                                         <th scope="col">Status</th>
                                         <th scope="col">Amount</th>
-                                        <th scope="col">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -80,45 +79,26 @@
                                     {
                                         var appt = row.Appointment;
                                         var bill = row.Bill;
-                                        var statusLower = (appt.Status ?? "").ToLower();
-                                        var paymentStatus = bill?.PaymentStatus ?? (statusLower == "completed" ? "Unpaid" : null);
+                                        var paymentStatus = bill?.PaymentStatus ?? "Unpaid";
                                         <tr>
                                             <td class="ps-4">@appt.AppointmentDate.ToString("dd MMM, yyyy")</td>
                                             <td>Dr. @appt.DoctorName</td>
                                             <td>@appt.TimeSlot</td>
                                             <td>@(string.IsNullOrWhiteSpace(appt.PatientDescription) ? "N/A" : appt.PatientDescription)</td>
                                             <td>
-                                                @if (statusLower == "pending")
-                                                {
-                                                    <span class="badge bg-warning text-dark">Pending</span>
-                                                }
-                                                else if (statusLower == "completed" && paymentStatus != "Paid")
+                                                @if (paymentStatus == "Paid")
                                                 {
                                                     <span class="badge bg-success">Completed</span>
                                                 }
-                                                else if (paymentStatus == "Paid")
+                                                else
                                                 {
-                                                    <span class="badge bg-danger">Paid</span>
+                                                    <span class="badge bg-warning text-dark">Pending</span>
                                                 }
                                             </td>
                                             <td>
                                                 @if (bill != null)
                                                 {
                                                     <span class="fw-semibold">₹@bill.TotalAmount.ToString("0.00")</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted small">--</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (bill != null && bill.PaymentStatus != "Paid")
-                                                {
-                                                    <a class="btn btn-sm btn-success" asp-action="Pay" asp-route-billId="@bill.BillId">Pay Now</a>
-                                                }
-                                                else if (bill?.PaymentStatus == "Paid")
-                                                {
-                                                    <span class="badge bg-danger">Paid</span>
                                                 }
                                                 else
                                                 {

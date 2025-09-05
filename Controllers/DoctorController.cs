@@ -129,7 +129,7 @@ namespace HMSApp.Controllers
                 var prescriptionText = request.prescription;
                 if (request.onSpot)
                 {
-                    const string spotTag = "[ON-SPOT]";
+                    const string spotTag = "";
                     if (string.IsNullOrWhiteSpace(prescriptionText)) prescriptionText = spotTag;
                     else if (!prescriptionText.Contains(spotTag)) prescriptionText += "\n" + spotTag;
                 }

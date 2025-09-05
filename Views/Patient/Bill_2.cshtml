@@ -12,7 +12,7 @@
         <small>Generated during visit</small>
       </div>
       <div class="text-end meta">
-        <small><strong>Bill #:</strong> @Model.Bill.BillId</small>
+				<small><strong>Bill #:</strong> @Model.Bill.BillId</small><a href="c:\users\2431425\onedrive - cognizant\documents\hmsapp\views\patient\bill_2.cshtml">c:\users\2431425\onedrive - cognizant\documents\hmsapp\views\patient\bill_2.cshtml</a>
         <small><strong>Date:</strong> @Model.Bill.BillDate.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small>
         <small><strong>Status:</strong> <span class="badge-status @(Model.Bill.PaymentStatus=="Paid"?"badge-paid":"badge-unpaid")">@Model.Bill.PaymentStatus</span></small>
       </div>
@@ -41,7 +41,7 @@
       </table>
       <div class="total-box">
         <div><strong>Total:</strong> Rs. @Model.Bill.TotalAmount.ToString("0.00")</div>
-        <div><strong>Payment Method:</strong> @(Model.Bill.Prescription!=null && Model.Bill.Prescription.Contains("[OFFLINE PAYMENT]") ? "Cash" : "Online / UPI")</div>
+        <div><strong>Payment Method:</strong> @(Model.Bill.Prescription!=null && Model.Bill.Prescription.Contains("") ? "Cash" : "Online / UPI")</div>
         <div><strong>Status:</strong> <span class="badge-status @(Model.Bill.PaymentStatus=="Paid"?"badge-paid":"badge-unpaid")">@Model.Bill.PaymentStatus</span></div>
       </div>
     </div>
@@ -51,7 +51,7 @@
     </div>
     <div class="section small text-muted">On-spot payment successfully recorded.</div>
     <div class="actions">
-      <a asp-action="Dashboard" class="btn btn-primary"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a asp-controller="Doctor" asp-action="DoctorDashboard" class="btn btn-primary"><i class="bi bi-speedometer2"></i> Dashboard</a>
     </div>
   </div>
 </div>

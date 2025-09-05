@@ -57,10 +57,9 @@
       <div class="prescription-box">@(string.IsNullOrWhiteSpace(Model.Bill.Prescription) ? "No prescription provided." : Model.Bill.Prescription)</div>
     </div>
     <div class="section small text-muted">
-      This is a computer generated receipt for your records.
-    </div>
+			This is a computer generated receipt for your records. </div>
     <div class="actions">
-      <a asp-action="Dashboard" class="btn btn-primary"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a asp-controller="Doctor" asp-action="DoctorDashboard" class="btn btn-primary"><i class="bi bi-speedometer2"></i> Dashboard</a>
     </div>
   </div>
 </div>
