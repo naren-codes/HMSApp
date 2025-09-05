@@ -223,9 +223,8 @@ namespace HMSApp.Controllers
 
             model.PatientId = patient.PatientId;
             model.PatientName = string.IsNullOrWhiteSpace(PatientName) ? patient.Name : PatientName.Trim();
-            model.Symptoms = PatientDescription; 
+            model.Symptoms = PatientDescription;
             model.Status = "Pending";
-
             if (!ModelState.IsValid)
             {
                 ViewBag.PatientName = model.PatientName;

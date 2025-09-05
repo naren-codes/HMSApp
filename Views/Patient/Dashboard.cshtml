@@ -17,7 +17,6 @@
             </div>
             <div class="nav-quick">
                 <a class="btn btn-sm btn-light px-3" asp-controller="Patient" asp-action="AppointmentHistory"><i class="bi bi-calendar-event me-1"></i>Appointments</a>
-                <a class="btn btn-sm btn-light px-3" href="#"><i class="bi bi-capsule-pill me-1"></i>Prescriptions</a>
                 <a class="btn btn-sm btn-light px-3" asp-controller="Patient" asp-action="Profile"><i class="bi bi-person-badge me-1"></i>Profile</a>
             </div>
         </div>
@@ -68,10 +67,10 @@
                                         <th scope="col" class="ps-4">Date</th>
                                         <th scope="col">Doctor</th>
                                         <th scope="col">Time</th>
-                                        <th scope="col">Symptoms</th>
+                                        <th scope="col">Prescription</th>
                                         <th scope="col">Status</th>
                                         <th scope="col">Amount</th>
-                                        <th scope="col">Action</th>
+                           
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -97,7 +96,7 @@
                                                 }
                                                 else if (paymentStatus == "Paid")
                                                 {
-                                                    <span class="badge bg-danger">Paid</span>
+                                                    <span class="badge bg-success">Completed</span>
                                                 }
                                             </td>
                                             <td>
@@ -110,20 +109,7 @@
                                                     <span class="text-muted small">--</span>
                                                 }
                                             </td>
-                                            <td>
-                                                @if (bill != null && bill.PaymentStatus != "Paid")
-                                                {
-                                                    <a class="btn btn-sm btn-success" asp-action="Pay" asp-route-billId="@bill.BillId">Pay Now</a>
-                                                }
-                                                else if (bill?.PaymentStatus == "Paid")
-                                                {
-                                                    <span class="badge bg-danger">Paid</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted small">--</span>
-                                                }
-                                            </td>
+                                
                                         </tr>
                                     }
                                 </tbody>
