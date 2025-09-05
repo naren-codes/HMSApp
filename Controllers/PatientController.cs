@@ -183,10 +183,10 @@ namespace HMSApp.Controllers
                 // Patient not found, redirect to login
                 return RedirectToAction("PatientLogin", "Account");
             }
- var appointments = await _context.Appointment
-                                             .Where(a => a.PatientId == patient.PatientId)
-                                             .OrderByDescending(a => a.AppointmentDate)
-                                             .ToListAsync();
+            var appointments = await _context.Appointment
+                                                        .Where(a => a.PatientId == patient.PatientId)
+                                                        .OrderByDescending(a => a.AppointmentDate)
+                                                        .ToListAsync();
 
             return View(appointments);
         }
@@ -195,27 +195,26 @@ namespace HMSApp.Controllers
         {
             return View();
         }
-
         public IActionResult Mri()
         {
             return View();
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Mri(MriAppointment appointment)
+        public async Task<IActionResult> AddMri(Scan scan)
         {
             if (ModelState.IsValid)
             {
-                _context.MriAppointment.Add(appointment);
-                _context.SaveChanges();
+                // Add the new scan record to the database.
+                _context.Scan.Add(scan);
+                await _context.SaveChangesAsync();
 
-                return RedirectToAction("Dashboard");
+                // Redirect to the DoctorDashboard page after a successful save.
+                // This is a best practice for POST requests to prevent form resubmission.
+                return RedirectToPage("/Dashboard");
             }
 
-            return View(appointment);
+            // If the model state is not valid, return to the current view.
+            return View(scan);
         }
-
-
-
     }
 }

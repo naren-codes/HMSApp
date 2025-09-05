@@ -13,9 +13,7 @@
                 <h2 class="fw-bold mb-1 text-light"><i class="bi bi-activity"></i> Book a Scan</h2>
                 <div class="small opacity-75">Select the type of scan you need to book.</div>
             </div>
-            <div class="nav-quick">
-                <a class="btn btn-sm btn-light px-3" asp-controller="Patient" asp-action="Dashboard"><i class="bi bi-arrow-left me-1"></i>Back to Dashboard</a>
-            </div>
+            
         </div>
     </div>
 
@@ -43,7 +41,7 @@
                         <p class="card-text text-muted">
                             Produces detailed images of internal organs, bones, soft tissue, and blood vessels.
                         </p>
-                        <a asp-controller="Patient" asp-action="BookCT" class="btn btn-success mt-3">Book Now</a>
+                        <a asp-controller="Patient" asp-action="CtScan" class="btn btn-success mt-3">Book Now</a>
                     </div>
                 </div>
             </div>
@@ -56,7 +54,7 @@
                         <p class="card-text text-muted">
                             Quick and painless medical imaging to create pictures of the structures inside your body.
                         </p>
-                        <a asp-controller="Patient" asp-action="BookXRay" class="btn btn-light mt-3">Book Now</a>
+                        <a asp-controller="Patient" asp-action="XRay" class="btn btn-light mt-3">Book Now</a>
                     </div>
                 </div>
             </div>
