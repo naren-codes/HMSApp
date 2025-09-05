@@ -195,26 +195,116 @@ namespace HMSApp.Controllers
         {
             return View();
         }
+
+        [HttpGet]
         public IActionResult Mri()
         {
-            return View();
+            // Return the "Mri" view with a new, empty Scan object.
+            // This prevents a NullReferenceException when the page loads.
+            return View("Mri", new Scan());
         }
+
+        // This method handles the POST request to add a new MRI scan.
         [HttpPost]
         public async Task<IActionResult> AddMri(Scan scan)
         {
+            // The default DateTime value in C# is out of range for SQL Server's 'datetime' data type.
+            // We check for the default value and assign a valid one if necessary.
+            if (scan.AppointmentDate == default(DateTime))
+            {
+                scan.AppointmentDate = DateTime.Now;
+            }
+
             if (ModelState.IsValid)
             {
                 // Add the new scan record to the database.
+                // The DbSet is named 'Scans', not 'Scan'.
                 _context.Scan.Add(scan);
                 await _context.SaveChangesAsync();
 
-                // Redirect to the DoctorDashboard page after a successful save.
-                // This is a best practice for POST requests to prevent form resubmission.
-                return RedirectToPage("/Dashboard");
+                // Redirect to the DoctorDashboard action after a successful save.
+                // For MVC controllers, RedirectToAction is used.
+                return RedirectToAction("Mri");
             }
 
-            // If the model state is not valid, return to the current view.
+            // If the model state is not valid, return to the "Mri" view with the model to show validation errors.
+            // You must explicitly specify the view name here.
+            return View("Mri", scan);
+        }
+        [HttpGet]
+        public IActionResult CTScan()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CTScan(Scan scan)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Scan.Add(scan);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("CTScan"); 
+            }
+
             return View(scan);
         }
-    }
+        [HttpGet]
+        public IActionResult Xray()
+        {
+            return View("Xray", new Scan());
+        }
+
+        // This method handles the POST request to add a new X-ray record.
+        [HttpPost]
+        public async Task<IActionResult> AddXray(Scan scan)
+        {
+            scan.LabName = "Lab C";
+
+            if (scan.AppointmentDate == default(DateTime))
+            {
+                scan.AppointmentDate = DateTime.Now;
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.Scan.Add(scan);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("DoctorDashboard");
+            }
+
+            return View("Xray", scan);
+        }
+
+        // This action handles the initial GET request to display the Ultrasound form.
+        [HttpGet]
+        public IActionResult Ultrasound()
+        {
+            return View("Ultrasound", new Scan());
+        }
+
+        // This method handles the POST request to add a new Ultrasound record.
+        [HttpPost]
+        public async Task<IActionResult> AddUltrasound(Scan scan)
+        {
+            // Set the LabName to 'Lab D' for Ultrasounds.
+            scan.LabName = "Lab C";
+
+            if (scan.AppointmentDate == default(DateTime))
+            {
+                scan.AppointmentDate = DateTime.Now;
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.Scan.Add(scan);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Dashboard");
+            }
+
+            // If the model state is not valid, return to the "Ultrasound" view with the model to show validation errors.
+            return View("Ultrasound", scan);
+        }
+    
+}
 }

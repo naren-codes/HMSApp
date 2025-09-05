@@ -1,7 +1,7 @@
 ﻿@model HMSApp.Models.Scan
 
 @{
-    ViewData["Title"] = "Create Scan";
+    ViewData["Title"] = "Create Ultrasound Scan";
 }
 
 <style>
@@ -77,9 +77,9 @@
 </style>
 
 <div class="container">
-    <h1>Create MRI Scan</h1>
+    <h1>Create Ultrasound Scan</h1>
 
-    <form asp-controller="Patient" asp-action="AddMri" method="post">
+    <form asp-controller="Patient" asp-action="AddUltrasound" method="post">
         <div asp-validation-summary="All" class="validation-summary"></div>
 
         <div class="form-group">
@@ -96,7 +96,7 @@
 
         <div class="form-group">
             <label asp-for="LabName"></label>
-            <input asp-for="LabName" class="form-control" value="Lap A" />
+            <input asp-for="LabName" class="form-control" value="Lab D" readonly />
             <span asp-validation-for="LabName" class="text-danger"></span>
         </div>
 
@@ -104,3 +104,9 @@
     </form>
 
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
