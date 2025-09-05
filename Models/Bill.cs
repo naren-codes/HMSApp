@@ -18,7 +18,7 @@ namespace HMSApp.Models
 
         [Column("paymentStatus")]
         [Required]
-        public string PaymentStatus { get; set; } = string.Empty;
+        public string PaymentStatus { get; set; } = string.Empty; 
 
         [Column("billDate")]
         public DateTime BillDate { get; set; }
@@ -28,5 +28,11 @@ namespace HMSApp.Models
 
         [Column("prescription")]
         public string? Prescription { get; set; }
+
+        [NotMapped]
+        public string PaymentMethod => PaymentStatus.StartsWith("Paid-") ? PaymentStatus.Split('-').Last() : (PaymentStatus == "Paid" ? "Unknown" : "");
+
+        [NotMapped]
+        public string DoctorName { get; set; } = string.Empty; 
     }
 }

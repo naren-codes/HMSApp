@@ -12,7 +12,7 @@
     </div>
     <div class="mb-3">
         <label asp-for="DateOfBirth" class="form-label"></label>
-        <input asp-for="DateOfBirth" class="form-control" type="date" />
+        <input asp-for="DateOfBirth" class="form-control" type="date" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
     </div>
     <div class="mb-3">
         <label asp-for="Gender" class="form-label"></label>

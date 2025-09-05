@@ -30,10 +30,10 @@
                             <dd class="col-7">@Model.TimeSlot</dd>
                             <dt class="col-5">Status</dt>
                             <dd class="col-7"><span class="badge bg-warning text-dark">@Model.Status</span></dd>
-                            @if (!string.IsNullOrWhiteSpace(Model.PatientDescription))
+                            @if (!string.IsNullOrWhiteSpace(Model.Symptoms))
                             {
-                                <dt class="col-5">Description</dt>
-                                <dd class="col-7">@Model.PatientDescription</dd>
+                                <dt class="col-5">Symptoms</dt>
+                                <dd class="col-7">@Model.Symptoms</dd>
                             }
                         </dl>
                     </div>

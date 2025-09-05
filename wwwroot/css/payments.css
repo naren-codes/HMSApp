@@ -1,0 +1,15 @@
+.payments-wrapper{max-width:1200px;margin:2rem auto}
+.payments-card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 10px 35px -12px rgba(0,0,0,.07);overflow:hidden}
+.payments-header{background:linear-gradient(120deg,#1d4ed8,#6d28d9);padding:1.6rem 2rem;color:#fff}
+.payments-header h2{margin:0;font-size:1.45rem;font-weight:600;letter-spacing:.5px}
+.table-responsive{border-top:1px solid #e5e7eb}
+.table.payments-table thead th{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;background:#f1f5f9;border-bottom:1px solid #e2e8f0;color:#475569}
+.table.payments-table tbody td{vertical-align:middle;font-size:.9rem}
+.status-badge{padding:.35rem .65rem;border-radius:12px;font-size:.65rem;font-weight:600;letter-spacing:.05em;background:#e2e8f0;color:#334155}
+.status-paid{background:#dcfce7;color:#166534}
+.status-offline{background:#fff7ed;color:#92400e}
+.method-chip{display:inline-flex;align-items:center;gap:.25rem;padding:.25rem .55rem;font-size:.65rem;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-weight:600}
+.method-chip.cash{background:#fef9c3;color:#92400e}
+.search-bar{max-width:320px}
+.empty-box{padding:3rem 1rem;text-align:center;color:#64748b}
+@media (max-width:768px){.payments-header{flex-direction:column;align-items:flex-start}.search-bar{width:100%!important}}

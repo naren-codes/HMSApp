@@ -13,6 +13,7 @@ namespace HMSApp.Models
         public string? PatientName { get; set; }
         public string? DoctorName { get; set; }
         [StringLength(255)]
-        public string? PatientDescription { get; set; }
+        public string? Symptoms { get; set; }
+        public string? Prescription { get; set; }
     }
 }
