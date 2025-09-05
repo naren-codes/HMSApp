@@ -25,7 +25,7 @@
 
     <div class="container main-content">
         <div class="row g-4 mb-5">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="stat-card p-3 dd-header-bar">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-calendar-plus-fill display-4 text-info mb-3"></i>
@@ -37,15 +37,28 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="stat-card p-3" style="background:var(--dd-green-grad)">
+            <div class="col-md-4">
+                <div class="stat-card p-3 h-100" style="background:var(--dd-green-grad)">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-activity display-4 text-white mb-3 text-glow"></i>
+                        <h5 class="card-title fw-bold">Scans</h5>
+                        <p class="card-text text-muted">
+                            Book your medical scan to get a clearer picture of your health.
+                        </p>
+                        <a asp-controller="Patient" asp-action="BookScan" class="btn btn-success mt-3">Book a Scan</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card p-3" style="background:var(--dd-accent-grad)" ">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-clock-history display-4 text-success mb-3"></i>
                         <h5 class="card-title fw-bold">Appointment History</h5>
                         <p class="card-text text-muted">
                             View your past and upcoming appointments.
                         </p>
-                        <a asp-controller="Patient" asp-action="AppointmentHistory" class="btn btn-info text-white mt-3">View History</a>
+                        <a asp-controller="Appointment" asp-action="History" class="btn btn-light mt-3">View History</a>
                     </div>
                 </div>
             </div>

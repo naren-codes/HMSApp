@@ -1,0 +1,19 @@
+﻿@model HMSApp.Models.Scan
+
+<h2>CT Scan Entry</h2>
+
+<form asp-action="CTScan" method="post">
+    <div>
+        <label>Patient Name:</label>
+        <input asp-for="PatientName" class="form-control" />
+    </div>
+    <div>
+        <label>Appointment Date:</label>
+        <input asp-for="AppointmentDate" type="date" class="form-control" />
+    </div>
+    <div>
+        <label>Lab Name:</label>
+        <input asp-for="LabName" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
