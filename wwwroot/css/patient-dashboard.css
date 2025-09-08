@@ -76,6 +76,18 @@ body {
         opacity: .25;
     }
 
+/* Ensure buttons inside stat cards are clickable */
+.stat-card .btn {
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.stat-card .card-body {
+    position: relative;
+    z-index: 5;
+}
+
 .stat-value {
     font-size: 2.35rem;
     font-weight: 600;
@@ -138,4 +150,28 @@ body {
 .table-custom tbody td {
     vertical-align: middle;
     font-size: .85rem;
+}
+/* Add this new CSS to your patient-dashboard.css file */
+
+.dashboard-layout {
+    align-items: flex-start; /* This is the key fix that stops the profile box from stretching */
+}
+
+/* Make the appointments card scrollable */
+
+.appointments-container .card {
+    max-height: 600px; /* Adjust this value to control the height before scrolling starts */
+
+    display: flex;
+    flex-direction: column;
+}
+
+    .appointments-container .card .card-body {
+        overflow-y: auto; /* Adds a scrollbar to the card body ONLY when needed */
+    }
+
+/* The profile container will now correctly have its natural height */
+
+.profile-container {
+    flex-shrink: 0;
 }
