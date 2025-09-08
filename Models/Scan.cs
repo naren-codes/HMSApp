@@ -17,6 +17,8 @@ namespace HMSApp.Models
 
         public string LabName { get; set; }
         public string ScanType { get; set; }
+        public string? FileName { get; set; }
+
 
     }
 }
