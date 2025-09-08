@@ -97,6 +97,8 @@
 
                     <a class="btn btn-sm btn-light px-3" asp-controller="Doctor" asp-action="Profile"><i class="bi bi-person-badge me-1"></i>Profile</a>
 
+                    <a class="btn btn-sm btn-light px-3" asp-controller="Doctor" asp-action="Payments"><i class="bi bi-cash-stack me-1"></i>View Payments</a>
+
                 </div>
 
                 <a href="/Account/Logout" class="btn btn-sm btn-outline-danger" id="logoutBtn"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
@@ -209,7 +211,7 @@
 
                                     <th>Status</th>
 
-                                    <th>Reason</th>
+                                    <th>Symptoms</th>
 
                                     <th class="text-center" style="width:160px;">Actions</th>
 
@@ -255,7 +257,7 @@
 
                                             <td><span class="badge text-bg-@statusClass">@a.Status</span></td>
 
-                                            <td class="small">@a.PatientDescription</td>
+                                            <td class="small">@(string.IsNullOrWhiteSpace(a.Symptoms) ? "N/A" : a.Symptoms)</td>
 
                                             <td class="text-center">
 
@@ -440,7 +442,8 @@
 
                         <label class="form-label">Prescription</label>
 
-                        <textarea class="form-control" id="billPrescription" rows="3" placeholder="Enter prescription"></textarea>
+                        <textarea required class="form-control" id="billPrescription" rows="3" placeholder="Enter prescription"></textarea>
+
 
                     </div>
 
@@ -448,17 +451,10 @@
 
                         <label class="form-label">Total Amount</label>
 
-                        <input type="number" step="0.01" min="0" class="form-control" id="billTotalAmount" placeholder="0.00" />
+                        <input required type="number" step="0.01" min="0" class="form-control" id="billTotalAmount" placeholder="0.00" />
 
                     </div>
 
-                    <div class="mb-3">
-
-                        <label class="form-label">Payment Status</label>
-
-                        <input type="text" class="form-control" value="Unpaid" readonly />
-
-                    </div>
 
                 </form>
 
@@ -471,8 +467,8 @@
             <div class="modal-footer">
 
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-
-                <button type="button" class="btn btn-primary" id="saveBillBtn">Save Bill</button>
+                <button type="button" class="btn btn-success" id="generateAndPayBtn"><i class="bi bi-lightning-charge me-1"></i>Generate & Pay</button>
+                @* <button type="button" class="btn btn-primary" id="saveBillBtn">Save Bill</button> *@
 
             </div>
 
@@ -540,7 +536,7 @@
 
                     + '<td><span class="badge text-bg-'+statusClass+'">'+a.status+'</span></td>'
 
-                    + '<td class="small">'+(a.patientDescription||'')+'</td>'
+                    + '<td class="small">'+(a.symptoms||'N/A')+'</td>'
 
                     + '<td class="text-center"><div class="btn-group btn-group-sm" role="group">'
 
@@ -562,7 +558,7 @@
 
                 var norm = $.map(data, function(r){
 
-                    return { appointmentId:r.appointmentId??r.AppointmentId, appointmentDate:r.appointmentDate??r.AppointmentDate, timeSlot:r.timeSlot??r.TimeSlot, patientName:r.patientName??r.PatientName, status:r.status??r.Status, patientDescription:r.patientDescription??r.PatientDescription, patientId:r.patientId??r.PatientId };
+                    return { appointmentId:r.appointmentId??r.AppointmentId, appointmentDate:r.appointmentDate??r.AppointmentDate, timeSlot:r.timeSlot??r.TimeSlot, patientName:r.patientName??r.PatientName, status:r.status??r.Status, symptoms:r.symptoms??r.Symptoms, patientId:r.patientId??r.PatientId };
 
                 });
 
@@ -674,6 +670,42 @@
 
             });
 
+        });
+
+        $('#generateAndPayBtn').on('click', function(){
+            var apptId = parseInt($('#billAppointmentId').val()||'0');
+            if(!apptId) return;
+            var prescription = $.trim($('#billPrescription').val());
+            var totalAmount = parseFloat($('#billTotalAmount').val()||'0');
+
+            // Hide previous errors first
+    $('#billError').addClass('d-none');
+
+    // VALIDATION FOR BOTH FIELDS
+    if (prescription === '') {
+        $('#billError').text('Prescription details are required.').removeClass('d-none');
+        return;
+    }
+    if (isNaN(totalAmount) || totalAmount <= 0) {
+        $('#billError').text('Enter a valid amount before generating.').removeClass('d-none');
+        return;
+    }
+
+            if(isNaN(totalAmount) || totalAmount < 0){ $('#billError').text('Enter a valid amount before generating.').removeClass('d-none'); return; }
+            $.ajax({
+                url:'/Doctor/CompleteAppointmentAndCreateBill',
+                method:'POST',
+                contentType:'application/json',
+                data: JSON.stringify({ appointmentId: apptId, prescription: prescription, totalAmount: totalAmount, onSpot: true }),
+                success:function(resp){
+                    if(resp && resp.success){
+                       window.location.href = '/Doctor/PayBill?billId=' + resp.billId;
+                    } else {
+                       $('#billError').text('Failed to generate bill').removeClass('d-none');
+                    }
+                },
+                error:function(xhr){ $('#billError').text('Generate failed: '+ (xhr.responseText||'')).removeClass('d-none'); }
+            });
         });
 
     });

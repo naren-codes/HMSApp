@@ -1,0 +1,65 @@
+@model HMSApp.Controllers.PatientController.BillDisplayViewModel
+@{
+    ViewData["Title"] = "Bill";
+    Layout = "_Layout";
+}
+<link rel="stylesheet" href="~/css/bill.css" asp-append-version="true" />
+<div class="bill-wrapper">
+  <div class="bill-paper">
+    <div class="bill-header">
+      <div>
+        <h2><i class="bi bi-receipt-cutoff me-2"></i>Medical Bill / Receipt</h2>
+        <small>Payment confirmation</small>
+      </div>
+      <div class="text-end meta">
+        <small><strong>Bill #:</strong> @Model.Bill.BillId</small>
+        <small><strong>Date:</strong> @Model.Bill.BillDate.ToLocalTime().ToString("dd MMM yyyy")</small>
+        <small><strong>Status:</strong> <span class="badge-status @(Model.Bill.PaymentStatus=="Paid"?"badge-paid":"badge-unpaid")">@Model.Bill.PaymentStatus</span></small>
+      </div>
+    </div>
+    <div class="section">
+      <h5>Patient Details</h5>
+      <div class="row g-3">
+        <div class="col-md-6 small">
+          <strong>Name:</strong> @Model.Patient.Name<br />
+          <strong>Gender:</strong> @Model.Patient.Gender<br />
+          <strong>DOB:</strong> @Model.Patient.DateOfBirth.ToString("dd MMM yyyy")<br />
+        </div>
+        <div class="col-md-6 small">
+          <strong>Contact:</strong> @(Model.Patient.ContactNumber ?? "-")<br />
+          <strong>Address:</strong> @(Model.Patient.Address ?? "-")<br />
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <h5>Bill Summary</h5>
+      <table class="table-summary">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th style="width:140px;text-align:right">Amount (Rs.)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Consultation / Treatment Charges</td>
+            <td style="text-align:right">@Model.Bill.TotalAmount.ToString("0.00")</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="total-box">
+        <div><strong>Total:</strong> Rs. @Model.Bill.TotalAmount.ToString("0.00")</div>
+        <div><strong>Payment Status:</strong> <span class="badge-status @(Model.Bill.PaymentStatus=="Paid"?"badge-paid":"badge-unpaid")">@Model.Bill.PaymentStatus</span></div>
+      </div>
+    </div>
+    <div class="section">
+      <h5>Prescription / Notes</h5>
+      <div class="prescription-box">@(string.IsNullOrWhiteSpace(Model.Bill.Prescription) ? "No prescription provided." : Model.Bill.Prescription)</div>
+    </div>
+    <div class="section small text-muted">
+			This is a computer generated receipt for your records. </div>
+    <div class="actions">
+            <a asp-controller="Doctor" asp-action="DoctorDashboard" class="btn btn-primary"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    </div>
+  </div>
+</div>
