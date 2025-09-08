@@ -143,6 +143,13 @@ namespace HMSApp.Controllers
                 var bill = new Bill
                 {
                     PatientId = appointment.PatientId,
+                    AppointmentId = appointment.AppointmentId, // Primary matching field
+                    
+                    // Additional fields for cross-environment matching
+                    AppointmentDate = appointment.AppointmentDate,
+                    DoctorName = appointment.DoctorName,
+                    TimeSlot = appointment.TimeSlot,
+                    
                     PatientName = appointment.PatientName,
                     Prescription = prescriptionText,
                     TotalAmount = request.totalAmount,

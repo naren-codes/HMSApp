@@ -139,56 +139,72 @@ namespace HMSApp.Controllers
             ViewData["PatientAddress"] = patient.Address ?? "N/A";
             ViewData["PatientGender"] = patient.Gender ?? "N/A";
 
-            ViewData["PatientName"] = char.ToUpper(patient.Name[0]) + patient.Name.Substring(1);
             var appointments = await _patientService.GetPatientAppointmentsAsync(patient.PatientId);
 
+            // Fetch all bills for this patient
             var bills = await _context.Bill
                 .Where(b => b.PatientId == patient.PatientId)
-                .OrderBy(b => b.BillDate)
                 .ToListAsync();
 
-            // Existing heuristic attempted to match bill within a small window around appointment date.
-            // If bill date falls outside (e.g. backdated, or created long after), patient would never see Pay Now.
-            // Added robust fallback: if no window match for a completed appointment, attach the next unpaid, unassigned bill.
-
-            var assignedBillIds = new HashSet<int>();
-            var apptOrdered = appointments.OrderBy(a => a.AppointmentDate).ThenBy(a => a.AppointmentId).ToList();
-
             List<PatientApptDashboardRow> enriched = new();
-            foreach (var appt in apptOrdered)
+            
+            foreach (var appt in appointments)
             {
-                Bill? matched = null;
-                var apptStart = appt.AppointmentDate;
-                var windowStart = apptStart.AddHours(-12); 
-                var windowEnd = apptStart.AddDays(7);     
-
-                matched = bills
-                    .Where(b => !assignedBillIds.Contains(b.BillId) && b.BillDate >= windowStart && b.BillDate <= windowEnd)
-                    .OrderBy(b => Math.Abs((b.BillDate - apptStart).TotalMinutes)) // closest in time first
-                    .FirstOrDefault();
-
-              
-                if (matched == null && string.Equals(appt.Status, "Completed", StringComparison.OrdinalIgnoreCase))
+                Bill? matchedBill = null;
+                
+                // Strategy 1: Direct appointment ID matching (best for same environment)
+                matchedBill = bills.FirstOrDefault(b => b.AppointmentId == appt.AppointmentId);
+                
+                // Strategy 2: Multi-criteria matching (works across different environments)
+                if (matchedBill == null)
                 {
-                    matched = bills
-                        .Where(b => !assignedBillIds.Contains(b.BillId) && !string.Equals(b.PaymentStatus, "Paid", StringComparison.OrdinalIgnoreCase))
-                        .OrderBy(b => b.BillDate) // oldest unpaid first
-                        .FirstOrDefault();
+                    matchedBill = bills.FirstOrDefault(b => 
+                        b.AppointmentDate.HasValue &&
+                        b.AppointmentDate.Value.Date == appt.AppointmentDate.Date &&
+                        b.DoctorName == appt.DoctorName &&
+                        b.TimeSlot == appt.TimeSlot &&
+                        b.PatientName == appt.PatientName);
                 }
-
-                if (matched != null)
+                
+                // Strategy 3: Date and patient matching (broader fallback)
+                if (matchedBill == null)
                 {
-                    assignedBillIds.Add(matched.BillId);
+                    var appointmentDate = appt.AppointmentDate.Date;
+                    
+                    var relevantBills = bills.Where(b => 
+                        b.AppointmentDate.HasValue &&
+                        b.AppointmentDate.Value.Date == appointmentDate &&
+                        b.PatientName == appt.PatientName &&
+                        b.DoctorName == appt.DoctorName).ToList();
+                    
+                    if (relevantBills.Any())
+                    {
+                        matchedBill = relevantBills.OrderBy(b => Math.Abs((b.BillDate - appt.AppointmentDate).TotalHours)).FirstOrDefault();
+                    }
+                }
+                
+                // Strategy 4: Legacy date-based matching for older bills
+                if (matchedBill == null && string.Equals(appt.Status, "Completed", StringComparison.OrdinalIgnoreCase))
+                {
+                    var usedBillIds = enriched.Where(e => e.Bill != null).Select(e => e.Bill!.BillId).ToList();
+                    var appointmentDate = appt.AppointmentDate.Date;
+                    
+                    matchedBill = bills
+                        .Where(b => !usedBillIds.Contains(b.BillId) && 
+                                   (!b.AppointmentDate.HasValue || b.AppointmentDate.Value.Date == appointmentDate) &&
+                                   b.PatientName == appt.PatientName)
+                        .OrderByDescending(b => b.BillDate)
+                        .FirstOrDefault();
                 }
 
                 enriched.Add(new PatientApptDashboardRow
                 {
                     Appointment = appt,
-                    Bill = matched
+                    Bill = matchedBill
                 });
             }
 
-            // Show latest first in UI
+            // Show latest appointments first in UI
             enriched = enriched.OrderByDescending(r => r.Appointment.AppointmentDate).ToList();
             return View(enriched);
         }
@@ -502,6 +518,119 @@ namespace HMSApp.Controllers
             return View("Bill", vm);
         }
 
+
+        public IActionResult BookScan()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Mri()
+        {
+            var scan = new Scan { LabName = "Lab A", ScanType = "MRI" };
+            return View("Mri", scan);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddMri(Scan scan)
+        {
+            // These lines are crucial to ensure the correct values are saved.
+            scan.LabName = "Lab A";
+            scan.ScanType = "MRI";
+
+            if (ModelState.IsValid)
+            {
+                _context.Scan.Add(scan);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Dashboard"); // Redirects to the Patient Dashboard
+            }
+
+            return View("Mri", scan);
+        }
+
+
+        [HttpGet]
+        public IActionResult CTScan()
+        {
+            var scan = new Scan { LabName = "Lab B", ScanType = "CTScan" };
+            return View("CTScan", scan);
+        }
+
+        // In PatientController.cs
+
+        [HttpPost]
+        public async Task<IActionResult> CTScan(Scan scan)
+        {
+            // These lines are crucial to ensure the correct values are saved.
+            scan.LabName = "Lab B";
+            scan.ScanType = "CTScan";
+
+            if (ModelState.IsValid)
+            {
+                _context.Scan.Add(scan);
+                await _context.SaveChangesAsync();
+                // Change the redirect destination here
+                return RedirectToAction("Dashboard"); // Redirects to the Patient Dashboard
+            }
+
+            return View("CTScan", scan);
+        }
+
+        [HttpGet]
+        public IActionResult XRay()
+        {
+            var scan = new Scan { LabName = "Lab C", ScanType = "XRay" };
+            return View("XRay", scan);
+        }
+
+        // In PatientController.cs
+
+        [HttpPost]
+        public async Task<IActionResult> XRay(Scan scan)
+        {
+            // These lines are crucial to ensure the correct values are saved.
+            scan.LabName = "Lab C";
+            scan.ScanType = "XRay";
+
+            if (ModelState.IsValid)
+            {
+                _context.Scan.Add(scan);
+                await _context.SaveChangesAsync();
+                // Change the redirect destination here
+                return RedirectToAction("Dashboard"); // Redirects to the Patient Dashboard
+            }
+
+            return View("XRay", scan);
+        }
+        [HttpGet]
+        public IActionResult Ultrasound()
+        {
+            return View("Ultrasound", new Scan());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddUltrasound(Scan scan)
+        {
+            scan.LabName = "Lab C";
+
+            if (scan.AppointmentDate == default(DateTime))
+            {
+                scan.AppointmentDate = DateTime.Now;
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.Scan.Add(scan);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Dashboard");
+            }
+
+            return View("Ultrasound", scan);
+        }
+
+
+
+
+
         public class PatientApptDashboardRow
         {
             public Appointment Appointment { get; set; } = null!;
@@ -513,6 +642,6 @@ namespace HMSApp.Controllers
             public Bill Bill { get; set; } = null!;
             public Patient Patient { get; set; } = null!;
         }
-    }
-}
+    
+}}
 

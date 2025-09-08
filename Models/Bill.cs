@@ -13,6 +13,19 @@ namespace HMSApp.Models
         [Column("patientId")]
         public int PatientId { get; set; }
 
+        [Column("appointmentId")]
+        public int? AppointmentId { get; set; }
+
+        // Additional fields for robust matching across environments
+        [Column("appointmentDate")]
+        public DateTime? AppointmentDate { get; set; }
+
+        [Column("doctorName")]
+        public string? DoctorName { get; set; }
+
+        [Column("timeSlot")]
+        public string? TimeSlot { get; set; }
+
         [Column("totalAmount")]
         public decimal TotalAmount { get; set; }
 
@@ -33,6 +46,6 @@ namespace HMSApp.Models
         public string PaymentMethod => PaymentStatus.StartsWith("Paid-") ? PaymentStatus.Split('-').Last() : (PaymentStatus == "Paid" ? "Unknown" : "");
 
         [NotMapped]
-        public string DoctorName { get; set; } = string.Empty; 
+        public string DoctorName_Legacy { get; set; } = string.Empty; 
     }
 }

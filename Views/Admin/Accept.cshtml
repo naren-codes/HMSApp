@@ -1,0 +1,30 @@
+﻿@model HMSApp.Models.Scan
+
+@{
+    ViewData["Title"] = "Appointment Details";
+}
+
+<div class="container my-5">
+    <div class="card shadow p-4">
+        @* Added p-4 for internal padding *@
+        <div class="card-body text-center">
+            @* Centered the content within the card *@
+            <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
+
+            <h1 class="card-title mb-4 fw-bold">Appointment Accepted!</h1>
+            <p class="card-text fs-5">Here are the details for the confirmed appointment:</p>
+
+            <div class="text-start mt-4">
+                @* Left-align details, add margin-top *@
+                <p><strong>ID:</strong> @Model.Id</p>
+                <p><strong>Patient Name:</strong> @Model.PatientName</p>
+                <p><strong>Appointment Date:</strong> @Model.AppointmentDate.ToShortDateString()</p>
+                <p><strong>Lab Name:</strong> @Model.LabName</p>
+                <p><strong>Scan Type:</strong> @Model.ScanType</p>
+                <a asp-action="Index" class="btn btn-secondary mt-4 me-2">Back to Scan List</a>
+
+                <a asp-action="Upload" asp-route-id="@Model.Id" class="btn btn-primary mt-4">Upload Scan</a>
+            </div>
+        </div>
+    </div>
+</div>
