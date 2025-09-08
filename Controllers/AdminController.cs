@@ -1,47 +1,47 @@
 ﻿using HMSApp.Data;
 using HMSApp.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HMSApp.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<AdminController> _logger;
         private readonly ApplicationDbContext _context;
-        public AdminController(ILogger<HomeController> logger, ApplicationDbContext context)
+        private readonly IWebHostEnvironment _hostingEnvironment;
+
+        // Constructor with all necessary services injected
+        public AdminController(ILogger<AdminController> logger, ApplicationDbContext context, IWebHostEnvironment hostingEnvironment)
         {
             _logger = logger;
             _context = context;
+            _hostingEnvironment = hostingEnvironment;
         }
+
         public IActionResult Index()
         {
             return View();
         }
+
         public IActionResult BookedScans()
         {
-
             var allScansFromDb = _context.Scan.OrderBy(s => s.Id).ToList();
-
-
-            var bookedScans = allScansFromDb.Select(s => new Scan
-            {
-                Id = s.Id,
-                PatientName = s.PatientName,
-                AppointmentDate = s.AppointmentDate,
-                LabName = s.LabName,
-                ScanType = s.LabName == "Lab A" ? "MRI" :
-                           s.LabName == "Lab B" ? "CT Scan" :
-                           s.LabName == "Lab C" ? "X-Ray" : "Unknown"
-            }).ToList();
-
-            return View(bookedScans);
+            return View(allScansFromDb);
         }
 
-        public IActionResult Accept(int id)
+        // The correct version of Accept, using patientName
+        public async Task<IActionResult> Accept(string patientName)
         {
-            // Your code to handle the accept action
-            var appointment = _context.Scan.FirstOrDefault(a => a.Id == id);
+            // The value from the link (e.g., "mani") is now in the patientName variable
+            var appointment = await _context.Scan
+                                      .FirstOrDefaultAsync(a => a.PatientName == patientName);
 
             if (appointment == null)
             {
@@ -50,27 +50,64 @@ namespace HMSApp.Controllers
 
             return View(appointment);
         }
-        // In your AdminController.cs
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Reject(int id)
         {
-            // Find the record to be deleted
             var appointment = await _context.Scan.FindAsync(id);
-
             if (appointment == null)
             {
-                // Handle case where appointment is not found
+                return NotFound();
+            }
+            _context.Scan.Remove(appointment);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(BookedScans));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Upload(string patientName, IFormFile scanFile)
+        {
+            if (scanFile == null || scanFile.Length == 0)
+            {
+                TempData["ErrorMessage"] = "Please select a file to upload.";
+                return RedirectToAction("Accept", new { patientName });
+            }
+
+            var scanToUpdate = await _context.Scan
+                .FirstOrDefaultAsync(s => s.PatientName == patientName);
+
+            if (scanToUpdate == null)
+            {
                 return NotFound();
             }
 
-            // Remove the appointment from the database
-            _context.Scan.Remove(appointment);
+            string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+            Directory.CreateDirectory(uploadsFolder);
 
-            // Save the changes to the database
-            await _context.SaveChangesAsync();
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + scanFile.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-            // Redirect back to the scan list page
-            return RedirectToAction(nameof(Index));
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await scanFile.CopyToAsync(fileStream);
+            }
+
+            scanToUpdate.FileName = uniqueFileName;
+
+            try
+            {
+                _context.Update(scanToUpdate);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "File uploaded successfully!";
+            }
+            catch (DbUpdateException)
+            {
+                TempData["ErrorMessage"] = "An error occurred while saving the file.";
+            }
+
+            return RedirectToAction("Accept", new { patientName = scanToUpdate.PatientName });
         }
     }
 }

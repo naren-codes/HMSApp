@@ -569,20 +569,27 @@ namespace HMSApp.Controllers
             return View("Mri", scan);
         }
         [HttpPost]
-        public async Task<IActionResult> AddMri(Scan scan)
+        public async Task<IActionResult> AddMri(Scan scanFromForm) // Renamed for clarity
         {
-            // These lines are crucial to ensure the correct values are saved.
-            scan.LabName = "Lab A";
-            scan.ScanType = "MRI";
-
-            if (ModelState.IsValid)
+            // 1. Create a new, clean Scan object
+            var newScan = new Scan
             {
-                _context.Scan.Add(scan);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Dashboard"); // Redirects to the Patient Dashboard
-            }
+                // 2. Copy the values you actually need from the form
+                PatientName = scanFromForm.PatientName,
+                AppointmentDate = scanFromForm.AppointmentDate
+                // Note: Any other properties from the form would be copied here
+            };
 
-            return View("Mri", scan);
+            // 3. Manually set the values for this specific action
+            newScan.LabName = "Lab A";
+            newScan.ScanType = "MRI";
+
+            // 4. Add the new object and save it
+            // We don't need to check ModelState.IsValid because we built the object ourselves
+            _context.Scan.Add(newScan);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Dashboard");
         }
 
 
