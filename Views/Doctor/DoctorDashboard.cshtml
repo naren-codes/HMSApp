@@ -265,7 +265,7 @@
 
                                                     <button type="button" class="btn btn-outline-success btn-complete" title="Complete & Bill"><i class="bi bi-check2"></i></button>
 
-                                                    <button type="button" class="btn btn-outline-danger" title="Cancel"><i class="bi bi-x"></i></button>
+                                                    <button type="button" class="btn btn-outline-danger btn-cancel" title="Cancel"><i class="bi bi-x"></i></button>
 
                                                 </div>
 
@@ -707,7 +707,37 @@
                 error:function(xhr){ $('#billError').text('Generate failed: '+ (xhr.responseText||'')).removeClass('d-none'); }
             });
         });
+            // Inside your existing $(function(){ ... }); block
+    $('#appointmentsTable').on('click', '.btn-cancel', function(){
+        var appointmentId = $(this).closest('tr').data('appointment-id');
 
+        if (confirm('Are you sure you want to cancel this appointment?')) {
+            $.ajax({
+                url: '/Doctor/CancelAppointment',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ appointmentId: appointmentId }),
+                success: function(resp){
+                    if (resp && resp.success) {
+                        // Update the row on the front end
+                        var $row = $('tr[data-appointment-id="' + appointmentId + '"]');
+                        $row.find('.badge').text('Cancelled').removeClass('text-bg-success text-bg-warning').addClass('text-bg-danger');
+                        // Hide the action buttons
+                        $row.find('.btn-group').hide();
+                        // Optionally, remove the row with animation
+                        //$row.addClass('row-whoosh-out').one('transitionend', function(){
+                        //    $(this).remove();
+                        //});
+                    } else {
+                        alert('Error: ' + (resp.message || 'Could not cancel appointment.'));
+                    }
+                },
+                error: function(xhr){
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        }
+    });
     });
 
 </script>

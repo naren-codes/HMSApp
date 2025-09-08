@@ -411,5 +411,29 @@ namespace HMSApp.Controllers
             ViewData["DoctorMode"] = true;
             return View("~/Views/Patient/Payment.cshtml", bill);
         }
+        [HttpPost]
+        public async Task<IActionResult> CancelAppointment([FromBody] AppointmentCancelRequest request)
+        {
+            var appointment = await _context.Appointment.FirstOrDefaultAsync(a => a.AppointmentId == request.AppointmentId);
+
+            if (appointment == null)
+            {
+                return Json(new { success = false, message = "Appointment not found." });
+            }
+
+            // Update the status of the appointment
+            appointment.Status = "Cancelled";
+
+            // Save the changes to the database
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+
+        // You might need a simple model to represent the incoming data
+        public class AppointmentCancelRequest
+        {
+            public int AppointmentId { get; set; }
+        }
     }
 }
