@@ -2,109 +2,234 @@
     ViewData["Title"] = "Home";
 }
 
+<div id="particles-container" aria-hidden="true"></div>
+
+<div class="floating-shapes" aria-hidden="true">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+    <div class="shape shape-5"></div>
+</div>
+
 <section class="hero-section text-white">
+    <div class="hero-background-animation"></div>
+
+    <div class="glass-overlay"></div>
+
     <div class="container position-relative">
         <div class="hero-content">
             <div class="hero-badge animate-float" aria-label="System status badge">
-                <span class="bi bi-shield-check" aria-hidden="true"></span>
-                Secure • Scalable • Smart
+                <span class="bi bi-shield-check glow-icon" aria-hidden="true"></span>
+                <span class="badge-text">Secure • Scalable • Smart</span>
             </div>
-            <h1 class="hero-title">Hospital Management System</h1>
-            <p class="hero-text">Streamline clinical workflows, empower patients, and enable data‑driven decisions with an integrated, secure solution designed for doctors, administrators and patients.</p>
-            <div class="d-flex flex-wrap gap-3 mt-3">
-                <a asp-controller="Account" asp-action="PatientLogin" class="btn btn-gradient btn-lg animate-pulse" aria-label="Get started as a patient"><i class="bi bi-play-circle-fill me-1"></i>Get Started</a>
-                <a href="#features" class="btn btn-outline-light-soft btn-lg" aria-label="Explore platform features"><i class="bi bi-grid me-1"></i>Explore Features</a>
+
+            <h1 class="hero-title gradient-text">
+                <span class="text-reveal">Hospital Management</span>
+                <span class="text-reveal delay-1">System</span>
+            </h1>
+
+            <p class="hero-text text-reveal delay-2">
+                Streamline clinical workflows, empower patients, and enable data‑driven decisions with an
+                integrated, secure solution designed for doctors, administrators and patients.
+            </p>
+
+            <div class="d-flex flex-wrap gap-3 mt-4 text-reveal delay-3">
+                <a asp-controller="Account" asp-action="PatientLogin" class="btn btn-gradient btn-lg animate-pulse hover-lift" aria-label="Get started as a patient">
+                    <i class="bi bi-play-circle-fill me-2"></i>
+                    <span>Get Started</span>
+                    <div class="btn-particles"></div>
+                </a>
+                <a href="#features" class="btn btn-glass btn-lg hover-lift" aria-label="Explore platform features">
+                    <i class="bi bi-grid me-2"></i>
+                    <span>Explore Features</span>
+                </a>
             </div>
 
             <div class="stats-ribbon" aria-label="Platform statistics">
-                <div class="stat-card" tabindex="0">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <span class="text-white-50"><i class="bi bi-person-badge fs-5"></i></span>
-                        <div class="stat-value">@ViewBag.DoctorCount</div>
+                <div class="stat-card glass-card hover-float" tabindex="0">
+                    <div class="stat-icon">
+                        <i class="bi bi-person-badge"></i>
                     </div>
+                    <div class="stat-value counter" data-target="@ViewBag.DoctorCount">0</div>
                     <div class="stat-label">Active Doctors</div>
+                    <div class="stat-background"></div>
                 </div>
-                <div class="stat-card" tabindex="0">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <span class="text-white-50"><i class="bi bi-people fs-5"></i></span>
-                        <div class="stat-value">@ViewBag.PatientCount</div>
+                <div class="stat-card glass-card hover-float" tabindex="0">
+                    <div class="stat-icon">
+                        <i class="bi bi-people"></i>
                     </div>
+                    <div class="stat-value counter" data-target="@ViewBag.PatientCount">0</div>
                     <div class="stat-label">Registered Patients</div>
+                    <div class="stat-background"></div>
                 </div>
-                <div class="stat-card" tabindex="0">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <span class="text-white-50"><i class="bi bi-calendar-week fs-5"></i></span>
-                        <div class="stat-value">@ViewBag.AppointmentCount</div>
+                <div class="stat-card glass-card hover-float" tabindex="0">
+                    <div class="stat-icon">
+                        <i class="bi bi-calendar-week"></i>
                     </div>
+                    <div class="stat-value counter" data-target="@ViewBag.AppointmentCount">0</div>
                     <div class="stat-label">Appointments</div>
+                    <div class="stat-background"></div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="scroll-indicator">
+        <div class="scroll-arrow">
+            <i class="bi bi-chevron-down"></i>
+        </div>
+    </div>
 </section>
 
-<section id="features" class="features-section bg-light">
+<section id="features" class="features-section">
     <div class="container">
-        <div class="row mb-4">
-            <div class="col-lg-8">
-                <h2 class="mb-2">Key Capabilities</h2>
-                <p class="text-muted mb-0">Everything you need to deliver efficient, patient‑centric care and optimize operational performance.</p>
+        <div class="row mb-5">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="section-title mb-3">
+                    <span class="highlight">Key Capabilities</span>
+                </h2>
+                <p class="section-subtitle text-muted mb-0">
+                    Everything you need to deliver efficient, patient‑centric care and optimize operational performance.
+                </p>
             </div>
         </div>
+
         <div class="features-grid">
-            <div class="feature-card" aria-label="Appointment management feature">
-                <div class="feature-icon"><span class="bi bi-calendar2-check" aria-hidden="true"></span></div>
+            <div class="feature-card glass-card hover-3d" aria-label="Appointment management feature">
+                <div class="feature-icon-wrapper">
+                    <div class="feature-icon">
+                        <span class="bi bi-calendar2-check" aria-hidden="true"></span>
+                        <div class="icon-glow"></div>
+                    </div>
+                </div>
                 <h3 class="feature-title">Smart Scheduling</h3>
                 <p class="feature-desc">Real‑time availability, automated reminders, conflict detection and seamless booking workflows.</p>
+                <div class="feature-decoration"></div>
             </div>
-            <div class="feature-card" aria-label="Patient record feature">
-                <div class="feature-icon"><span class="bi bi-file-medical" aria-hidden="true"></span></div>
+
+            <div class="feature-card glass-card hover-3d" aria-label="Patient record feature">
+                <div class="feature-icon-wrapper">
+                    <div class="feature-icon">
+                        <span class="bi bi-file-medical" aria-hidden="true"></span>
+                        <div class="icon-glow"></div>
+                    </div>
+                </div>
                 <h3 class="feature-title">Unified Records</h3>
                 <p class="feature-desc">Centralized longitudinal patient profiles with history, visits, billing and clinical notes.</p>
+                <div class="feature-decoration"></div>
             </div>
-            <div class="feature-card" aria-label="Analytics feature">
-                <div class="feature-icon"><span class="bi bi-graph-up" aria-hidden="true"></span></div>
+
+            <div class="feature-card glass-card hover-3d" aria-label="Analytics feature">
+                <div class="feature-icon-wrapper">
+                    <div class="feature-icon">
+                        <span class="bi bi-graph-up" aria-hidden="true"></span>
+                        <div class="icon-glow"></div>
+                    </div>
+                </div>
                 <h3 class="feature-title">Actionable Analytics</h3>
                 <p class="feature-desc">Operational dashboards and metrics to improve utilization, quality and patient outcomes.</p>
+                <div class="feature-decoration"></div>
             </div>
-            <div class="feature-card" aria-label="Security feature">
-                <div class="feature-icon"><span class="bi bi-shield-lock" aria-hidden="true"></span></div>
+
+            <div class="feature-card glass-card hover-3d" aria-label="Security feature">
+                <div class="feature-icon-wrapper">
+                    <div class="feature-icon">
+                        <span class="bi bi-shield-lock" aria-hidden="true"></span>
+                        <div class="icon-glow"></div>
+                    </div>
+                </div>
                 <h3 class="feature-title">Enterprise Security</h3>
                 <p class="feature-desc">Role‑based access, audit trails and encrypted data to safeguard sensitive information.</p>
+                <div class="feature-decoration"></div>
             </div>
         </div>
     </div>
 </section>
 
-<section class="section" aria-labelledby="portalsHeading">
+<section class="portals-section" aria-labelledby="portalsHeading">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 id="portalsHeading" class="mb-2">Access Portals</h2>
-            <p class="text-muted mb-0">Tailored experiences for each role in the healthcare journey.</p>
+            <h2 id="portalsHeading" class="section-title mb-3">
+                <span class="highlight">Access Portals</span>
+            </h2>
+            <p class="section-subtitle text-muted mb-0">
+                Tailored experiences for each role in the healthcare journey.
+            </p>
         </div>
+
         <div class="row g-4">
             <div class="col-md-4 d-flex">
-                <div class="card feature-card w-100">
-                    <div class="feature-icon mb-3"><span class="bi bi-hospital" aria-hidden="true"></span></div>
-                    <h3 class="h5 d-flex align-items-center gap-2"><i class="bi bi-stethoscope"></i>Doctor</h3>
-                    <p class="text-muted mb-4">Manage appointments, review patient histories and streamline clinical workflow.</p>
-                    <div class="mt-auto"><a asp-controller="Account" asp-action="DoctorLogin" class="btn btn-primary w-100" aria-label="Doctor login"><i class="bi bi-box-arrow-in-right me-1"></i>Enter Portal</a></div>
+                <div class="portal-card glass-card w-100 hover-3d">
+                    <div class="portal-icon doctor-gradient">
+                        <div class="doctor-logo-container">
+                            <img src="~/images/doctor-logo.png" alt="Doctor Logo" class="doctor-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="doctor-logo-fallback">
+                                <i class="bi bi-person-fill-gear"></i>
+                            </div>
+                        </div>
+                        <div class="icon-ripple"></div>
+                    </div>
+                    <h3 class="portal-title">Doctor Portal</h3>
+                    <p class="portal-desc">Manage appointments, review patient histories and streamline clinical workflow.</p>
+                    <div class="portal-features">
+                        <span class="feature-tag">Patient Management</span>
+                        <span class="feature-tag">Appointment Scheduling</span>
+                        <span class="feature-tag">Medical Records</span>
+                    </div>
+                    <div class="mt-auto">
+                        <a asp-controller="Account" asp-action="DoctorLogin" class="btn btn-portal-doctor w-100 hover-lift" aria-label="Doctor login">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            <span>Enter Portal</span>
+                        </a>
+                    </div>
+                    <div class="portal-decoration doctor-decoration"></div>
                 </div>
             </div>
+
             <div class="col-md-4 d-flex">
-                <div class="card feature-card w-100">
-                    <div class="feature-icon mb-3"><span class="bi bi-gear" aria-hidden="true"></span></div>
-                    <h3 class="h5 d-flex align-items-center gap-2"><i class="bi bi-sliders"></i>Admin</h3>
-                    <p class="text-muted mb-4">Configure system settings, oversee users and optimize hospital operations.</p>
-                    <div class="mt-auto"><a asp-controller="Account" asp-action="AdminLogin" class="btn btn-primary w-100" aria-label="Admin login"><i class="bi bi-box-arrow-in-right me-1"></i>Enter Portal</a></div>
+                <div class="portal-card glass-card w-100 hover-3d">
+                    <div class="portal-icon admin-gradient">
+                        <i class="bi bi-sliders"></i>
+                        <div class="icon-ripple"></div>
+                    </div>
+                    <h3 class="portal-title">Admin Portal</h3>
+                    <p class="portal-desc">Configure system settings, oversee users and optimize hospital operations.</p>
+                    <div class="portal-features">
+                        <span class="feature-tag">System Configuration</span>
+                        <span class="feature-tag">User Management</span>
+                        <span class="feature-tag">Analytics Dashboard</span>
+                    </div>
+                    <div class="mt-auto">
+                        <a asp-controller="Account" asp-action="AdminLogin" class="btn btn-portal-admin w-100 hover-lift" aria-label="Admin login">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            <span>Enter Portal</span>
+                        </a>
+                    </div>
+                    <div class="portal-decoration admin-decoration"></div>
                 </div>
             </div>
+
             <div class="col-md-4 d-flex">
-                <div class="card feature-card w-100">
-                    <div class="feature-icon mb-3"><span class="bi bi-person-heart" aria-hidden="true"></span></div>
-                    <h3 class="h5 d-flex align-items-center gap-2"><i class="bi bi-person"></i>Patient</h3>
-                    <p class="text-muted mb-4">Book visits, manage your health data and stay engaged with your care team.</p>
-                    <div class="mt-auto"><a asp-controller="Account" asp-action="PatientLogin" class="btn btn-primary w-100" aria-label="Patient login"><i class="bi bi-box-arrow-in-right me-1"></i>Enter Portal</a></div>
+                <div class="portal-card glass-card w-100 hover-3d">
+                    <div class="portal-icon patient-gradient">
+                        <i class="bi bi-person-heart"></i>
+                        <div class="icon-ripple"></div>
+                    </div>
+                    <h3 class="portal-title">Patient Portal</h3>
+                    <p class="portal-desc">Book visits, manage your health data and stay engaged with your care team.</p>
+                    <div class="portal-features">
+                        <span class="feature-tag">Appointment Booking</span>
+                        <span class="feature-tag">Health Records</span>
+                        <span class="feature-tag">Billing & Payments</span>
+                    </div>
+                    <div class="mt-auto">
+                        <a asp-controller="Account" asp-action="PatientLogin" class="btn btn-portal-patient w-100 hover-lift" aria-label="Patient login">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            <span>Enter Portal</span>
+                        </a>
+                    </div>
+                    <div class="portal-decoration patient-decoration"></div>
                 </div>
             </div>
         </div>
@@ -112,15 +237,26 @@
 </section>
 
 <section class="cta-section text-white" aria-labelledby="ctaHeading">
-    <div class="shape" aria-hidden="true"></div>
+    <div class="cta-background"></div>
+    <div class="cta-particles"></div>
+
     <div class="container position-relative">
         <div class="row align-items-center gy-4">
             <div class="col-lg-8">
-                <h2 id="ctaHeading" class="mb-3">Ready to elevate patient care and efficiency?</h2>
-                <p class="mb-0">Join a modern platform engineered to reduce administrative friction, improve outcomes and create a seamless experience for every stakeholder.</p>
+                <h2 id="ctaHeading" class="cta-title mb-3">
+                    Ready to <span class="text-glow">elevate</span> patient care and efficiency?
+                </h2>
+                <p class="cta-subtitle mb-0">
+                    Join a modern platform engineered to reduce administrative friction, improve outcomes
+                    and create a seamless experience for every stakeholder.
+                </p>
             </div>
             <div class="col-lg-4 text-lg-end">
-                <a asp-controller="Account" asp-action="PatientLogin" class="btn btn-gradient btn-lg w-100 w-lg-auto" aria-label="Start now"><i class="bi bi-rocket-takeoff-fill me-1"></i>Start Now</a>
+                <a asp-controller="Account" asp-action="PatientLogin" class="btn btn-cta btn-lg w-100 w-lg-auto hover-lift" aria-label="Start now">
+                    <i class="bi bi-rocket-takeoff-fill me-2"></i>
+                    <span>Start Now</span>
+                    <div class="btn-glow"></div>
+                </a>
             </div>
         </div>
     </div>
@@ -128,31 +264,90 @@
 
 @section Scripts {
     <script>
+        // Particle system using jQuery
+        function createParticles() {
+            const $container = $('#particles-container');
+            if (!$container.length) return; 
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                $('<div>').addClass('particle').css({
+                    left: Math.random() * 100 + '%',
+                    top: Math.random() * 100 + '%',
+                    animationDelay: Math.random() * 20 + 's',
+                    animationDuration: (Math.random() * 10 + 10) + 's'
+                }).appendTo($container);
+            }
+        }
+
         $(function () {
+            // Enhanced reveal animation
             function inViewport($el) {
                 if ($el.length === 0) return false;
                 const top = $el.offset().top;
                 const bottom = top + $el.outerHeight();
                 const viewTop = $(window).scrollTop();
                 const viewBottom = viewTop + $(window).height();
-                return bottom > viewTop + 40 && top < viewBottom - 40;
+                return bottom > viewTop + 60 && top < viewBottom - 60;
             }
 
-            const $reveal = $('.feature-card, .stat-card, .feature-icon');
+            const $reveal = $('.feature-card, .stat-card, .portal-card, .text-reveal');
             $reveal.addClass('will-reveal');
+
             function processReveal() {
                 $reveal.each(function () {
                     const $el = $(this);
                     if ($el.hasClass('reveal-in')) return;
-                    if (inViewport($el)) $el.addClass('reveal-in');
+                    if (inViewport($el)) {
+                        setTimeout(() => $el.addClass('reveal-in'), $el.index() * 100);
+                    }
                 });
             }
+
             processReveal();
             $(window).on('scroll resize', processReveal);
+
+            
+            $('.counter').each(function() {
+                const $this = $(this);
+                const target = parseInt($this.data('target')) || 0;
+
+                $({ Counter: 0 }).animate({ Counter: target }, {
+                    duration: 2000,
+                    easing: 'swing',
+                    step: function () {
+                        $this.text(Math.ceil(this.Counter));
+                    },
+                    complete: function() {
+                        $this.text(target); // Ensure final number is exact
+                    }
+                });
+            });
+
+            // Particle system call
+            createParticles();
+
+            // Scroll indicator
+            $('.scroll-indicator').click(function() {
+                $('html, body').animate({
+                    scrollTop: $('#features').offset().top - 80
+                }, 800);
+            });
+
+            // Enhanced 3D hover effects using jQuery
+            $('.hover-3d').on('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+
+                $(this).css('transform', `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`);
+            }).on('mouseleave', function() {
+                $(this).css('transform', 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
+            });
         });
     </script>
-    <style>
-        .will-reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
-        .reveal-in { opacity: 1; transform: translateY(0); }
-    </style>
-}}
+}

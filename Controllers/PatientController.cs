@@ -221,9 +221,22 @@ namespace HMSApp.Controllers
                 return RedirectToAction("PatientLogin", "Account");
 
             ViewBag.PatientName = patient.Name;
-            ViewBag.Doctors = _context.Doctor
-                .Select(d => new SelectListItem { Value = d.DoctorId.ToString(), Text = d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization})" : d.Name })
+            
+            // Get all doctors with availability status
+            var allDoctors = _context.Doctor
+                .OrderBy(d => d.Name)
                 .ToList();
+
+            var doctorOptions = allDoctors.Select(d => new SelectListItem 
+            { 
+                Value = d.DoctorId.ToString(), 
+                Text = d.IsAvailable 
+                    ? (d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization})" : d.Name)
+                    : (d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization}) - Unavailable" : $"{d.Name} - Unavailable"),
+                Disabled = !d.IsAvailable
+            }).ToList();
+
+            ViewBag.Doctors = doctorOptions;
             return View();
         }
 
@@ -241,12 +254,37 @@ namespace HMSApp.Controllers
             model.PatientName = string.IsNullOrWhiteSpace(PatientName) ? patient.Name : PatientName.Trim();
             model.Symptoms = PatientDescription;
             model.Status = "Pending";
+            
+            // Check if selected doctor is available
+            var selectedDoctor = _context.Doctor.FirstOrDefault(d => d.DoctorId == model.DoctorId);
+            if (selectedDoctor == null)
+            {
+                ModelState.AddModelError("DoctorId", "Please select a valid doctor.");
+            }
+            else if (!selectedDoctor.IsAvailable)
+            {
+                ModelState.AddModelError("DoctorId", "This doctor is currently unavailable. Please select another doctor.");
+            }
+            
             if (!ModelState.IsValid)
             {
                 ViewBag.PatientName = model.PatientName;
-                ViewBag.Doctors = _context.Doctor
-                    .Select(d => new SelectListItem { Value = d.DoctorId.ToString(), Text = d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization})" : d.Name })
+                
+                // Get all doctors with availability status for validation errors
+                var allDoctors = _context.Doctor
+                    .OrderBy(d => d.Name)
                     .ToList();
+
+                var doctorOptions = allDoctors.Select(d => new SelectListItem 
+                { 
+                    Value = d.DoctorId.ToString(), 
+                    Text = d.IsAvailable 
+                        ? (d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization})" : d.Name)
+                        : (d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization}) - Unavailable" : $"{d.Name} - Unavailable"),
+                    Disabled = !d.IsAvailable
+                }).ToList();
+
+                ViewBag.Doctors = doctorOptions;
                 return View(model);
             }
 
