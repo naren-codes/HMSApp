@@ -36,6 +36,18 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-4">
+                <div class="stat-card p-3 h-100" style="background:var(--dd-green-grad)">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-activity display-4 text-white mb-3 text-glow"></i>
+                        <h5 class="card-title fw-bold">Scans</h5>
+                        <p class="card-text text-muted">
+                            Book your medical scan to get a clearer picture of your health.
+                        </p>
+                        <a asp-controller="Patient" asp-action="BookScan" class="btn btn-success mt-3">Book a Scan</a>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-6">
                 <div class="stat-card p-3" style="background:var(--dd-green-grad)">
                     <div class="card-body text-center p-4">
@@ -100,9 +112,9 @@
                                                 }
                                             </td>
                                             <td>
-                                                @if (bill != null)
+                                                @if (bill != null && bill.TotalAmount > 0)
                                                 {
-                                                    <span class="fw-semibold">₹@bill.TotalAmount.ToString("0.00")</span>
+                                                    <span class="fw-semibold">₹@bill.TotalAmount.ToString("N2")</span>
                                                 }
                                                 else
                                                 {

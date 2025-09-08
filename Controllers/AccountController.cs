@@ -33,7 +33,7 @@ public class AccountController : Controller
         {
             return RedirectToAction("Index", redirectController);
         }
-        ViewBag.Error = user == null ? "Invalid username or password" : $"{expectedRole} login is not allowed here.";
+        ViewBag.Error = user == null ? "Invalid username or password" : $"{expectedRole} Invalid credentials.";
         return View($"{expectedRole}Login");
     }
 
@@ -58,6 +58,8 @@ public class AccountController : Controller
     [HttpPost]
     public IActionResult LoginAdmin(string username, string password) => HandleLogin(username, password, "admin", "Admin");
 
+
+
     [HttpPost]
     public IActionResult LoginDoctor(string username, string password)
     {
@@ -79,15 +81,45 @@ public class AccountController : Controller
     public IActionResult PatientRegister() => View();
 
     [HttpPost]
-    public IActionResult PatientRegister(Patient model)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PatientRegister(Patient patient)
     {
+        // First, check if the standard model validation (e.g., required fields) passes.
         if (ModelState.IsValid)
         {
-            _accountService.RegisterPatient(model);
-            TempData["SuccessMessage"] = "Registration successful! You can now sign in.";
-            return RedirectToAction("PatientLogin");
+            bool usernameExists = await _context.User.AnyAsync(u => u.Username == patient.Username);
+
+            if (usernameExists)
+            {
+                // If the username exists, add an error to the ModelState.
+                // This error will be displayed by the <span asp-validation-for="Username"> tag in your view.
+                ModelState.AddModelError("Username", "Username already exists. Please choose a different one.");
+            }
+            else
+            {
+                var user = new User
+                {
+                    Username = patient.Username,
+                    Password = HashPassword(patient.Password),
+                    role = "patient"
+                };
+                _context.User.Add(user);
+
+
+                _context.Patient.Add(patient);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("PatientLogin");
+            }
         }
-        return View(model);
+
+
+        return View(patient);
+    }
+
+    private string HashPassword(string password)
+    {
+        return password;
     }
 
     [HttpGet]

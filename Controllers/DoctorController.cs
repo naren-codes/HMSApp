@@ -85,6 +85,7 @@ namespace HMSApp.Controllers
             ViewData["DoctorSpecialization"] = doctor.Specialization;
             ViewData["DoctorContact"] = doctor.ContactNumber;
             ViewData["DoctorSchedule"] = doctor.AvailabilitySchedule;
+            ViewData["DoctorAvailability"] = doctor.IsAvailable; // Add availability status
 
             var allAppointments = _context.Appointment
                 .Where(a => a.DoctorName == doctor.Name)
@@ -143,6 +144,13 @@ namespace HMSApp.Controllers
                 var bill = new Bill
                 {
                     PatientId = appointment.PatientId,
+                    AppointmentId = appointment.AppointmentId, // Primary matching field
+                    
+                    // Additional fields for cross-environment matching
+                    AppointmentDate = appointment.AppointmentDate,
+                    DoctorName = appointment.DoctorName,
+                    TimeSlot = appointment.TimeSlot,
+                    
                     PatientName = appointment.PatientName,
                     Prescription = prescriptionText,
                     TotalAmount = request.totalAmount,
@@ -403,6 +411,26 @@ namespace HMSApp.Controllers
             if (bill == null) return NotFound();
             ViewData["DoctorMode"] = true;
             return View("~/Views/Patient/Payment.cshtml", bill);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetAvailability([FromBody] SetAvailabilityRequest request)
+        {
+            var doctorId = HttpContext.Session.GetInt32("DoctorId");
+            if (doctorId == null) return Unauthorized();
+
+            var doctor = await _context.Doctor.FirstOrDefaultAsync(d => d.DoctorId == doctorId);
+            if (doctor == null) return NotFound();
+
+            doctor.IsAvailable = request.IsAvailable;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { success = true, isAvailable = doctor.IsAvailable });
+        }
+
+        public class SetAvailabilityRequest
+        {
+            public bool IsAvailable { get; set; }
         }
     }
 }

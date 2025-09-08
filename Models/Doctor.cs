@@ -10,5 +10,6 @@
         public string? Username { get; set; }
         public string? Password { get; set; }
         public string? Role { get; set; } = "Doctor";
+        public bool IsAvailable { get; set; } = true;
     }
 }

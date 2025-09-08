@@ -5,14 +5,22 @@
     Layout = "_Layout";
 }
 
-<!-- Link to both dashboard CSS (for the header) and this page's specific CSS -->
 <link href="~/css/patient-dashboard.css" rel="stylesheet" asp-append-version="true" />
 <link href="~/css/book-appointment.css" rel="stylesheet" asp-append-version="true" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
 
+<style>
+    
+    select option:disabled {
+        color: #6c757d !important;
+        font-style: italic;
+        background-color: #f8f9fa !important;
+    }
+</style>
+
 <div class="container-fluid py-4 book-appointment-page">
 
-    <!-- This header now matches your Patient Dashboard exactly -->
+    
     <div class="dd-header-bar mb-4">
         <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
             <div>
@@ -27,7 +35,7 @@
         </div>
     </div>
 
-    <!-- The rest of your form remains unchanged -->
+  
     <div class="ba-card mb-5">
         <div class="ba-card-header">
             <h5><i class="bi bi-journal-medical text-primary"></i><span>New Appointment Request</span></h5>
@@ -45,6 +53,7 @@
                         <select asp-for="DoctorId" asp-items="ViewBag.Doctors" class="form-select" required>
                             <option value="">Choose a doctor</option>
                         </select>
+                        <span asp-validation-for="DoctorId" class="text-danger"></span>
                     </div>
                 </div>
 
@@ -143,6 +152,15 @@
             const $counter = $('#descCounter');
             $desc.on('input', function(){
                 $counter.text(this.value.length + ' / 500');
+            });
+
+            // Handle doctor selection
+            $('#DoctorId').on('change', function() {
+                const selectedOption = $(this).find('option:selected');
+                if (selectedOption.prop('disabled') && selectedOption.val() !== '') {
+                    alert('This doctor is currently unavailable. Please select another doctor.');
+                    $(this).val(''); // Reset selection
+                }
             });
         });
     </script>
