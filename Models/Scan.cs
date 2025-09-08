@@ -14,7 +14,9 @@ namespace HMSApp.Models
 
             public DateTime AppointmentDate { get; set; }
 
+
             public string LabName { get; set; }
-        
+            public string ScanType { get; set; }
+
     }
 }
