@@ -632,19 +632,24 @@ namespace HMSApp.Controllers
         [HttpPost]
         public async Task<IActionResult> XRay(Scan scan)
         {
-            // These lines are crucial to ensure the correct values are saved.
-            scan.LabName = "Lab C";
-            scan.ScanType = "XRay";
-
-            if (ModelState.IsValid)
+            var newScan = new Scan
             {
-                _context.Scan.Add(scan);
-                await _context.SaveChangesAsync();
-                // Change the redirect destination here
-                return RedirectToAction("Dashboard"); // Redirects to the Patient Dashboard
-            }
+                // 2. Copy the values you actually need from the form
+                PatientName = scan.PatientName,
+                AppointmentDate = scan.AppointmentDate
+                // Note: Any other properties from the form would be copied here
+            };
 
-            return View("XRay", scan);
+            // 3. Manually set the values for this specific action
+            newScan.LabName = "Lab C";
+            newScan.ScanType = "X-RAY";
+
+            // 4. Add the new object and save it
+            // We don't need to check ModelState.IsValid because we built the object ourselves
+            _context.Scan.Add(newScan);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Dashboard");
         }
         [HttpGet]
         public IActionResult Ultrasound()
