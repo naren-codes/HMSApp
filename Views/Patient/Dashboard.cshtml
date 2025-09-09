@@ -24,7 +24,7 @@
 
     <div class="container main-content">
         <div class="row g-4 mb-5">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="stat-card p-3 dd-header-bar">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-calendar-plus-fill display-4 text-info mb-3"></i>
@@ -48,7 +48,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="stat-card p-3" style="background:var(--dd-green-grad)">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-clock-history display-4 text-success mb-3"></i>
@@ -109,6 +109,10 @@
                                                 else if (paymentStatus == "Paid")
                                                 {
                                                     <span class="badge bg-success">Completed</span>
+                                                }
+                                                else if (statusLower == "cancelled")
+                                                {
+                                                    <span class="badge bg-danger">Cancelled</span>
                                                 }
                                             </td>
                                             <td>

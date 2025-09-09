@@ -81,11 +81,32 @@ namespace HMSApp.Controllers
                 return RedirectToAction("DoctorLogin", "Account");
             }
 
+            // CLEANUP: Remove old unpaid bills for this doctor's patients (older than 1 hour) to prevent accumulation
+            var oneHourAgo = DateTime.UtcNow.AddHours(-1);
+            var doctorPatientIds = _context.Appointment
+                .Where(a => a.DoctorName == doctor.Name)
+                .Select(a => a.PatientId)
+                .Distinct()
+                .ToList();
+            
+            var oldUnpaidBills = _context.Bill
+                .Where(b => b.PaymentStatus == "Unpaid" && 
+                           b.BillDate < oneHourAgo && 
+                           doctorPatientIds.Contains(b.PatientId) &&
+                           b.DoctorName == doctor.Name)
+                .ToList();
+            
+            if (oldUnpaidBills.Any())
+            {
+                _context.Bill.RemoveRange(oldUnpaidBills);
+                _context.SaveChanges();
+            }
+
             ViewData["DoctorName"] = doctor.Name;
             ViewData["DoctorSpecialization"] = doctor.Specialization;
             ViewData["DoctorContact"] = doctor.ContactNumber;
             ViewData["DoctorSchedule"] = doctor.AvailabilitySchedule;
-            ViewData["DoctorAvailability"] = doctor.IsAvailable; // Add availability status
+            ViewData["DoctorAvailability"] = doctor.IsAvailable; 
 
             var allAppointments = _context.Appointment
                 .Where(a => a.DoctorName == doctor.Name)
@@ -126,14 +147,32 @@ namespace HMSApp.Controllers
 
             try
             {
-                appointment.Status = "Completed"; // mark appointment completed
-                var prescriptionText = request.prescription;
-                if (request.onSpot)
+                // DELETE ANY EXISTING UNPAID BILLS FOR THIS APPOINTMENT
+                // Strategy 1: Delete by AppointmentId (most accurate)
+                var existingUnpaidBills = await _context.Bill
+                    .Where(b => b.AppointmentId == appointment.AppointmentId && b.PaymentStatus == "Unpaid")
+                    .ToListAsync();
+                
+                // Strategy 2: Also delete any unpaid bills for this patient-doctor combination on the same date
+                // (in case there are orphaned bills without proper AppointmentId)
+                var additionalUnpaidBills = await _context.Bill
+                    .Where(b => b.PatientId == appointment.PatientId && 
+                               b.DoctorName == appointment.DoctorName &&
+                               b.PaymentStatus == "Unpaid" &&
+                               b.AppointmentDate.HasValue &&
+                               b.AppointmentDate.Value.Date == appointment.AppointmentDate.Date &&
+                               !existingUnpaidBills.Select(eb => eb.BillId).Contains(b.BillId))
+                    .ToListAsync();
+                
+                var allUnpaidBillsToRemove = existingUnpaidBills.Concat(additionalUnpaidBills).ToList();
+                
+                if (allUnpaidBillsToRemove.Any())
                 {
-                    const string spotTag = "";
-                    if (string.IsNullOrWhiteSpace(prescriptionText)) prescriptionText = spotTag;
-                    else if (!prescriptionText.Contains(spotTag)) prescriptionText += "\n" + spotTag;
+                    _context.Bill.RemoveRange(allUnpaidBillsToRemove);
                 }
+
+                // DO NOT set appointment status to "Completed" here - it should only be completed when payment is made
+                var prescriptionText = request.prescription;
                 
                 // Store the prescription in the Appointment table's prescription column
                 if (!string.IsNullOrWhiteSpace(prescriptionText))
@@ -173,7 +212,6 @@ namespace HMSApp.Controllers
             public int appointmentId { get; set; }
             public decimal totalAmount { get; set; }
             public string? prescription { get; set; }
-            public bool onSpot { get; set; } // new flag
         }
        
         public async Task<IActionResult> Index()
@@ -351,12 +389,15 @@ namespace HMSApp.Controllers
                 case "completed":
                     query = query.Where(a => a.Status == "Completed");
                     break;
+                case "cancelled":
+                    query = query.Where(a => a.Status == "Cancelled");
+                    break;
                 case "all":
-                    query = query.Where(a => a.Status == "Pending" || a.Status == "Completed");
+                    query = query.Where(a => a.Status == "Pending" || a.Status == "Completed" || a.Status == "Cancelled");
                     break;
                 case "upcoming":
                 default:
-                    query = query.Where(a => (a.AppointmentDate.Date >= today && a.Status != "Completed") || a.Status == "Pending");
+                    query = query.Where(a => (a.AppointmentDate.Date >= today && a.Status != "Completed" && a.Status != "Cancelled") || a.Status == "Pending");
                     break;
             }
 
@@ -392,7 +433,7 @@ namespace HMSApp.Controllers
                 .ToListAsync();
 
             var bills = await _context.Bill
-                .Where(b => patientIds.Contains(b.PatientId) && b.PaymentStatus.StartsWith("Paid"))
+                .Where(b => patientIds.Contains(b.PatientId) && b.PaymentStatus == "Paid")
                 .OrderByDescending(b => b.BillDate)
                 .Take(200)
                 .ToListAsync();
@@ -428,9 +469,63 @@ namespace HMSApp.Controllers
             return Ok(new { success = true, isAvailable = doctor.IsAvailable });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CancelUnpaidBill([FromBody] CancelBillRequest request)
+        {
+            var doctorId = HttpContext.Session.GetInt32("DoctorId");
+            if (doctorId == null) return Unauthorized();
+
+            try
+            {
+                var bill = await _context.Bill.FirstOrDefaultAsync(b => b.BillId == request.billId && b.PaymentStatus == "Unpaid");
+                if (bill != null)
+                {
+                    _context.Bill.Remove(bill);
+                    await _context.SaveChangesAsync();
+                }
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error canceling bill: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelAppointment([FromBody] AppointmentCancelRequest request)
+        {
+            var doctorId = HttpContext.Session.GetInt32("DoctorId");
+            if (doctorId == null) return Unauthorized();
+
+            var appointment = await _context.Appointment.FirstOrDefaultAsync(a => a.AppointmentId == request.AppointmentId);
+
+            if (appointment == null)
+            {
+                return Json(new { success = false, message = "Appointment not found." });
+            }
+
+            // Update the status of the appointment
+            appointment.Status = "Cancelled";
+
+            // Save the changes to the database
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+
         public class SetAvailabilityRequest
         {
             public bool IsAvailable { get; set; }
+        }
+
+        public class CancelBillRequest
+        {
+            public int billId { get; set; }
+        }
+
+        public class AppointmentCancelRequest
+        {
+            public int AppointmentId { get; set; }
         }
     }
 }

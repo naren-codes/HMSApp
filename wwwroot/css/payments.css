@@ -1,15 +1,23 @@
-.payments-wrapper{max-width:1200px;margin:2rem auto}
-.payments-card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 10px 35px -12px rgba(0,0,0,.07);overflow:hidden}
-.payments-header{background:linear-gradient(120deg,#1d4ed8,#6d28d9);padding:1.6rem 2rem;color:#fff}
-.payments-header h2{margin:0;font-size:1.45rem;font-weight:600;letter-spacing:.5px}
-.table-responsive{border-top:1px solid #e5e7eb}
-.table.payments-table thead th{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;background:#f1f5f9;border-bottom:1px solid #e2e8f0;color:#475569}
-.table.payments-table tbody td{vertical-align:middle;font-size:.9rem}
-.status-badge{padding:.35rem .65rem;border-radius:12px;font-size:.65rem;font-weight:600;letter-spacing:.05em;background:#e2e8f0;color:#334155}
-.status-paid{background:#dcfce7;color:#166534}
-.status-offline{background:#fff7ed;color:#92400e}
-.method-chip{display:inline-flex;align-items:center;gap:.25rem;padding:.25rem .55rem;font-size:.65rem;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-weight:600}
-.method-chip.cash{background:#fef9c3;color:#92400e}
-.search-bar{max-width:320px}
-.empty-box{padding:3rem 1rem;text-align:center;color:#64748b}
-@media (max-width:768px){.payments-header{flex-direction:column;align-items:flex-start}.search-bar{width:100%!important}}
+.payments-wrapper{max-width:1200px;margin:0 auto;padding:1.5rem}
+.payments-card{background:white;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,.1);overflow:hidden}
+.payments-header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:1.5rem}
+.payments-header h2{margin:0;font-size:1.75rem;font-weight:700}
+.search-bar input{border-radius:20px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;transition-all .3s ease}
+.search-bar input::placeholder{color:rgba(255,255,255,.7)}
+.search-bar input:focus{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.5);box-shadow:0 0 0 .2rem rgba(255,255,255,.25);color:#fff}
+.payments-table{margin:0}
+.payments-table thead th{background:#f8f9fa;border:none;font-weight:600;color:#495057;padding:1rem .75rem;font-size:.875rem;text-transform:uppercase;letter-spacing:.5px}
+.payments-table tbody tr{border-bottom:1px solid #e9ecef;transition:background-color .2s ease}
+.payments-table tbody tr:hover{background-color:#f8f9fa}
+.payments-table tbody td{padding:1rem .75rem;vertical-align:middle;border:none}
+.method-chip{display:inline-flex;align-items:center;gap:.375rem;padding:.375rem .75rem;border-radius:20px;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;border:1px solid transparent;transition-all .2s ease}
+.method-chip.cash{background:#ffc107;color:#856404;border-color:#ffca2c}
+.method-chip.online{background:#28a745;color:#fff;border-color:#28a745}
+.method-chip.offline{background:#007bff;color:#fff;border-color:#007bff}
+.method-chip:not(.cash):not(.online):not(.offline){background:#6c757d;color:#fff;border-color:#6c757d}
+.status-chip{display:inline-flex;align-items:center;gap:.375rem;padding:.375rem .75rem;border-radius:20px;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;border:1px solid transparent}
+.status-chip.paid{background:#d4edda;color:#155724;border-color:#c3e6cb}
+.status-chip.unpaid{background:#f8d7da;color:#721c24;border-color:#f5c6cb}
+.prescription-cell{max-width:200px;word-wrap:break-word;font-size:.875rem;color:#6c757d}
+.empty-box{text-align:center;padding:2rem;color:#6c757d;font-style:italic}
+@media (max-width:768px){.payments-wrapper{padding:1rem}.payments-header{padding:1rem}.payments-header h2{font-size:1.5rem}.payments-table{font-size:.875rem}.method-chip,.status-chip{font-size:.625rem;padding:.25rem .5rem}}

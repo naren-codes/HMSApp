@@ -43,7 +43,22 @@ namespace HMSApp.Models
         public string? Prescription { get; set; }
 
         [NotMapped]
-        public string PaymentMethod => PaymentStatus.StartsWith("Paid-") ? PaymentStatus.Split('-').Last() : (PaymentStatus == "Paid" ? "Unknown" : "");
+        public string PaymentMethod
+        {
+            get
+            {
+                if (PaymentStatus != "Paid") return "";
+                
+                if (!string.IsNullOrWhiteSpace(Prescription))
+                {
+                    if (Prescription.Contains("[PAYMENT: Cash]")) return "Cash";
+                    if (Prescription.Contains("[PAYMENT: UPI]")) return "Online";
+                    if (Prescription.Contains("[PAYMENT: GPay]")) return "Online";
+                }
+                
+                return "Unknown";
+            }
+        }
 
         [NotMapped]
         public string DoctorName_Legacy { get; set; } = string.Empty; 

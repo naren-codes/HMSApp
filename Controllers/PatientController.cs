@@ -362,12 +362,9 @@ namespace HMSApp.Controllers
 
             if (bill.PaymentStatus == "Paid")
             {
-                if (bill.Prescription?.Contains("[ON-SPOT]") == true)
-                    return RedirectToAction("OnSpotBill", new { billId = bill.BillId });
                 return RedirectToAction("Bill", new { billId });
             }
 
-            const string offlineTag = "";
             if (mode == "Online")
             {
                 if (string.IsNullOrWhiteSpace(upiId))
@@ -375,20 +372,46 @@ namespace HMSApp.Controllers
                     ModelState.AddModelError("UpiId", "UPI Id required for online payment");
                     return View("Payment", bill);
                 }
+                // Use "Paid" status that complies with database constraint
+                // Store payment method info in prescription field for tracking
                 bill.PaymentStatus = "Paid";
+                if (!string.IsNullOrWhiteSpace(bill.Prescription))
+                {
+                    bill.Prescription += " [PAYMENT: UPI]";
+                }
+                else
+                {
+                    bill.Prescription = "[PAYMENT: UPI]";
+                }
             }
             else
             {
+                // Use "Paid" status that complies with database constraint
                 bill.PaymentStatus = "Paid";
-                if (bill.Prescription == null || !bill.Prescription.Contains(offlineTag))
+                if (!string.IsNullOrWhiteSpace(bill.Prescription))
                 {
-                    bill.Prescription = (bill.Prescription == null ? offlineTag : bill.Prescription + "\n" + offlineTag);
+                    bill.Prescription += " [PAYMENT: Cash]";
+                }
+                else
+                {
+                    bill.Prescription = "[PAYMENT: Cash]";
                 }
             }
             bill.BillDate = DateTime.UtcNow;
+
+            // UPDATE APPOINTMENT STATUS TO COMPLETED WHEN PAYMENT IS SUCCESSFUL
+            if (bill.AppointmentId.HasValue)
+            {
+                var appointment = await _context.Appointment.FirstOrDefaultAsync(a => a.AppointmentId == bill.AppointmentId.Value);
+                if (appointment != null)
+                {
+                    appointment.Status = "Completed";
+                }
+            }
+
             await _context.SaveChangesAsync();
-            if (bill.Prescription?.Contains("[ON-SPOT]") == true)
-                return RedirectToAction("OnSpotBill", new { billId = bill.BillId });
+            
+            // All payments redirect to regular Bill.cshtml
             return RedirectToAction("Bill", new { billId = bill.BillId });
         }
 
@@ -425,12 +448,32 @@ namespace HMSApp.Controllers
             if (bill == null || patient == null) return NotFound();
             if (bill.PaymentStatus != "Paid")
             {
+                // Use "Paid" status that complies with database constraint
                 bill.PaymentStatus = "Paid";
+                // Store payment method info in prescription field for tracking
+                if (!string.IsNullOrWhiteSpace(bill.Prescription))
+                {
+                    bill.Prescription += " [PAYMENT: GPay]";
+                }
+                else
+                {
+                    bill.Prescription = "[PAYMENT: GPay]";
+                }
                 bill.BillDate = DateTime.UtcNow;
+
+                // UPDATE APPOINTMENT STATUS TO COMPLETED WHEN QR PAYMENT IS CONFIRMED
+                if (bill.AppointmentId.HasValue)
+                {
+                    var appointment = await _context.Appointment.FirstOrDefaultAsync(a => a.AppointmentId == bill.AppointmentId.Value);
+                    if (appointment != null)
+                    {
+                        appointment.Status = "Completed";
+                    }
+                }
+
                 await _context.SaveChangesAsync();
             }
-            if (bill.Prescription?.Contains("[ON-SPOT]") == true)
-                return RedirectToAction("OnSpotBill", new { billId = bill.BillId });
+            // Redirect to regular Bill.cshtml for QR/GPay payments
             return RedirectToAction("Bill", new { billId = bill.BillId });
         }
 
@@ -441,6 +484,8 @@ namespace HMSApp.Controllers
             var doctorId = HttpContext.Session.GetInt32("DoctorId");
             Bill? bill = null;
             Patient? patient = null;
+            bool isDoctorMode = false;
+            
             if (!string.IsNullOrEmpty(username))
             {
                 patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
@@ -449,6 +494,7 @@ namespace HMSApp.Controllers
             }
             else if (doctorId != null)
             {
+                isDoctorMode = true;
                 bill = await _context.Bill.FirstOrDefaultAsync(b => b.BillId == billId);
                 if (bill != null)
                     patient = await _context.Patient.FirstOrDefaultAsync(p => p.PatientId == bill.PatientId);
@@ -458,10 +504,10 @@ namespace HMSApp.Controllers
                 return RedirectToAction("PatientLogin", "Account");
             }
             if (bill == null || patient == null) return NotFound();
-            if (bill.Prescription?.Contains("[ON-SPOT]") != true)
-                return RedirectToAction("Bill", new { billId });
+            
+            ViewData["DoctorMode"] = isDoctorMode;
             var vm = new BillDisplayViewModel { Bill = bill, Patient = patient };
-            return View("Bill_2", vm);
+            return View("Bill_2", vm); // Use Bill_2.cshtml for online payments
         }
 
         [HttpGet]
@@ -533,6 +579,8 @@ namespace HMSApp.Controllers
             var username = HttpContext.Session.GetString("Username");
             var doctorId = HttpContext.Session.GetInt32("DoctorId");
             Bill? bill = null; Patient? patient = null;
+            bool isDoctorMode = false;
+            
             if (!string.IsNullOrEmpty(username))
             {
                 patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
@@ -541,6 +589,7 @@ namespace HMSApp.Controllers
             }
             else if (doctorId != null)
             {
+                isDoctorMode = true;
                 bill = await _context.Bill.FirstOrDefaultAsync(b => b.BillId == billId);
                 if (bill != null)
                     patient = await _context.Patient.FirstOrDefaultAsync(p => p.PatientId == bill.PatientId);
@@ -550,8 +599,8 @@ namespace HMSApp.Controllers
                 return RedirectToAction("PatientLogin", "Account");
             }
             if (bill == null || patient == null) return NotFound();
-            if (bill.Prescription?.Contains("[ON-SPOT]") == true)
-                return RedirectToAction("OnSpotBill", new { billId });
+            
+            ViewData["DoctorMode"] = isDoctorMode;
             var vm = new BillDisplayViewModel { Bill = bill, Patient = patient };
             return View("Bill", vm);
         }

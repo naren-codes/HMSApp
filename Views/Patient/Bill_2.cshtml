@@ -2,19 +2,20 @@
 @{
     ViewData["Title"] = "On-Spot Bill";
     Layout = "_Layout";
+    bool isDoctorMode = ViewData["DoctorMode"] as bool? ?? false;
 }
 <link rel="stylesheet" href="~/css/bill.css" asp-append-version="true" />
 <div class="bill-wrapper">
   <div class="bill-paper">
     <div class="bill-header" style="background:linear-gradient(120deg,#059669,#0d9488)">
       <div>
-        <h2 class="mb-0"><i class="bi bi-receipt me-2"></i>On-Spot Payment Receipt</h2>
-        <small>Generated during visit</small>
+        <h2 class="mb-0"><i class="bi bi-receipt me-2"></i>Online Payment Receipt</h2>
+        <small>Generated during online payment</small>
       </div>
       <div class="text-end meta">
-				<small><strong>Bill #:</strong> @Model.Bill.BillId</small><a href="c:\users\2431425\onedrive - cognizant\documents\hmsapp\views\patient\bill_2.cshtml">c:\users\2431425\onedrive - cognizant\documents\hmsapp\views\patient\bill_2.cshtml</a>
+        <small><strong>Bill #:</strong> @Model.Bill.BillId</small>
         <small><strong>Date:</strong> @Model.Bill.BillDate.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small>
-        <small><strong>Status:</strong> <span class="badge-status @(Model.Bill.PaymentStatus=="Paid"?"badge-paid":"badge-unpaid")">@Model.Bill.PaymentStatus</span></small>
+        <small><strong>Status:</strong> <span class="badge-status @(Model.Bill.PaymentStatus.StartsWith("Paid")?"badge-paid":"badge-unpaid")">@Model.Bill.PaymentStatus</span></small>
       </div>
     </div>
     <div class="section">
@@ -41,17 +42,24 @@
       </table>
       <div class="total-box">
         <div><strong>Total:</strong> Rs. @Model.Bill.TotalAmount.ToString("0.00")</div>
-        <div><strong>Payment Method:</strong> @(Model.Bill.Prescription!=null && Model.Bill.Prescription.Contains("") ? "Cash" : "Online / UPI")</div>
-        <div><strong>Status:</strong> <span class="badge-status @(Model.Bill.PaymentStatus=="Paid"?"badge-paid":"badge-unpaid")">@Model.Bill.PaymentStatus</span></div>
+        <div><strong>Payment Method:</strong> @(Model.Bill.PaymentMethod ?? "Online")</div>
+        <div><strong>Status:</strong> <span class="badge-status @(Model.Bill.PaymentStatus.StartsWith("Paid")?"badge-paid":"badge-unpaid")">@Model.Bill.PaymentStatus</span></div>
       </div>
     </div>
     <div class="section">
       <h5>Notes / Prescription</h5>
       <div class="prescription-box">@(string.IsNullOrWhiteSpace(Model.Bill.Prescription) ? "No notes." : Model.Bill.Prescription.Replace("[ON-SPOT]",""))</div>
     </div>
-    <div class="section small text-muted">On-spot payment successfully recorded.</div>
+    <div class="section small text-muted">Online payment successfully recorded.</div>
     <div class="actions">
-      <a asp-controller="Doctor" asp-action="DoctorDashboard" class="btn btn-primary"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      @if (isDoctorMode)
+      {
+        <a asp-controller="Doctor" asp-action="DoctorDashboard" class="btn btn-primary"><i class="bi bi-speedometer2"></i> Doctor Dashboard</a>
+      }
+      else
+      {
+        <a asp-controller="Patient" asp-action="Dashboard" class="btn btn-primary"><i class="bi bi-speedometer2"></i> Patient Dashboard</a>
+      }
     </div>
   </div>
 </div>

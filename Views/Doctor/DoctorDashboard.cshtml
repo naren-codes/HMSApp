@@ -15,11 +15,6 @@
     
     int total = (int)(ViewData["TotalAppointments"] ?? 0);
     int pending = (int)(ViewData["PendingAppointments"] ?? 0);
-    var patientNames = Model?.Where(a => !string.IsNullOrWhiteSpace(a.PatientName))
-        .Select(a => a.PatientName!)
-        .Distinct()
-        .OrderBy(patient => patient)
-        .ToList() ?? new List<string>();
 }
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -43,6 +38,53 @@
         outline: 3px solid rgba(255,255,255,.5);
         box-shadow: 0 0 0 3px rgba(0,123,255,.25);
     }
+    
+    /* Dynamic visual enhancements */
+    .stat-card {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .stat-card:hover::before {
+        left: 100%;
+    }
+    
+    .profile-block {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 20px;
+        color: white;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .profile-block:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    
+    .profile-avatar {
+        width: 60px;
+        height: 60px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        backdrop-filter: blur(10px);
+    }
 </style>
 
 <div class="container-fluid py-4">
@@ -56,7 +98,6 @@
             <div class="d-flex flex-wrap gap-2 align-items-center">
                 <div class="nav-quick d-flex gap-2 flex-wrap me-2">
                     <a class="btn btn-sm btn-light px-3" href="#appointments"><i class="bi bi-calendar-event me-1"></i>Appointments</a>
-                    <a class="btn btn-sm btn-light px-3" href="#new-prescription"><i class="bi bi-file-medical me-1"></i>New Prescription</a>
                     <a class="btn btn-sm btn-light px-3" asp-controller="Doctor" asp-action="Profile"><i class="bi bi-person-badge me-1"></i>Profile</a>
                     <a class="btn btn-sm btn-light px-3" asp-controller="Doctor" asp-action="Payments"><i class="bi bi-cash-stack me-1"></i>View Payments</a>
                     
@@ -122,6 +163,7 @@
                             <button class="btn btn-outline-primary active filter-btn" data-filter="upcoming" type="button">Upcoming</button>
                             <button class="btn btn-outline-secondary filter-btn" data-filter="all" type="button">All</button>
                             <button class="btn btn-outline-success filter-btn" data-filter="completed" type="button">Completed</button>
+                            <button class="btn btn-outline-danger filter-btn" data-filter="cancelled" type="button">Cancelled</button>
                         </div>
                     </div>
                 </div>
@@ -160,10 +202,17 @@
                                             <td><span class="badge text-bg-@statusClass">@a.Status</span></td>
                                             <td class="small">@(string.IsNullOrWhiteSpace(a.Symptoms) ? "N/A" : a.Symptoms)</td>
                                             <td class="text-center">
-                                                <div class="btn-group btn-group-sm" role="group">
-                                                    <button type="button" class="btn btn-outline-success btn-complete" title="Complete & Bill"><i class="bi bi-check2"></i></button>
-                                                    <button type="button" class="btn btn-outline-danger" title="Cancel"><i class="bi bi-x"></i></button>
-                                                </div>
+                                                @if (a.Status != "Cancelled")
+                                                {
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        <button type="button" class="btn btn-outline-success btn-complete" title="Complete & Bill"><i class="bi bi-check2"></i></button>
+                                                        <button type="button" class="btn btn-outline-danger btn-cancel" title="Cancel"><i class="bi bi-x"></i></button>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted small">Cancelled</span>
+                                                }
                                             </td>
                                         </tr>
                                     }
@@ -199,52 +248,9 @@
                     </div>
                     <div class="small opacity-75">Contact: <span id="doctorContact">@ViewData["DoctorContact"]</span></div>
                     <div class="small opacity-75 mb-3">Schedule: <span id="doctorSchedule">@ViewData["DoctorSchedule"]</span></div>
-                    <div class="mt-auto pt-3 border-top small opacity-75">Last login: <span id="lastLogin">--</span></div>
                 </div>
             </a>
         </div>
-    </div>
-
-    <!-- Full-width New Prescription section -->
-    <div id="new-prescription" class="card dd-panel mb-4">
-        <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0"><i class="bi bi-file-medical me-2 text-primary"></i>New Prescription</h5>
-            <div class="small opacity-75">Create and manage patient prescriptions</div>
-        </div>
-        <div class="card-body">
-            <form id="prescriptionForm" autocomplete="off" class="needs-validation" novalidate>
-                <div class="row g-3 align-items-start">
-                    <div class="col-md-4 col-lg-3">
-                        <label class="form-label small fw-semibold">Patient Name</label>
-                        <input class="form-control form-control-sm" id="prescriptionPatientName" name="PatientName" list="patientNameOptions" placeholder="Start typing name" required />
-                        <datalist id="patientNameOptions">
-                            @foreach (var patient in patientNames)
-                            {
-                                <option value="@patient"></option>
-                            }
-                        </datalist>
-                        <div class="invalid-feedback small">Patient name required.</div>
-                    </div>
-                    <div class="col-md-8 col-lg-9">
-                        <label class="form-label small fw-semibold">Medication Details</label>
-                        <input class="form-control form-control-sm" name="MedicationDetails" required />
-                        <div class="invalid-feedback small">Medication details required.</div>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label small fw-semibold">Notes</label>
-                        <textarea class="form-control form-control-sm" name="Notes" rows="3" placeholder="Add dosage instructions, duration, etc."></textarea>
-                    </div>
-                    <div class="col-12 d-flex gap-2 flex-wrap pt-2">
-                        <button type="submit" class="btn btn-primary btn-sm" id="savePrescriptionBtn"><i class="bi bi-save me-1"></i>Save</button>
-                        <button type="reset" class="btn btn-outline-secondary btn-sm"><i class="bi bi-eraser me-1"></i>Clear</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="floating-action">
-        <button class="btn btn-primary" id="newPrescriptionBtn" title="New Prescription"><i class="bi bi-plus-lg"></i></button>
     </div>
 </div>
 
@@ -314,16 +320,25 @@
 
             var html = $.map(rows, function(a){
                 var statusClass = a.status === 'Completed' ? 'success' : a.status === 'Cancelled' ? 'danger' : 'warning';
+                var actionsHtml = '';
+                
+                // Only show action buttons for non-cancelled appointments
+                if (a.status !== 'Cancelled') {
+                    actionsHtml = '<div class="btn-group btn-group-sm" role="group">'
+                        + '<button type="button" class="btn btn-outline-success btn-complete" title="Complete & Bill"><i class="bi bi-check2"></i></button>'
+                        + '<button type="button" class="btn btn-outline-danger btn-cancel" title="Cancel"><i class="bi bi-x"></i></button>'
+                        + '</div>';
+                } else {
+                    actionsHtml = '<span class="text-muted small">Cancelled</span>';
+                }
+                
                 return '<tr data-appointment-id="'+a.appointmentId+'" data-status="'+a.status+'" data-patient-name="'+(a.patientName||'')+'" data-patient-id="'+a.patientId+'">'
                     + '<td>'+a.appointmentDate.substring(0,10)+'</td>'
                     + '<td>'+(a.timeSlot||'')+'</td>'
                     + '<td>'+(a.patientName||'')+'</td>'
                     + '<td><span class="badge text-bg-'+statusClass+'">'+a.status+'</span></td>'
                     + '<td class="small">'+(a.symptoms||'N/A')+'</td>'
-                    + '<td class="text-center"><div class="btn-group btn-group-sm" role="group">'
-                    + '<button type="button" class="btn btn-outline-success btn-complete" title="Complete & Bill"><i class="bi bi-check2"></i></button>'
-                    + '<button type="button" class="btn btn-outline-danger" title="Cancel"><i class="bi bi-x"></i></button>'
-                    + '</div></td></tr>';
+                    + '<td class="text-center">' + actionsHtml + '</td></tr>';
             }).join('');
             $tbody.html(html);
         }
@@ -355,9 +370,47 @@
             openBillModal($(this).closest('tr'));
         });
 
-        $('#newPrescriptionBtn').on('click', function(e){
-            e.preventDefault();
-            $('html, body').animate({scrollTop: $('#new-prescription').offset().top}, 500);
+        $('#appointmentsTable').on('click', '.btn-cancel', function(){
+            var $row = $(this).closest('tr');
+            var $button = $(this);
+            var appointmentId = parseInt($row.data('appointment-id'));
+            var patientName = $row.data('patient-name');
+            
+            if (confirm('Are you sure you want to cancel the appointment for ' + patientName + '?')) {
+                // Disable button and show loading state
+                $button.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i>');
+                
+                $.ajax({
+                    url: '/Doctor/CancelAppointment',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ AppointmentId: appointmentId }),
+                    success: function(response) {
+                        if (response.success) {
+                            // Add visual feedback for cancelled row
+                            $row.addClass('row-whoosh-out');
+                            
+                            setTimeout(function() {
+                                // Refresh the appointments table
+                                var currentFilter = $('.filter-btn.active').data('filter') || 'upcoming';
+                                loadAppointments(currentFilter);
+                                
+                                // Show success message
+                                alert('Appointment cancelled successfully.');
+                            }, 500);
+                        } else {
+                            // Re-enable button on error
+                            $button.prop('disabled', false).html('<i class="bi bi-x"></i>');
+                            alert('Error: ' + (response.message || 'Failed to cancel appointment'));
+                        }
+                    },
+                    error: function(xhr) {
+                        // Re-enable button on error
+                        $button.prop('disabled', false).html('<i class="bi bi-x"></i>');
+                        alert('Error cancelling appointment: ' + (xhr.responseText || 'Unknown error'));
+                    }
+                });
+            }
         });
 
         $('#generateAndPayBtn').on('click', function(){
@@ -381,7 +434,7 @@
                 url:'/Doctor/CompleteAppointmentAndCreateBill',
                 method:'POST',
                 contentType:'application/json',
-                data: JSON.stringify({ appointmentId: apptId, prescription: prescription, totalAmount: totalAmount, onSpot: true }),
+                data: JSON.stringify({ appointmentId: apptId, prescription: prescription, totalAmount: totalAmount }),
                 success:function(resp){
                     if(resp && resp.success){
                        window.location.href = '/Doctor/PayBill?billId=' + resp.billId;
