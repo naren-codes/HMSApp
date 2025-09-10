@@ -62,6 +62,7 @@
             </div>
         </div>
     </div>
+    
     <div class="row g-4 dasboard-layout">
         <div class="col-lg-8 appointments-container">
             <div class="card dd-panel shadow-sm">
@@ -82,7 +83,6 @@
                                         <th scope="col">Prescription</th>
                                         <th scope="col">Status</th>
                                         <th scope="col">Amount</th>
-                           
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -106,20 +106,10 @@
                                                 }
                                                 else if (statusLower == "pending")
                                                 {
-                                                    @if (bill != null && bill.TotalAmount > 0 && !isPaymentCompleted)
-                                                    {
-                                                        <span class="badge bg-info">Bill Generated</span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="badge bg-warning text-dark">Pending</span>
-                                                    }
+                                                    <!-- Always show "Pending" status for pending appointments, regardless of bill status -->
+                                                    <span class="badge bg-warning text-dark">Pending</span>
                                                 }
-                                                else if (statusLower == "completed" && isPaymentCompleted)
-                                                {
-                                                    <span class="badge bg-success">Completed</span>
-                                                }
-                                                else if (statusLower == "completed" && !isPaymentCompleted)
+                                                else if (statusLower == "completed")
                                                 {
                                                     <span class="badge bg-success">Completed</span>
                                                 }
@@ -131,25 +121,23 @@
                                             <td>
                                                 @if (statusLower == "cancelled")
                                                 {
-                                                    <!-- No amount shown for cancelled appointments -->
                                                     <span class="text-muted small">--</span>
                                                 }
-                                                else if (bill != null && bill.TotalAmount > 0 && isPaymentCompleted)
+                                                else if (statusLower == "completed" && bill != null && bill.TotalAmount > 0 && isPaymentCompleted)
                                                 {
-                                                    <!-- Only show amount when payment is completed -->
+                                                    <!-- Only show actual amount when appointment is completed AND payment is completed -->
                                                     <span class="fw-semibold text-success">₹@bill.TotalAmount.ToString("N2")</span>
                                                 }
                                                 else if (bill != null && bill.TotalAmount > 0 && !isPaymentCompleted)
                                                 {
-                                                    <!-- Bill generated but payment pending - show "Pending" -->
-                                                    <span class="text-warning small">Payment Pending</span>
+                                                    <!-- Bill generated but payment not completed - show "Bill Generated" text only -->
+                                                    <span class="text-info small">Bill Generated</span>
                                                 }
                                                 else
                                                 {
                                                     <span class="text-muted small">--</span>
                                                 }
                                             </td>
-                                
                                         </tr>
                                     }
                                 </tbody>
@@ -178,13 +166,12 @@
                     <p class="text-white-50 small mb-1 w-100 text-start"><i class="bi bi-gender-ambiguous me-2"></i>Gender: @ViewData["PatientGender"]</p>
                     <p class="text-white-50 small mb-1 w-100 text-start"><i class="bi bi-telephone-fill me-2"></i>Contact: @ViewData["PatientContact"]</p>
                     <p class="text-white-50 small w-100 text-start"><i class="bi bi-geo-alt-fill me-2"></i>Address: @ViewData["PatientAddress"]</p>
-
-
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 @section Scripts {
     <script>
         $(document).ready(function () {
