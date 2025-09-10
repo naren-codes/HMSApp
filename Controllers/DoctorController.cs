@@ -504,13 +504,44 @@ namespace HMSApp.Controllers
                 return Json(new { success = false, message = "Appointment not found." });
             }
 
-            // Update the status of the appointment
-            appointment.Status = "Cancelled";
+            try
+            {
+                
+                appointment.Status = "Cancelled";
 
-            // Save the changes to the database
-            await _context.SaveChangesAsync();
+                // Remove any unpaid bills associated with this appointment
+                // Strategy 1: Remove by AppointmentId (most accurate)
+                var unpaidBillsByAppointmentId = await _context.Bill
+                    .Where(b => b.AppointmentId == appointment.AppointmentId && b.PaymentStatus == "Unpaid")
+                    .ToListAsync();
 
-            return Json(new { success = true });
+                // Strategy 2: Also remove any unpaid bills for this patient-doctor combination on the same date
+                // (in case there are orphaned bills without proper AppointmentId)
+                var unpaidBillsByPatientDoctor = await _context.Bill
+                    .Where(b => b.PatientId == appointment.PatientId && 
+                               b.DoctorName == appointment.DoctorName &&
+                               b.PaymentStatus == "Unpaid" &&
+                               b.AppointmentDate.HasValue &&
+                               b.AppointmentDate.Value.Date == appointment.AppointmentDate.Date &&
+                               !unpaidBillsByAppointmentId.Select(ub => ub.BillId).Contains(b.BillId))
+                    .ToListAsync();
+
+                var allUnpaidBillsToRemove = unpaidBillsByAppointmentId.Concat(unpaidBillsByPatientDoctor).ToList();
+
+                if (allUnpaidBillsToRemove.Any())
+                {
+                    _context.Bill.RemoveRange(allUnpaidBillsToRemove);
+                }
+
+                // Save all changes to the database
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error cancelling appointment: {ex.Message}" });
+            }
         }
 
         public class SetAvailabilityRequest

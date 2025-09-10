@@ -91,34 +91,58 @@
                                         var appt = row.Appointment;
                                         var bill = row.Bill;
                                         var statusLower = (appt.Status ?? "").ToLower();
-                                        var paymentStatus = bill?.PaymentStatus ?? (statusLower == "completed" ? "Unpaid" : null);
+                                        var paymentStatus = bill?.PaymentStatus ?? null;
+                                        var isPaymentCompleted = paymentStatus == "Paid";
+                                        
                                         <tr>
                                             <td class="ps-4">@appt.AppointmentDate.ToString("dd MMM, yyyy")</td>
                                             <td>Dr. @appt.DoctorName</td>
                                             <td>@appt.TimeSlot</td>
                                             <td>@(string.IsNullOrWhiteSpace(appt.Prescription) ? "N/A" : appt.Prescription)</td>
                                             <td>
-                                                @if (statusLower == "pending")
-                                                {
-                                                    <span class="badge bg-warning text-dark">Pending</span>
-                                                }
-                                                else if (statusLower == "completed" && paymentStatus != "Paid")
-                                                {
-                                                    <span class="badge bg-success">Completed</span>
-                                                }
-                                                else if (paymentStatus == "Paid")
-                                                {
-                                                    <span class="badge bg-success">Completed</span>
-                                                }
-                                                else if (statusLower == "cancelled")
+                                                @if (statusLower == "cancelled")
                                                 {
                                                     <span class="badge bg-danger">Cancelled</span>
                                                 }
+                                                else if (statusLower == "pending")
+                                                {
+                                                    @if (bill != null && bill.TotalAmount > 0 && !isPaymentCompleted)
+                                                    {
+                                                        <span class="badge bg-info">Bill Generated</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-warning text-dark">Pending</span>
+                                                    }
+                                                }
+                                                else if (statusLower == "completed" && isPaymentCompleted)
+                                                {
+                                                    <span class="badge bg-success">Completed</span>
+                                                }
+                                                else if (statusLower == "completed" && !isPaymentCompleted)
+                                                {
+                                                    <span class="badge bg-success">Completed</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@appt.Status</span>
+                                                }
                                             </td>
                                             <td>
-                                                @if (bill != null && bill.TotalAmount > 0)
+                                                @if (statusLower == "cancelled")
                                                 {
-                                                    <span class="fw-semibold">₹@bill.TotalAmount.ToString("N2")</span>
+                                                    <!-- No amount shown for cancelled appointments -->
+                                                    <span class="text-muted small">--</span>
+                                                }
+                                                else if (bill != null && bill.TotalAmount > 0 && isPaymentCompleted)
+                                                {
+                                                    <!-- Only show amount when payment is completed -->
+                                                    <span class="fw-semibold text-success">₹@bill.TotalAmount.ToString("N2")</span>
+                                                }
+                                                else if (bill != null && bill.TotalAmount > 0 && !isPaymentCompleted)
+                                                {
+                                                    <!-- Bill generated but payment pending - show "Pending" -->
+                                                    <span class="text-warning small">Payment Pending</span>
                                                 }
                                                 else
                                                 {

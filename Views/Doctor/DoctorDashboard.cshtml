@@ -202,7 +202,11 @@
                                             <td><span class="badge text-bg-@statusClass">@a.Status</span></td>
                                             <td class="small">@(string.IsNullOrWhiteSpace(a.Symptoms) ? "N/A" : a.Symptoms)</td>
                                             <td class="text-center">
-                                                @if (a.Status != "Cancelled")
+                                                @if (a.Status == "Completed")
+                                                {
+                                                    <span class="text-success small fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>Completed</span>
+                                                }
+                                                else if (a.Status != "Cancelled")
                                                 {
                                                     <div class="btn-group btn-group-sm" role="group">
                                                         <button type="button" class="btn btn-outline-success btn-complete" title="Complete & Bill"><i class="bi bi-check2"></i></button>
@@ -322,8 +326,11 @@
                 var statusClass = a.status === 'Completed' ? 'success' : a.status === 'Cancelled' ? 'danger' : 'warning';
                 var actionsHtml = '';
                 
-                // Only show action buttons for non-cancelled appointments
-                if (a.status !== 'Cancelled') {
+                // Show different content based on appointment status
+                if (a.status === 'Completed') {
+                    actionsHtml = '<span class="text-success small fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>Completed</span>';
+                } else if (a.status !== 'Cancelled') {
+                    // Only show action buttons for pending appointments
                     actionsHtml = '<div class="btn-group btn-group-sm" role="group">'
                         + '<button type="button" class="btn btn-outline-success btn-complete" title="Complete & Bill"><i class="bi bi-check2"></i></button>'
                         + '<button type="button" class="btn btn-outline-danger btn-cancel" title="Cancel"><i class="bi bi-x"></i></button>'

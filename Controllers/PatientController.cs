@@ -147,54 +147,31 @@ namespace HMSApp.Controllers
                 .ToListAsync();
 
             List<PatientApptDashboardRow> enriched = new();
-            
+            var usedBillIds = new HashSet<int>();
+
             foreach (var appt in appointments)
             {
                 Bill? matchedBill = null;
-                
-                // Strategy 1: Direct appointment ID matching (best for same environment)
-                matchedBill = bills.FirstOrDefault(b => b.AppointmentId == appt.AppointmentId);
-                
-                // Strategy 2: Multi-criteria matching (works across different environments)
+
+                matchedBill = bills.FirstOrDefault(b =>
+                    b.AppointmentId == appt.AppointmentId &&
+                    !usedBillIds.Contains(b.BillId));
+
                 if (matchedBill == null)
                 {
-                    matchedBill = bills.FirstOrDefault(b => 
+                    matchedBill = bills.FirstOrDefault(b =>
+                        !usedBillIds.Contains(b.BillId) &&
                         b.AppointmentDate.HasValue &&
                         b.AppointmentDate.Value.Date == appt.AppointmentDate.Date &&
                         b.DoctorName == appt.DoctorName &&
                         b.TimeSlot == appt.TimeSlot &&
-                        b.PatientName == appt.PatientName);
-                }
-                
-                // Strategy 3: Date and patient matching (broader fallback)
-                if (matchedBill == null)
-                {
-                    var appointmentDate = appt.AppointmentDate.Date;
-                    
-                    var relevantBills = bills.Where(b => 
-                        b.AppointmentDate.HasValue &&
-                        b.AppointmentDate.Value.Date == appointmentDate &&
                         b.PatientName == appt.PatientName &&
-                        b.DoctorName == appt.DoctorName).ToList();
-                    
-                    if (relevantBills.Any())
-                    {
-                        matchedBill = relevantBills.OrderBy(b => Math.Abs((b.BillDate - appt.AppointmentDate).TotalHours)).FirstOrDefault();
-                    }
+                        (appt.Status == "Completed" || b.PaymentStatus == "Paid"));
                 }
-                
-                // Strategy 4: Legacy date-based matching for older bills
-                if (matchedBill == null && string.Equals(appt.Status, "Completed", StringComparison.OrdinalIgnoreCase))
+
+                if (matchedBill != null)
                 {
-                    var usedBillIds = enriched.Where(e => e.Bill != null).Select(e => e.Bill!.BillId).ToList();
-                    var appointmentDate = appt.AppointmentDate.Date;
-                    
-                    matchedBill = bills
-                        .Where(b => !usedBillIds.Contains(b.BillId) && 
-                                   (!b.AppointmentDate.HasValue || b.AppointmentDate.Value.Date == appointmentDate) &&
-                                   b.PatientName == appt.PatientName)
-                        .OrderByDescending(b => b.BillDate)
-                        .FirstOrDefault();
+                    usedBillIds.Add(matchedBill.BillId);
                 }
 
                 enriched.Add(new PatientApptDashboardRow
@@ -203,13 +180,10 @@ namespace HMSApp.Controllers
                     Bill = matchedBill
                 });
             }
-
-            // Show latest appointments first in UI
             enriched = enriched.OrderByDescending(r => r.Appointment.AppointmentDate).ToList();
             return View(enriched);
         }
 
-        // Patient-facing "Book Appointment" page (GET)
         public IActionResult BookAppointment()
         {
             var username = HttpContext.Session.GetString("Username");
