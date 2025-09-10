@@ -1,72 +1,238 @@
 ﻿@model HMSApp.Models.Patient
 @{
     ViewData["Title"] = "Patient Registration";
+    Layout = "_Layout";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-primary text-white text-center">
-                    <h3>Patient Registration</h3>
-                </div>
-                <div class="card-body">
-                    <form asp-action="PatientRegister" method="post">
-                        <div class="form-group">
-                            <label asp-for="Name"></label>
-                            <input asp-for="Name" class="form-control" />
-                            <span asp-validation-for="Name" class="text-danger"></span>
+<!-- Animated Background Elements from Landing Page -->
+<div id="particles-container" aria-hidden="true"></div>
+
+<div class="floating-shapes" aria-hidden="true">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+    <div class="shape shape-5"></div>
+</div>
+
+<section class="hero-section text-white d-flex align-items-center" style="min-height: 100vh; padding-top: 2rem; padding-bottom: 2rem;">
+    <div class="hero-background-animation"></div>
+    <div class="glass-overlay"></div>
+    
+    <div class="container position-relative">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-9 col-sm-11">
+                <!-- Registration Card with Glass Effect -->
+                <div class="glass-card p-4 p-md-5 text-center">
+                    <!-- Header -->
+                    <div class="mb-4">
+                        <div class="portal-icon patient-gradient mx-auto mb-3" style="width: 80px; height: 80px;">
+                            <i class="bi bi-person-plus"></i>
+                            <div class="icon-ripple"></div>
                         </div>
-                        <div class="form-group">
-                            <label asp-for="DateOfBirth"></label>
-                            <input asp-for="DateOfBirth" class="form-control" type="date" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
-                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                        <h2 class="gradient-text mb-2" style="font-size: 2.5rem;">Join Our Platform</h2>
+                        <p class="text-light opacity-75">Create your patient account and start your healthcare journey</p>
+                    </div>
+
+                    <!-- Registration Form -->
+                    <form asp-action="PatientRegister" method="post" class="text-start">
+                        <div class="row g-3">
+                            <!-- Personal Information Section -->
+                            <div class="col-12">
+                                <h5 class="text-light mb-3 pb-2" style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                    <i class="bi bi-person-fill me-2"></i>Personal Information
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label text-light">Full Name</label>
+                                <input asp-for="Name" class="form-control glass-input" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label asp-for="DateOfBirth" class="form-label text-light">Date of Birth</label>
+                                <input asp-for="DateOfBirth" class="form-control glass-input" type="date" max="@DateTime.Now.ToString("yyyy-MM-dd")" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);" />
+                                <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label asp-for="Gender" class="form-label text-light">Gender</label>
+                                <select asp-for="Gender" class="form-control glass-input" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="text-danger small"></span>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label asp-for="ContactNumber" class="form-label text-light">Contact Number</label>
+                                <input asp-for="ContactNumber" class="form-control glass-input" type="tel" pattern="[0-9]{10}" placeholder="10-digit phone number" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);" />
+                                <span asp-validation-for="ContactNumber" class="text-danger small"></span>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label asp-for="Address" class="form-label text-light">Address</label>
+                                <textarea asp-for="Address" class="form-control glass-input" rows="3" placeholder="Enter your complete address" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3); resize: vertical;"></textarea>
+                                <span asp-validation-for="Address" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Account Information Section -->
+                            <div class="col-12 mt-4">
+                                <h5 class="text-light mb-3 pb-2" style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                    <i class="bi bi-shield-lock me-2"></i>Account Security
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label asp-for="Username" class="form-label text-light">Username</label>
+                                <input asp-for="Username" class="form-control glass-input" placeholder="Choose a unique username" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);" />
+                                <span asp-validation-for="Username" class="text-danger small"></span>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label asp-for="Password" class="form-label text-light">Password</label>
+                                <input asp-for="Password" type="password" class="form-control glass-input" placeholder="Create a strong password" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);" />
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label asp-for="Gender"></label>
-                            <select asp-for="Gender" class="form-control">
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <span asp-validation-for="Gender" class="text-danger"></span>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-3 mt-4">
+                            <button type="submit" class="btn btn-portal-patient btn-lg hover-lift">
+                                <i class="bi bi-person-plus-fill me-2"></i>
+                                Create Account
+                            </button>
+                            
+                            <div class="text-center">
+                                <span class="text-light opacity-75">Already have an account?</span>
+                                <a asp-action="PatientLogin" class="btn btn-glass btn-sm ms-2 hover-lift">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+                                </a>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label asp-for="ContactNumber"></label>
-                            <input asp-for="ContactNumber" class="form-control" />
-                            <span asp-validation-for="ContactNumber" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="Address"></label>
-                            <textarea asp-for="Address" class="form-control"></textarea>
-                            <span asp-validation-for="Address" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="Username">Username</label>
-                            <input asp-for="Username" class="form-control" />
-                            <span asp-validation-for="Username" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="Password">Password</label>
-                            <input asp-for="Password" type="password" class="form-control" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
-                        
-                        </br>
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Register</button>
-                            <a asp-action="PatientLogin" class="btn btn-secondary ms-2">Back to Login</a>
-                        </div>
-                        </form>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Particle system using jQuery
+        function createParticles() {
+            const $container = $('#particles-container');
+            if (!$container.length) return; 
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                $('<div>').addClass('particle').css({
+                    left: Math.random() * 100 + '%',
+                    top: Math.random() * 100 + '%',
+                    animationDelay: Math.random() * 20 + 's',
+                    animationDuration: (Math.random() * 10 + 10) + 's'
+                }).appendTo($container);
+            }
+        }
+
+        $(function () {
+            // Initialize particles
+            createParticles();
+
+            // Enhanced input focus effects
+            $('.glass-input').on('focus', function() {
+                $(this).addClass('input-focused').css({
+                    'background': 'rgba(255, 255, 255, 0.95)',
+                    'border-color': 'var(--primary-color)',
+                    'box-shadow': '0 0 0 3px rgba(44, 110, 186, 0.1)',
+                    'transform': 'translateY(-2px)'
+                });
+            }).on('blur', function() {
+                $(this).removeClass('input-focused').css({
+                    'background': 'rgba(255, 255, 255, 0.9)',
+                    'border-color': 'rgba(255, 255, 255, 0.3)',
+                    'box-shadow': 'none',
+                    'transform': 'translateY(0)'
+                });
+            });
+
+            // Add reveal animation to form
+            $('.glass-card').addClass('text-reveal reveal-in');
+
+            // Form validation enhancements
+            $('form').on('submit', function(e) {
+                const $submitBtn = $(this).find('button[type="submit"]');
+                $submitBtn.prop('disabled', true).html('<i class="bi bi-hourglass-split me-2"></i>Creating Account...');
+                
+                // Re-enable button after 3 seconds in case of validation errors
+                setTimeout(function() {
+                    $submitBtn.prop('disabled', false).html('<i class="bi bi-person-plus-fill me-2"></i>Create Account');
+                }, 3000);
+            });
+
+            // Real-time username validation feedback
+            $('#Username').on('input', function() {
+                const username = $(this).val();
+                if (username.length >= 3) {
+                    $(this).css('border-color', 'var(--success)');
+                } else if (username.length > 0) {
+                    $(this).css('border-color', 'var(--warning)');
+                }
+            });
+
+            // Password strength indicator
+            $('#Password').on('input', function() {
+                const password = $(this).val();
+                if (password.length >= 8) {
+                    $(this).css('border-color', 'var(--success)');
+                } else if (password.length >= 4) {
+                    $(this).css('border-color', 'var(--warning)');
+                } else if (password.length > 0) {
+                    $(this).css('border-color', 'var(--danger)');
+                }
+            });
+
+            // Phone number formatting
+            $('#ContactNumber').on('input', function() {
+                let value = $(this).val().replace(/\D/g, '');
+                if (value.length === 10) {
+                    $(this).css('border-color', 'var(--success)');
+                } else if (value.length > 0) {
+                    $(this).css('border-color', 'var(--warning)');
+                }
+            });
+        });
+    </script>
 }
+
+<style>
+    .text-accent {
+        color: var(--accent-color) !important;
+    }
+    
+    .input-focused {
+        transform: scale(1.02);
+    }
+
+    /* Enhanced form validation styles */
+    .form-control:valid {
+        border-color: var(--success) !important;
+    }
+    
+    .form-control:invalid:not(:placeholder-shown) {
+        border-color: var(--danger) !important;
+    }
+
+    /* Section headers */
+    .text-light h5 {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-weight: 600;
+    }
+</style>

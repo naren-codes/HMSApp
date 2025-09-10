@@ -208,7 +208,7 @@ namespace HMSApp.Controllers
                     ? (d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization})" : d.Name)
                     : (d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization}) - Unavailable" : $"{d.Name} - Unavailable"),
                 Disabled = !d.IsAvailable
-            }).ToList();
+            }).ToList(); 
 
             ViewBag.Doctors = doctorOptions;
             return View();
@@ -271,7 +271,7 @@ namespace HMSApp.Controllers
             return RedirectToAction(nameof(BookingConfirmation), new { id = model.AppointmentId });
         }
 
-        // Patient-facing confirmation page after booking
+        
         public IActionResult BookingConfirmation(int id)
         {
             var appt = _context.Appointment.FirstOrDefault(a => a.AppointmentId == id);
