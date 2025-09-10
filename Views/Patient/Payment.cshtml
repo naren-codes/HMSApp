@@ -1,0 +1,192 @@
+@model HMSApp.Models.Bill
+@{
+    ViewData["Title"] = "Payment";
+    Layout = "_Layout";
+    bool isDoctorMode = ViewData["DoctorMode"] as bool? ?? false;
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+<link rel="stylesheet" href="~/css/payment.css" asp-append-version="true" />
+<div class="payment-wrapper">
+  <div class="pay-card bg-white">
+    <div class="pay-header">
+      <h3 class="mb-0"><i class="bi bi-credit-card-2-front me-2"></i>Complete Your Payment</h3>
+      <div class="small opacity-75 mt-1">Bill ID: #@Model.BillId • Date: @Model.BillDate.ToLocalTime().ToString("dd MMM yyyy")</div>
+    </div>
+    <div class="p-4 p-lg-5">
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+          <div class="text-muted small text-uppercase fw-semibold">Patient</div>
+          <div class="fw-bold fs-5">@Model.PatientName</div>
+        </div>
+        <div class="text-end">
+          <div class="text-muted small text-uppercase fw-semibold">Amount Due</div>
+          <div class="pay-amount text-primary">Rs. @Model.TotalAmount.ToString("0.00")</div>
+          <span class="badge @(Model.PaymentStatus=="Paid"?"badge-paid":"badge-unpaid")">@Model.PaymentStatus</span>
+        </div>
+      </div>
+      <div class="mb-4">
+        <div class="text-muted small text-uppercase fw-semibold mb-2">Prescription</div>
+        <div class="p-3 rounded bg-light">@(!string.IsNullOrWhiteSpace(Model.Prescription)?Model.Prescription:"No prescription notes provided.")</div>
+      </div>
+      @if(Model.PaymentStatus!="Paid"){
+      <form method="post" asp-controller="Patient" asp-action="ProcessPayment">
+        <input type="hidden" name="billId" value="@Model.BillId" />
+        <input type="hidden" name="onSpot" value="@((Model.Prescription??"").Contains("[ON-SPOT]")?"true":"false")" />
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="mode-tile w-100" id="tileOnline">
+              <input type="radio" name="mode" value="Online" />
+              <div class="d-flex align-items-center">
+                <div class="mode-icon" aria-hidden="true">
+                  <!-- Original simple GPay style icon (abstract token) -->
+                  <svg viewBox="0 0 123.84 104.9" xmlns="http://www.w3.org/2000/svg" role="img" focusable="false">
+                    <path fill="#FDBD00" d="M62.46,26.62l-37.82,65.5l16.56,9.56c10.69,6.17,24.37,2.51,30.54-8.18l24.53-42.49c3.86-6.68,1.57-15.23-5.12-19.09l-15.37-8.87C71.12,20.35,65.16,21.95,62.46,26.62z"/>
+                    <path fill="#2DA94F" d="M96.1,10.51L84.38,3.75C71.02-3.97,53.93,0.61,46.21,13.98L24.47,51.62c-3.86,6.68-1.57,15.23,5.12,19.09l11.72,6.76c6.68,3.86,15.23,1.57,19.09-5.12l25.95-44.95c5.39-9.34,17.33-12.53,26.66-7.14L96.1,10.51z"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="fw-semibold">Online (UPI / GPay)</div>
+                  <div class="small text-muted">Instant confirmation</div>
+                </div>
+              </div>
+              <div class="checkmark"><i class="bi bi-check"></i></div>
+            </label>
+          </div>
+          <div class="col-md-6">
+            <label class="mode-tile w-100" id="tileCash">
+              <input type="radio" name="mode" value="Cash" />
+              <div class="d-flex align-items-center">
+                <div class="mode-icon text-success"><i class="bi bi-cash-coin" style="font-size:2rem;"></i></div>
+                <div>
+                  <div class="fw-semibold">Cash (On Visit)</div>
+                  <div class="small text-muted">Pay at desk</div>
+                </div>
+              </div>
+              <div class="checkmark"><i class="bi bi-check"></i></div>
+            </label>
+          </div>
+        </div>
+        <div class="upi-box mb-4" id="upiBox">
+          <label class="form-label fw-semibold">Enter UPI ID (e.g. name@bank)</label>
+          <input type="text" class="form-control mb-2" name="upiId" id="upiId" placeholder="yourname@upi" />
+          <div class="form-text mb-3">We will simulate a secure UPI request. Use a demo UPI ID or scan the QR to auto-complete.</div>
+          <div class="qr-pay d-flex flex-wrap align-items-start gap-3">
+            <div class="qr-wrapper text-center">
+              <div class="qr-box border rounded p-2 bg-white">
+                <a href="@Url.Action("ConfirmQrPayment","Patient", new { billId = Model.BillId })" id="qrLink" aria-label="Scan to pay">
+                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=@Uri.EscapeDataString(Url.Action("ConfirmQrPayment","Patient", new { billId = Model.BillId }) ?? string.Empty)" alt="QR Code Pay" class="img-fluid" width="160" height="160" />
+                </a>
+              </div>
+              <div class="small mt-2 text-muted">Scan & pay instantly</div>
+            </div>
+            <ul class="small text-muted mb-0 flex-grow-1 ps-3">
+            </ul>
+          </div>
+        </div>
+        <div class="d-flex gap-3 flex-wrap">
+          @if (isDoctorMode)
+          {
+            <button type="button" class="btn btn-outline-secondary px-4" id="cancelBillBtn" data-bill-id="@Model.BillId"><i class="bi bi-arrow-left"></i> Back to Dashboard</button>
+          }
+          else
+          {
+            <a asp-controller="Patient" asp-action="Dashboard" class="btn btn-outline-secondary px-4"><i class="bi bi-arrow-left"></i> Back</a>
+          }
+          <button type="submit" class="btn btn-primary px-4" id="payBtn" disabled><i class="bi bi-lock-fill me-1"></i>Confirm Payment</button>
+        </div>
+      </form>
+      } else {
+        <div class="alert alert-success mb-0"><i class="bi bi-check2-circle me-2"></i>Payment already completed.</div>
+        <div class="mt-3">
+          @if (isDoctorMode)
+          {
+            <button type="button" class="btn btn-primary" id="completedCancelBillBtn" data-bill-id="@Model.BillId">Return to Dashboard</button>
+          }
+          else
+          {
+            <a asp-controller="Patient" asp-action="Dashboard" class="btn btn-primary">Return to Dashboard</a>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
+<script>
+  $(function(){
+      const $online = $('#tileOnline');
+      const $cash = $('#tileCash');
+      const $upiBox = $('#upiBox');
+      const $payBtn = $('#payBtn');
+      const isDoctorMode = @(isDoctorMode.ToString().ToLower());
+
+      function select($tile){
+          $online.removeClass('active');
+          $cash.removeClass('active');
+          $tile.addClass('active');
+          const mode = $tile.find('input').val();
+          if(mode === 'Online'){
+              $upiBox.slideDown(150);
+          } else {
+              $upiBox.slideUp(150);
+          }
+          $payBtn.prop('disabled', false);
+      }
+
+      $online.on('click', function(){ select($online); });
+      $cash.on('click', function(){ select($cash); });
+
+      // QR polling: if QR displayed, poll status every 3s
+      const billId = @Model.BillId;
+      let qrPollInterval;
+      function startQrPoll(){
+         if(qrPollInterval) return;
+         qrPollInterval = setInterval(()=>{
+            $.getJSON('@Url.Action("PayStatus","Patient")', { billId: billId }, function(resp){
+               if(resp && resp.paid){
+                  clearInterval(qrPollInterval);
+                  // All payments redirect to regular Bill.cshtml
+                  window.location.href = '@Url.Action("Bill","Patient")' + '?billId=' + billId;
+               }
+            });
+         },3000);
+      }
+      $online.on('click', function(){ startQrPoll(); });
+      if($online.hasClass('active')){ startQrPoll(); }
+
+      // Handle cancel bill functionality for doctor mode
+      $('#cancelBillBtn').on('click', function(){
+          var billId = parseInt($(this).data('bill-id') || '0');
+          if (billId > 0) {
+              // Cancel the unpaid bill before going back to dashboard
+              $.ajax({
+                  url: '/Doctor/CancelUnpaidBill',
+                  method: 'POST',
+                  contentType: 'application/json',
+                  data: JSON.stringify({ billId: billId }),
+                  success: function(resp) {
+                      if (resp && resp.success) {
+                          window.location.href = '/Doctor/DoctorDashboard';
+                      } else {
+                          // Even if cancel fails, go to dashboard
+                          window.location.href = '/Doctor/DoctorDashboard';
+                      }
+                  },
+                  error: function(xhr) {
+                      // Even if cancel fails, go to dashboard
+                      console.warn('Failed to cancel bill, but proceeding to dashboard');
+                      window.location.href = '/Doctor/DoctorDashboard';
+                  }
+              });
+          } else {
+              // No bill ID, just go to dashboard
+              window.location.href = '/Doctor/DoctorDashboard';
+          }
+      });
+
+      // Handle completed payment return to dashboard for doctor mode
+      $('#completedCancelBillBtn').on('click', function(){
+          // For completed payments, just go to dashboard (bill is already paid)
+          window.location.href = '/Doctor/DoctorDashboard';
+      });
+  });
+</script></script>

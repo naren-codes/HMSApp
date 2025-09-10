@@ -1,4 +1,4 @@
-﻿@model IEnumerable<HMSApp.Models.Appointment>
+﻿@model IEnumerable<HMSApp.Controllers.PatientController.PatientApptDashboardRow>
 
 @{
     ViewData["Title"] = "Patient Dashboard";
@@ -17,16 +17,14 @@
             </div>
             <div class="nav-quick">
                 <a class="btn btn-sm btn-light px-3" asp-controller="Patient" asp-action="AppointmentHistory"><i class="bi bi-calendar-event me-1"></i>Appointments</a>
-                <a class="btn btn-sm btn-light px-3" href="#"><i class="bi bi-capsule-pill me-1"></i>Prescriptions</a>
                 <a class="btn btn-sm btn-light px-3" asp-controller="Patient" asp-action="Profile"><i class="bi bi-person-badge me-1"></i>Profile</a>
-                
             </div>
         </div>
     </div>
 
     <div class="container main-content">
         <div class="row g-4 mb-5">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="stat-card p-3 dd-header-bar">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-calendar-plus-fill display-4 text-info mb-3"></i>
@@ -38,7 +36,19 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
+                <div class="stat-card p-3 h-100" style="background:var(--dd-green-grad)">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-activity display-4 text-white mb-3 text-glow"></i>
+                        <h5 class="card-title fw-bold">Scans</h5>
+                        <p class="card-text text-muted">
+                            Book your medical scan to get a clearer picture of your health.
+                        </p>
+                        <a asp-controller="Patient" asp-action="BookScan" class="btn btn-success mt-3">Book a Scan</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
                 <div class="stat-card p-3" style="background:var(--dd-green-grad)">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-clock-history display-4 text-success mb-3"></i>
@@ -52,8 +62,9 @@
             </div>
         </div>
     </div>
-    <div class="row g-4">
-        <div class="col-lg-8">
+    
+    <div class="row g-4 dasboard-layout">
+        <div class="col-lg-8 appointments-container">
             <div class="card dd-panel shadow-sm">
                 <div class="card-header bg-white fw-bold d-flex align-items-center" style="font-size: 1.1rem;">
                     <i class="bi bi-calendar-day me-2 fs-5 text-primary"></i>
@@ -69,26 +80,62 @@
                                         <th scope="col" class="ps-4">Date</th>
                                         <th scope="col">Doctor</th>
                                         <th scope="col">Time</th>
-                                        <th scope="col">Symptoms</th>
+                                        <th scope="col">Prescription</th>
                                         <th scope="col">Status</th>
+                                        <th scope="col">Amount</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var appt in Model)
+                                    @foreach (var row in Model)
                                     {
+                                        var appt = row.Appointment;
+                                        var bill = row.Bill;
+                                        var statusLower = (appt.Status ?? "").ToLower();
+                                        var paymentStatus = bill?.PaymentStatus ?? null;
+                                        var isPaymentCompleted = paymentStatus == "Paid";
+                                        
                                         <tr>
                                             <td class="ps-4">@appt.AppointmentDate.ToString("dd MMM, yyyy")</td>
                                             <td>Dr. @appt.DoctorName</td>
                                             <td>@appt.TimeSlot</td>
-                                            <td>@(string.IsNullOrWhiteSpace(appt.PatientDescription) ? "N/A" : appt.PatientDescription)</td>
+                                            <td>@(string.IsNullOrWhiteSpace(appt.Prescription) ? "N/A" : appt.Prescription)</td>
                                             <td>
-                                                @if (appt.Status.ToLower() == "pending")
+                                                @if (statusLower == "cancelled")
                                                 {
-                                                    <span class="badge bg-warning text-dark">@appt.Status</span>
+                                                    <span class="badge bg-danger">Cancelled</span>
+                                                }
+                                                else if (statusLower == "pending")
+                                                {
+                                                    <!-- Always show "Pending" status for pending appointments, regardless of bill status -->
+                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                }
+                                                else if (statusLower == "completed")
+                                                {
+                                                    <span class="badge bg-success">Completed</span>
                                                 }
                                                 else
                                                 {
-                                                    <span class="badge bg-success">@appt.Status</span>
+                                                    <span class="badge bg-secondary">@appt.Status</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (statusLower == "cancelled")
+                                                {
+                                                    <span class="text-muted small">--</span>
+                                                }
+                                                else if (statusLower == "completed" && bill != null && bill.TotalAmount > 0 && isPaymentCompleted)
+                                                {
+                                                    <!-- Only show actual amount when appointment is completed AND payment is completed -->
+                                                    <span class="fw-semibold text-success">₹@bill.TotalAmount.ToString("N2")</span>
+                                                }
+                                                else if (bill != null && bill.TotalAmount > 0 && !isPaymentCompleted)
+                                                {
+                                                    <!-- Bill generated but payment not completed - show "Bill Generated" text only -->
+                                                    <span class="text-info small">Bill Generated</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted small">--</span>
                                                 }
                                             </td>
                                         </tr>
@@ -107,8 +154,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
-            <div id="profile-card" class="stat-card patient-card-profile p-3 h-100" data-url="@Url.Action("Profile","Patient")" style="cursor: pointer;">
+        <div class="col-lg-4 profile-container">
+            <div id="profile-card" class="stat-card patient-card-profile p-3" data-url="@Url.Action("Profile", "Patient")" style="cursor: pointer;">
                 <div class="d-flex flex-column align-items-center">
                     <i class="bi bi-person-circle text-white mb-2" style="font-size: 4rem;"></i>
                     <h5 class="text-white">@ViewData["PatientName"]</h5>
@@ -119,18 +166,16 @@
                     <p class="text-white-50 small mb-1 w-100 text-start"><i class="bi bi-gender-ambiguous me-2"></i>Gender: @ViewData["PatientGender"]</p>
                     <p class="text-white-50 small mb-1 w-100 text-start"><i class="bi bi-telephone-fill me-2"></i>Contact: @ViewData["PatientContact"]</p>
                     <p class="text-white-50 small w-100 text-start"><i class="bi bi-geo-alt-fill me-2"></i>Address: @ViewData["PatientAddress"]</p>
-
-                    
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 @section Scripts {
     <script>
         $(document).ready(function () {
             $('#profile-card').on('click', function() {
-                // This line finds the URL from the data-url attribute and navigates to it
                 window.location.href = $(this).data('url');
             });
         });

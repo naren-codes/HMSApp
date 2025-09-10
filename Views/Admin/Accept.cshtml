@@ -1,0 +1,39 @@
+﻿@model HMSApp.Models.Scan
+
+@{
+    ViewData["Title"] = "Appointment Details";
+}
+
+<div class="container my-5">
+    <div class="card shadow p-4">
+        <div class="card-body text-center">
+            <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
+            <h1 class="card-title mb-4 fw-bold">Appointment Accepted!</h1>
+            <p class="card-text fs-5">Here are the details for the confirmed appointment:</p>
+
+            <div class="text-start mt-4">
+                <p><strong>ID:</strong> @Model.Id</p>
+                <p><strong>Patient Name:</strong> @Model.PatientName</p>
+                <p><strong>Appointment Date:</strong> @Model.AppointmentDate.ToShortDateString()</p>
+                <p><strong>Lab Name:</strong> @Model.LabName</p>
+                <p><strong>Scan Type:</strong> @Model.ScanType</p>
+
+                <hr class="my-4">
+                <h5 class="fw-bold">Upload Scan Document</h5>
+
+                <form asp-action="Upload" method="post" enctype="multipart/form-data">
+
+                    <input type="hidden" name="patientName" value="@Model.PatientName" />
+
+                    <div class="input-group">
+                        <input type="file" name="scanFile" class="form-control" />
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </div>
+                </form>
+                <div class="mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">Back to Scan List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
