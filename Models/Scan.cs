@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.Metrics;
 
 namespace HMSApp.Models
 {
@@ -9,7 +10,7 @@ namespace HMSApp.Models
         // The [Key] attribute explicitly defines this as the primary key.
         [Key]
         public int Id { get; set; }
-
+        public int PatientId { get; set; }
         public string PatientName { get; set; }
 
         public DateTime AppointmentDate { get; set; }
