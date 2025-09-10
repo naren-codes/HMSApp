@@ -72,7 +72,7 @@ namespace HMSApp.Controllers
             if (scanFile == null || scanFile.Length == 0)
             {
                 TempData["ErrorMessage"] = "Please select a file to upload.";
-                return RedirectToAction("Accept", new { patientName });
+                return RedirectToAction("BookedScans", new { patientName });
             }
 
             var scanToUpdate = await _context.Scan
@@ -107,7 +107,7 @@ namespace HMSApp.Controllers
                 TempData["ErrorMessage"] = "An error occurred while saving the file.";
             }
 
-            return RedirectToAction("Accept", new { patientName = scanToUpdate.PatientName });
+            return RedirectToAction("BookedScans", new { patientName = scanToUpdate.PatientName });
         }
     }
 }

@@ -148,16 +148,42 @@ namespace HMSApp.Controllers
         // Admin-facing delete confirmation page (GET)
         public IActionResult Delete(int id)
         {
+            // This method is fine, no changes needed.
             var patient = _patientService.GetPatientById(id);
             return View(patient);
         }
 
         // Admin-facing delete confirmation (POST)
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            _patientService.DeletePatient(id);
-            return RedirectToAction("Index");
+            // 1. Get the patient before trying to delete, so we have their name for the message.
+            var patient = _patientService.GetPatientById(id);
+            if (patient == null)
+            {
+                // This is a safety check in case the patient was deleted by someone else.
+                return NotFound();
+            }
+
+            try
+            {
+                // 2. Try to delete the patient.
+                _patientService.DeletePatient(id);
+
+                // Optional: Set a success message for a good user experience.
+                TempData["SuccessMessage"] = $"Patient '{patient.Name}' was deleted successfully.";
+                return RedirectToAction("Index");
+            }
+            catch (DbUpdateException) // Catches the specific database error
+            {
+                // 3. If the 'try' block fails, this code runs.
+                // Set the error message that will be shown in the popup.
+                TempData["ErrorMessage"] = $"Cannot delete patient '{patient.Name}' because they have existing appointments.";
+
+                // Redirect back to the list, where the popup will appear.
+                return RedirectToAction("Index");
+            }
         }
 
         // Patient-facing dashboard

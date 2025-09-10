@@ -350,18 +350,38 @@ namespace HMSApp.Controllers
         }
 
         // POST: Doctor/Delete/5
+        // POST: Doctor/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            // First, find the doctor to be deleted.
             var doctor = await _context.Doctor.FindAsync(id);
-            if (doctor != null)
+
+            // It's good practice to check if the doctor exists.
+            if (doctor == null)
             {
-                _context.Doctor.Remove(doctor);
+                return NotFound();
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                // Attempt to remove the doctor and save the changes.
+                _context.Doctor.Remove(doctor);
+                await _context.SaveChangesAsync();
+
+                // If successful, set a success message.
+                TempData["SuccessMessage"] = $"Doctor '{doctor.Name}' was deleted successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException) // This will catch the foreign key constraint error.
+            {
+                // If the deletion fails, create the error message for the popup.
+                TempData["ErrorMessage"] = $"Could not delete Dr. {doctor.Name} because they have existing appointments.";
+
+                // Redirect back to the doctor list page, where the popup will appear.
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         private bool DoctorExists(int id)
