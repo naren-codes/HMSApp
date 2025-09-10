@@ -3,108 +3,176 @@
 }
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link rel="stylesheet" href="~/css/contact.css" asp-append-version="true" />
 
-<section class="hero-section text-center">
-    <div class="container">
-        <span class="badge hero-kicker mb-3">Contact HMS</span>
-        <h1 class="display-5 mb-2">Get In Touch With Us</h1>
-        <p class="lead mb-0">We're here to answer any questions you may have and provide the support you need.</p>
+<!-- Animated Background Elements from Landing Page -->
+<div id="particles-container" aria-hidden="true"></div>
+
+<div class="floating-shapes" aria-hidden="true">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+    <div class="shape shape-5"></div>
+</div>
+
+<section class="hero-section text-white text-center" style="position: relative; z-index: 10;">
+    <div class="hero-background-animation"></div>
+    <div class="glass-overlay"></div>
+    
+    <div class="container position-relative">
+        <div class="hero-badge animate-float mb-3">
+            <span class="bi bi-telephone-fill glow-icon"></span>
+            <span class="badge-text">Contact HMS</span>
+        </div>
+        <h1 class="display-5 mb-2 gradient-text">Get In Touch With Us</h1>
+        <p class="lead mb-0 text-light">We're here to answer any questions you may have and provide the support you need.</p>
     </div>
 </section>
 
-
-<div class="container py-4">
+<div class="container py-4" style="position: relative; z-index: 10; background: rgba(255, 255, 255, 0.95); padding: 4rem 15px !important; border-radius: 20px; margin-top: -50px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
     <div class="row g-4">
         <div class="col-lg-6">
-            <div class="content-section h-100">
-                <h3>Reach Out to Us</h3>
-                <p>Feel free to connect with us through the following channels:</p>
+            <div class="content-section glass-card h-100 p-4">
+                <h3 class="mb-3">Reach Out to Us</h3>
+                <p class="mb-4">Feel free to connect with us through the following channels:</p>
 
-                <div class="contact-info-item">
-                    <span class="icon-badge"><i class="bi bi-geo-alt-fill"></i></span>
+                <div class="contact-info-item hover-lift">
+                    <div class="contact-icon-wrapper">
+                        <div class="contact-icon patient-gradient">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                    </div>
                     <div>
                         <h5 class="mb-1">Hospital Address</h5>
                         <p class="mb-0">HMS<br/>Gandhi Nagar<br/>Coimbatore, Tamil Nadu, CBE-641035</p>
                     </div>
                 </div>
 
-                <div class="contact-info-item">
-                    <span class="icon-badge"><i class="bi bi-telephone-fill"></i></span>
+                <div class="contact-info-item hover-lift">
+                    <div class="contact-icon-wrapper">
+                        <div class="contact-icon doctor-gradient">
+                            <i class="bi bi-telephone-fill"></i>
+                        </div>
+                    </div>
                     <div>
                         <h5 class="mb-1">Phone Numbers</h5>
-                        <p class="mb-1">General Enquiries: <a href="tel:+919876543210" class="text-decoration-none">+91-9876543210</a></p>
-                        <p class="mb-0">Emergency Line: <a href="tel:+918765432109" class="text-decoration-none">+91-8765432109</a></p>
+                        <p class="mb-1">General Enquiries: <a href="tel:+919876543210" class="contact-link">+91-9876543210</a></p>
+                        <p class="mb-0">Emergency Line: <a href="tel:+918765432109" class="contact-link">+91-8765432109</a></p>
                     </div>
                 </div>
 
-                <div class="contact-info-item">
-                    <span class="icon-badge"><i class="bi bi-envelope-fill"></i></span>
+                <div class="contact-info-item hover-lift">
+                    <div class="contact-icon-wrapper">
+                        <div class="contact-icon admin-gradient">
+                            <i class="bi bi-envelope-fill"></i>
+                        </div>
+                    </div>
                     <div>
                         <h5 class="mb-1">Email Addresses</h5>
-                        <p class="mb-1">Support: <a href="mailto:support@hms.com" class="text-decoration-none">support@hms.com</a></p>
-                        <p class="mb-0">Feedback: <a href="mailto:feedback@hms.com" class="text-decoration-none">feedback@hms.com</a></p>
+                        <p class="mb-1">Support: <a href="mailto:support@hms.com" class="contact-link">support@hms.com</a></p>
+                        <p class="mb-0">Feedback: <a href="mailto:feedback@hms.com" class="contact-link">feedback@hms.com</a></p>
                     </div>
                 </div>
 
                 <div class="mt-4">
-                    <h5>Find Us on Map</h5>
-                    <div class="ratio ratio-16x9">
+                    <h5 class="mb-3">Find Us on Map</h5>
+                    <div class="map-container ratio ratio-16x9">
                         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31329.585566157984!2d76.92461761839871!3d11.023751504969336!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba858e8f255ab59%3A0xfc7f5ba2980c0e3b!2sJawahar%20Nagar%2C%20Saibaba%20Colony%2C%20Coimbatore%2C%20Tamil%20Nadu%20641011!5e0!3m2!1sen!2sin!4v1753725365104!5m2!1sen!2sin" style="border:0;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                 </div>
 
-                <div class="cta-strip mt-4 d-flex align-items-center justify-content-between flex-wrap">
+                <div class="cta-strip glass-card mt-4 d-flex align-items-center justify-content-between flex-wrap p-3">
                     <div class="me-3 mb-2 mb-sm-0">
                         <strong>Need urgent assistance?</strong>
                         <div class="text-muted small">Our emergency team is available 24/7.</div>
                     </div>
-                    <a href="tel:+918765432109" class="btn btn-primary">Call Emergency</a>
+                    <a href="tel:+918765432109" class="btn btn-portal-patient hover-lift">Call Emergency</a>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-6">
-            <div class="content-section h-100">
-                <h3>Send Us a Message</h3>
-                <p>Have a question or need assistance? Fill out the form below:</p>
+            <div class="content-section glass-card h-100 p-4">
+                <h3 class="mb-3">Send Us a Message</h3>
+                <p class="mb-4">Have a question or need assistance? Fill out the form below:</p>
                 <form id="contactForm" novalidate>
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" required>
+                        <input type="text" class="form-control glass-input" id="name" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0, 0, 0, 0.1);">
                         <div class="invalid-feedback">Please enter your name.</div>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" required>
+                        <input type="email" class="form-control glass-input" id="email" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0, 0, 0, 0.1);">
                         <div class="invalid-feedback">Please enter a valid email.</div>
                     </div>
                     <div class="mb-3">
                         <label for="subject" class="form-label">Subject (Optional)</label>
-                        <input type="text" class="form-control" id="subject">
+                        <input type="text" class="form-control glass-input" id="subject" style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0, 0, 0, 0.1);">
                     </div>
                     <div class="mb-3">
                         <label for="message" class="form-label">Message</label>
-                        <textarea class="form-control" id="message" rows="5" required></textarea>
+                        <textarea class="form-control glass-input" id="message" rows="5" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0, 0, 0, 0.1); resize: vertical;"></textarea>
                         <div class="invalid-feedback">Please enter your message.</div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Send Message</button>
+                    <button type="submit" class="btn btn-portal-patient w-100 hover-lift">
+                        <i class="bi bi-send me-2"></i>Send Message
+                    </button>
                 </form>
-                <div id="formAlert" class="alert alert-success mt-3 d-none text-center">
+                <div id="formAlert" class="alert glass-card mt-3 d-none text-center" style="background: rgba(46, 204, 113, 0.15); border: 1px solid rgba(46, 204, 113, 0.3); color: var(--success);">
                     <i class="bi bi-check-circle-fill me-2"></i>Message sent successfully! We'll get back to you soon.
                 </div>
             </div>
         </div>
     </div>
-</div>
+    
 
 @section Scripts{
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    // Particle system using jQuery
+    function createParticles() {
+        const $container = $('#particles-container');
+        if (!$container.length) return; 
+        const particleCount = 50;
+
+        for (let i = 0; i < particleCount; i++) {
+            $('<div>').addClass('particle').css({
+                left: Math.random() * 100 + '%',
+                top: Math.random() * 100 + '%',
+                animationDelay: Math.random() * 20 + 's',
+                animationDuration: (Math.random() * 10 + 10) + 's'
+            }).appendTo($container);
+        }
+    }
+
     $(function(){
+        // Initialize particles
+        createParticles();
+
+        // Enhanced input focus effects
+        $('.glass-input').on('focus', function() {
+            $(this).addClass('input-focused').css({
+                'background': 'rgba(255, 255, 255, 0.95)',
+                'border-color': 'var(--primary-color)',
+                'box-shadow': '0 0 0 3px rgba(44, 110, 186, 0.1)',
+                'transform': 'translateY(-2px)'
+            });
+        }).on('blur', function() {
+            $(this).removeClass('input-focused').css({
+                'background': 'rgba(255, 255, 255, 0.9)',
+                'border-color': 'rgba(0, 0, 0, 0.1)',
+                'box-shadow': 'none',
+                'transform': 'translateY(0)'
+            });
+        });
+
+        // Contact form submission
         $('#contactForm').on('submit', function(e){
             e.preventDefault();
 
             const $form = $(this);
+            const $submitBtn = $form.find('button[type="submit"]');
             let valid = true;
 
             // Simple client-side validation using Bootstrap styles
@@ -120,15 +188,50 @@
 
             if(!valid) return;
 
-            $('#formAlert').removeClass('d-none');
-            $form[0].reset();
-            setTimeout(function(){ $('#formAlert').addClass('d-none'); }, 5000);
+            // Submit button loading state
+            $submitBtn.prop('disabled', true).html('<i class="bi bi-hourglass-split me-2"></i>Sending...');
+
+            setTimeout(function() {
+                $('#formAlert').removeClass('d-none');
+                $form[0].reset();
+                $submitBtn.prop('disabled', false).html('<i class="bi bi-send me-2"></i>Send Message');
+                
+                setTimeout(function(){ 
+                    $('#formAlert').addClass('d-none'); 
+                }, 5000);
+            }, 1000);
         });
 
         // Remove invalid state on input
         $('#contactForm').on('input', 'input, textarea', function(){
             $(this).removeClass('is-invalid');
         });
+
+        // Enhanced reveal animation
+        function inViewport($el) {
+            if ($el.length === 0) return false;
+            const top = $el.offset().top;
+            const bottom = top + $el.outerHeight();
+            const viewTop = $(window).scrollTop();
+            const viewBottom = viewTop + $(window).height();
+            return bottom > viewTop + 60 && top < viewBottom - 60;
+        }
+
+        const $reveal = $('.contact-info-item, .stat-card, .glass-card');
+        $reveal.addClass('will-reveal');
+
+        function processReveal() {
+            $reveal.each(function () {
+                const $el = $(this);
+                if ($el.hasClass('reveal-in')) return;
+                if (inViewport($el)) {
+                    setTimeout(() => $el.addClass('reveal-in'), $el.index() * 100);
+                }
+            });
+        }
+
+        processReveal();
+        $(window).on('scroll resize', processReveal);
     });
 </script>
 }

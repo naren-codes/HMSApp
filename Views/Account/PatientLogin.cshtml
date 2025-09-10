@@ -1,48 +1,79 @@
 ﻿@model HMSApp.Models.Patient
 @{
-    ViewData["Title"] = "Login or Register";
+    ViewData["Title"] = "Patient Login";
+    Layout = "_Layout";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div id="loginPanel" class="col-md-6">
-            <div class="card">
-                <div class="card-header text-center bg-primary text-white">
-                    <h3>Patient Login</h3>
-                </div>
-                <div class="card-body">
-                    <form asp-action="LoginPatient" method="post">
-                        <div class="form-group">
-                            <label for="username">Username</label>
-                            <input name="username" class="form-control" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input name="password" type="password" class="form-control" required />
-                        </div>
-                        @* <form asp-action="LoginPatient" method="post">
-                            <div class="d-flex justify-content-between mt-3">
-                                <button type="submit" class="btn btn-primary">Login</button>
-                                <a asp-controller="Account" asp-action="PatientRegister" class="btn btn-secondary">Register</a>
-                            </div>
+<!-- Animated Background Elements from Landing Page -->
+<div id="particles-container" aria-hidden="true"></div>
 
-                            @if (ViewBag.Error != null)
-                            {
-                                <div class="text-danger mt-2">@ViewBag.Error</div>
-                            }
-                        </form> *@
-                        <br />
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">SignIn</button>
-                            <a asp-action="PatientRegister" class="btn btn-secondary ms-2">Register</a>
+<div class="floating-shapes" aria-hidden="true">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+    <div class="shape shape-5"></div>
+</div>
+
+<section class="hero-section text-white d-flex align-items-center" style="min-height: 100vh;">
+    <div class="hero-background-animation"></div>
+    <div class="glass-overlay"></div>
+    
+    <div class="container position-relative">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7 col-sm-9">
+                <!-- Login Card with Glass Effect -->
+                <div class="glass-card p-4 p-md-5 text-center">
+                    <!-- Header -->
+                    <div class="mb-4">
+                        <div class="portal-icon patient-gradient mx-auto mb-3" style="width: 80px; height: 80px;">
+                            <i class="bi bi-person-heart"></i>
+                            <div class="icon-ripple"></div>
                         </div>
-                       </form>
-                       
+                        <h2 class="gradient-text mb-2" style="font-size: 2.5rem;">Patient Portal</h2>
+                        <p class="text-light opacity-75">Sign in to access your health dashboard</p>
+                    </div>
+
+                    <!-- Error Display -->
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger glass-card mb-4" style="background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.3); color: #fff;">
+                            <i class="bi bi-exclamation-triangle me-2"></i>@ViewBag.Error
+                        </div>
+                    }
+
+                    <!-- Login Form -->
+                    <form asp-action="LoginPatient" method="post" class="text-start">
+                        <div class="mb-3">
+                            <label for="username" class="form-label text-light">Username</label>
+                            <input name="username" type="text" class="form-control glass-input" id="username" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password" class="form-label text-light">Password</label>
+                            <input name="password" type="password" class="form-control glass-input" id="password" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-portal-patient btn-lg hover-lift">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>
+                                Sign In
+                            </button>
+                            
+                            <div class="text-center">
+                                <span class="text-light opacity-75">Don't have an account?</span>
+                                <a asp-action="PatientRegister" class="btn btn-glass btn-sm ms-2 hover-lift">
+                                    <i class="bi bi-person-plus me-1"></i>Register
+                                </a>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
 @section Scripts {
     @{
@@ -50,18 +81,55 @@
     }
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#showRegisterBtn').on('click', function(e) {
-                e.preventDefault();
-                $('#loginPanel').hide();
-                $('#registerPanel').show();
+        // Particle system using jQuery
+        function createParticles() {
+            const $container = $('#particles-container');
+            if (!$container.length) return; 
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                $('<div>').addClass('particle').css({
+                    left: Math.random() * 100 + '%',
+                    top: Math.random() * 100 + '%',
+                    animationDelay: Math.random() * 20 + 's',
+                    animationDuration: (Math.random() * 10 + 10) + 's'
+                }).appendTo($container);
+            }
+        }
+
+        $(function () {
+            // Initialize particles
+            createParticles();
+
+            // Enhanced input focus effects
+            $('.glass-input').on('focus', function() {
+                $(this).addClass('input-focused').css({
+                    'background': 'rgba(255, 255, 255, 0.95)',
+                    'border-color': 'var(--primary-color)',
+                    'box-shadow': '0 0 0 3px rgba(44, 110, 186, 0.1)',
+                    'transform': 'translateY(-2px)'
+                });
+            }).on('blur', function() {
+                $(this).removeClass('input-focused').css({
+                    'background': 'rgba(255, 255, 255, 0.9)',
+                    'border-color': 'rgba(255, 255, 255, 0.3)',
+                    'box-shadow': 'none',
+                    'transform': 'translateY(0)'
+                });
             });
 
-            $('#showLoginBtn').on('click', function(e) {
-                e.preventDefault();
-                $('#loginPanel').show();
-                $('#registerPanel').hide();
-            });
+            // Add reveal animation to form
+            $('.glass-card').addClass('text-reveal reveal-in');
         });
     </script>
 }
+
+<style>
+    .text-accent {
+        color: var(--accent-color) !important;
+    }
+    
+    .input-focused {
+        transform: scale(1.02);
+    }
+</style>

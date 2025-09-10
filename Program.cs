@@ -15,6 +15,7 @@ builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<DoctorService>();
 builder.Services.AddScoped<AccountService>();
 
+
 // Session dependencies
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

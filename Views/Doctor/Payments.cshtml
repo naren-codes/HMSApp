@@ -1,0 +1,108 @@
+@model IEnumerable<HMSApp.Models.Bill>
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Payments";
+    var doctorName = ViewData["DoctorName"] as string ?? "Doctor";
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+<link rel="stylesheet" href="~/css/payments.css" asp-append-version="true" />
+<div class="payments-wrapper">
+  <div class="payments-card">
+    <div class="payments-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+      <div>
+        <h2><i class="bi bi-cash-stack me-2"></i>Payments Received</h2>
+        <div class="small opacity-75">Dr. @doctorName – online & offline payments</div>
+      </div>
+      <div class="search-bar w-100 w-sm-auto">
+        <input id="paySearch" type="text" class="form-control form-control-sm" placeholder="Search patient, method or status..." />
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover payments-table mb-0" id="paymentsTable">
+        <thead>
+          <tr>
+            <th>Bill #</th>
+            <th>Patient</th>
+            <th>Date (UTC)</th>
+            <th>Amount (Rs.)</th>
+            <th>Method</th>
+            <th>Status</th>
+            <th>Prescription</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var b in Model.OrderByDescending(x => x.BillDate))
+          {
+              bool isPaid = b.PaymentStatus == "Paid";
+              bool isCashPayment = isPaid && (b.Prescription?.Contains("[PAYMENT: Cash]") ?? false);
+              bool isOnlinePayment = isPaid && ((b.Prescription?.Contains("[PAYMENT: UPI]") ?? false) || (b.Prescription?.Contains("[PAYMENT: GPay]") ?? false));
+              // Assuming offline payments don't have payment tags or have a specific offline tag
+              bool isOfflinePayment = isPaid && !isCashPayment && !isOnlinePayment;
+              <tr>
+                <td>#@b.BillId</td>
+                <td>@b.PatientName</td>
+                <td>@b.BillDate.ToString("dd MMM yyyy HH:mm")</td>
+                <td><strong>@b.TotalAmount.ToString("0.00")</strong></td>
+                <td>
+                  @if(isCashPayment)
+                  {
+                    <span class="method-chip cash"><i class="bi bi-wallet2"></i>Cash</span>
+                  }
+                  else if(isOnlinePayment)
+                  {
+                    <span class="method-chip online"><i class="bi bi-phone"></i>Online</span>
+                  }
+                  else if(isOfflinePayment)
+                  {
+                    <span class="method-chip offline"><i class="bi bi-credit-card"></i>Offline</span>
+                  }
+                  else
+                  {
+                    <span class="method-chip unknown"><i class="bi bi-question-circle"></i>–</span>
+                  }
+                </td>
+                <td>
+                  @if(isPaid)
+                  {
+                    <span class="status-chip paid"><i class="bi bi-check2-circle"></i>Paid</span>
+                  }
+                  else
+                  {
+                    <span class="status-chip unpaid"><i class="bi bi-clock"></i>Unpaid</span>
+                  }
+                </td>
+                <td class="prescription-cell">
+                  @{
+                      var displayPrescription = b.Prescription ?? "";
+                      // Remove payment method tags from display
+                      displayPrescription = displayPrescription.Replace("[PAYMENT: Cash]", "").Replace("[PAYMENT: UPI]", "").Replace("[PAYMENT: GPay]", "").Trim();
+                  }
+                  @(string.IsNullOrWhiteSpace(displayPrescription) ? "–" : displayPrescription)
+                </td>
+              </tr>
+          }
+          @if(!Model.Any())
+          {
+            <tr><td colspan="7"><div class="empty-box"><i class="bi bi-info-circle me-1"></i>No bills found.</div></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+  $(function(){
+    const $search = $('#paySearch');
+    const $table = $('#paymentsTable');
+    const $rows = $table.find('tbody tr');
+
+    $search.on('keyup', function(){
+      const query = this.value.toLowerCase();
+      $rows.each(function(){
+        const text = $(this).text().toLowerCase();
+        $(this).toggle(text.includes(query));
+      });
+    });
+  });
+</script>

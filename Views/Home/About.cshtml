@@ -3,17 +3,33 @@
 }
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link rel="stylesheet" href="~/css/about.css" asp-append-version="true" />
 
-<section class="hero-section text-center">
-    <div class="container">
-        <span class="badge hero-kicker mb-3">About HMS</span>
-        <h1 class="display-5 mb-3">Caring for Your Health, Always</h1>
-        <p class="lead mb-0">We combine compassionate care with cutting-edge technology to deliver outstanding outcomes.</p>
+<!-- Animated Background Elements from Landing Page -->
+<div id="particles-container" aria-hidden="true"></div>
+
+<div class="floating-shapes" aria-hidden="true">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+    <div class="shape shape-5"></div>
+</div>
+
+<section class="hero-section text-white text-center" style="position: relative; z-index: 10;">
+    <div class="hero-background-animation"></div>
+    <div class="glass-overlay"></div>
+    
+    <div class="container position-relative">
+        <div class="hero-badge animate-float mb-3">
+            <span class="bi bi-heart-pulse-fill glow-icon"></span>
+            <span class="badge-text">About HMS</span>
+        </div>
+        <h1 class="display-5 mb-3 gradient-text">Caring for Your Health, Always</h1>
+        <p class="lead mb-0 text-light">We combine compassionate care with cutting-edge technology to deliver outstanding outcomes.</p>
     </div>
 </section>
 
-<div class="container section">
+<div class="container section" style="position: relative; z-index: 10; background: rgba(255, 255, 255, 0.95); padding: 4rem 15px; border-radius: 20px; margin-top: -50px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
     <div class="content-section mb-4">
         <div class="row align-items-center g-4">
             <div class="col-lg-7">
@@ -22,11 +38,11 @@
                     Our mission is simple yet profound: to deliver high?quality, patient?centered healthcare with unwavering integrity and continuous innovation. We strive to be a trusted partner in your health journey, focusing on personalized care that respects your unique needs and values.
                 </p>
                 <p class="mb-0">
-                    Every decision we make?from advanced treatments to warm, human interactions?is rooted in this mission. True healing embraces medical excellence, empathy, and understanding.
+                    Every decision we make—from advanced treatments to warm, human interactions—is rooted in this mission. True healing embraces medical excellence, empathy, and understanding.
                 </p>
             </div>
             <div class="col-lg-5 text-center">
-                <img src="~/images/doctor-team.jpg" alt="Doctors Team" class="img-fluid shadow-sm rounded" onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=Doctors+Team';">
+                <img src="~/images/doctor-team.jpg" alt="Doctors Team" class="img-fluid shadow-sm rounded hover-lift" onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=Doctors+Team';">
             </div>
         </div>
     </div>
@@ -36,7 +52,7 @@
         <h3 class="mb-3">Our Care Pillars</h3>
         <div class="row g-3">
             <div class="col-12 col-md-6 col-lg-3">
-                <div class="feature-card h-100 p-3 bg-white">
+                <div class="feature-card glass-card h-100 p-3 hover-3d">
                     <div class="d-flex align-items-start">
                         <i class="bi bi-heart-pulse text-danger fs-2 me-3"></i>
                         <div>
@@ -47,7 +63,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
-                <div class="feature-card h-100 p-3 bg-white">
+                <div class="feature-card glass-card h-100 p-3 hover-3d">
                     <div class="d-flex align-items-start">
                         <i class="bi bi-cpu text-primary fs-2 me-3"></i>
                         <div>
@@ -58,7 +74,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
-                <div class="feature-card h-100 p-3 bg-white">
+                <div class="feature-card glass-card h-100 p-3 hover-3d">
                     <div class="d-flex align-items-start">
                         <i class="bi bi-shield-check text-success fs-2 me-3"></i>
                         <div>
@@ -69,7 +85,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
-                <div class="feature-card h-100 p-3 bg-white">
+                <div class="feature-card glass-card h-100 p-3 hover-3d">
                     <div class="d-flex align-items-start">
                         <i class="bi bi-clock-history text-warning fs-2 me-3"></i>
                         <div>
@@ -93,7 +109,7 @@
                 <p class="mb-0">Beyond treating illness, we promote wellness, prevent disease, and empower individuals through education.</p>
             </div>
             <div class="col-lg-5 order-lg-1 text-center">
-                <img src="~/images/modern-interior.jpg" alt="Modern Hospital Interior" class="img-fluid shadow-sm rounded" onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=Hospital+Interior';">
+                <img src="~/images/modern-interior.jpg" alt="Modern Hospital Interior" class="img-fluid shadow-sm rounded hover-lift" onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=Hospital+Interior';">
             </div>
         </div>
     </div>
@@ -106,12 +122,12 @@
                 ("Cardiology","bi-heart-pulse","Advanced heart care and diagnostics."),
                 ("Neurology","bi-cpu","Comprehensive neuro care and rehab."),
                 ("Orthopedics","bi-bandaid","Joint, bone, and sports injury care."),
-                ("Pediatrics","bi-emoji-smile","Complete children?s health services."),
+                ("Pediatrics","bi-emoji-smile","Complete children's health services."),
                 ("Oncology","bi-bezier2","Integrated cancer care & therapy."),
-                ("Gynecology","bi-gender-female","Women?s health and maternity.")})
+                ("Gynecology","bi-gender-female","Women's health and maternity.")})
             {
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="dept-card border p-3 h-100 bg-white">
+                    <div class="dept-card glass-card border p-3 h-100 hover-3d">
                         <div class="d-flex align-items-start">
                             <i class="bi @dept.Item2 fs-2 text-primary me-3"></i>
                             <div>
@@ -128,7 +144,7 @@
     <!-- Care Pathway -->
     <div class="content-section mb-4">
         <h3 class="mb-3">Your Care Pathway</h3>
-        <div class="timeline">
+        <div class="timeline glass-card">
             <div class="timeline-item">
                 <span class="dot"></span>
                 <h5 class="mb-1">1. Book Appointment</h5>
@@ -155,7 +171,7 @@
     <!-- FAQ -->
     <div class="content-section">
         <h3 class="mb-3">Frequently Asked Questions</h3>
-        <div class="accordion" id="faqAccordion">
+        <div class="accordion glass-card" id="faqAccordion">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="q1h">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#q1" aria-expanded="true" aria-controls="q1">
@@ -179,7 +195,7 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="q3h">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q3" aria-expanded="false" aria-controls="q3">
-                        What are your emergency care hours?
+                        What are our emergency care hours?
                     </button>
                 </h2>
                 <div id="q3" class="accordion-collapse collapse" aria-labelledby="q3h" data-bs-parent="#faqAccordion">
@@ -191,4 +207,68 @@
 </div>
 
 @section Scripts{
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Particle system using jQuery
+    function createParticles() {
+        const $container = $('#particles-container');
+        if (!$container.length) return; 
+        const particleCount = 50;
+
+        for (let i = 0; i < particleCount; i++) {
+            $('<div>').addClass('particle').css({
+                left: Math.random() * 100 + '%',
+                top: Math.random() * 100 + '%',
+                animationDelay: Math.random() * 20 + 's',
+                animationDuration: (Math.random() * 10 + 10) + 's'
+            }).appendTo($container);
+        }
+    }
+
+    $(function () {
+        // Initialize particles
+        createParticles();
+
+        // Enhanced reveal animation
+        function inViewport($el) {
+            if ($el.length === 0) return false;
+            const top = $el.offset().top;
+            const bottom = top + $el.outerHeight();
+            const viewTop = $(window).scrollTop();
+            const viewBottom = viewTop + $(window).height();
+            return bottom > viewTop + 60 && top < viewBottom - 60;
+        }
+
+        const $reveal = $('.feature-card, .dept-card, .timeline, .accordion');
+        $reveal.addClass('will-reveal');
+
+        function processReveal() {
+            $reveal.each(function () {
+                const $el = $(this);
+                if ($el.hasClass('reveal-in')) return;
+                if (inViewport($el)) {
+                    setTimeout(() => $el.addClass('reveal-in'), $el.index() * 100);
+                }
+            });
+        }
+
+        processReveal();
+        $(window).on('scroll resize', processReveal);
+
+        // Enhanced 3D hover effects using jQuery
+        $('.hover-3d').on('mousemove', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 10;
+            const rotateY = (centerX - x) / 10;
+
+            $(this).css('transform', `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`);
+        }).on('mouseleave', function() {
+            $(this).css('transform', 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
+        });
+    });
+</script>
 }

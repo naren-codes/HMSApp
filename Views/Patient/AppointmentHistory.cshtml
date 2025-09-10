@@ -1,4 +1,5 @@
-﻿@model IEnumerable<HMSApp.Models.Appointment>
+﻿@* This now points to the ViewModel which holds both appointments and scans *@
+@model HMSApp.ViewModels.AppointmentHistoryViewModel
 
 @{
     ViewData["Title"] = "Appointment History";
@@ -14,22 +15,24 @@
         <p>Review your past, present, and future appointments. Use the filters to navigate your history.</p>
     </div>
 
-    @if (Model != null && Model.Any())
+    @if (Model != null && (Model.Appointment.Any() || Model.Scan.Any()))
     {
         <ul class="nav nav-pills ah-filter-pills mb-4">
             <li class="nav-item"><a class="nav-link active" href="#" data-status="all">All</a></li>
             <li class="nav-item"><a class="nav-link" href="#" data-status="upcoming">Upcoming</a></li>
             <li class="nav-item"><a class="nav-link" href="#" data-status="completed">Completed</a></li>
             <li class="nav-item"><a class="nav-link" href="#" data-status="pending">Pending</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" data-status="scans">Scans</a></li>
         </ul>
 
+        @* Section 1: APPOINTMENTS - Loops through Model.Appointments *@
         <div id="appointment-list">
-            @foreach (var appointment in Model)
+            @foreach (var appointment in Model.Appointment)
             {
                 <div class="ah-card ah-fade-in" data-status="@appointment.Status.ToLower()">
                     <div class="ah-card-header">
                         <span class="ah-doctor-info">Dr. @appointment.DoctorName</span>
-                        <span class="badge bg-@appointment.Status.ToLower()">@appointment.Status</span>
+                        <span class="badge bg-secondary">@appointment.Status</span>
                     </div>
                     <div class="ah-details">
                         <div class="ah-detail-item">
@@ -42,11 +45,48 @@
                         </div>
                         <div class="ah-detail-item">
                             <i class="bi bi-file-earmark-medical icon"></i>
-                            <strong>Symptoms:</strong> @(string.IsNullOrWhiteSpace(appointment.PatientDescription) ? "N/A" : appointment.PatientDescription)
+                            <strong>Symptoms:</strong> @appointment.Symptoms
                         </div>
                     </div>
                 </div>
             }
+        </div>
+
+        
+        <div id="scans-list" style="display:none;">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered align-middle">
+                            <thead class="bg-dark text-white">
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Patient Name</th>
+                                    <th>Appointment Date</th>
+                                    <th>Lab Name</th>
+                                    <th>Scan Type</th>
+                                    <th>File</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var scan in Model.Scan)
+                                {
+                                    <tr>
+                                        <td>@scan.Id</td>
+                                        <td>@scan.PatientName</td>
+                                        <td>@scan.AppointmentDate.ToString("dd MMMM, yyyy")</td>
+                                        <td>@scan.LabName</td>
+                                        <td>@scan.ScanType</td>
+                                        <td>
+                                            <a asp-action="ViewScanDocument" asp-controller="Patient" asp-route-id="@scan.Id" class="btn btn-info btn-sm" target="_blank">View</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     }
     else
@@ -54,22 +94,21 @@
         <div class="ah-empty-state">
             <i class="bi bi-info-circle icon"></i>
             <h5>No History Found</h5>
-            <p>You haven't booked any appointments with us yet.</p>
+            <p>You haven't booked any appointments or scans with us yet.</p>
         </div>
     }
-
-    <div class="text-center mt-5">
-        <a asp-action="Dashboard" asp-controller="Patient" class="btn btn-secondary">
-            <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
-        </a>
-    </div>
+</div>
+<div class="text-center mt-5">
+    <a asp-action="Dashboard" asp-controller="Patient" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
+    </a>
+</div>
 </div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Function to filter appointments
             function filterAppointments(status) {
                 $('#appointment-list .ah-card').each(function () {
                     var cardStatus = $(this).data('status');
@@ -81,21 +120,24 @@
                 });
             }
 
-            // Set initial filter to 'all'
-            filterAppointments('all');
-            $('.ah-filter-pills .nav-link[data-status="all"]').addClass('active');
-
-            // Handle pill click
             $('.ah-filter-pills .nav-link').on('click', function (e) {
                 e.preventDefault();
                 $('.ah-filter-pills .nav-link').removeClass('active');
                 $(this).addClass('active');
                 var status = $(this).data('status');
-                filterAppointments(status);
+
+                if (status === 'scans') {
+                    $('#appointment-list').hide();
+                    $('#scans-list').show();
+                } else {
+                    $('#scans-list').hide();
+                    $('#appointment-list').show();
+                    filterAppointments(status);
+                }
             });
 
-            // Add class to body for background color
-            $('body').addClass('appointment-history-page');
+            // Set the initial view to the "All" tab
+            $('.ah-filter-pills .nav-link[data-status="all"]').trigger('click');
         });
     </script>
 }

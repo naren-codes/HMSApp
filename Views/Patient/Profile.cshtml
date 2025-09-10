@@ -11,7 +11,6 @@
         <div class="card-body p-4">
 
             <form asp-action="UpdateProfile" method="post">
-                @* These hidden fields are crucial for identifying the patient and preserving data *@
                 <input type="hidden" asp-for="PatientId" />
                 <input type="hidden" asp-for="Username" />
                 <input type="hidden" asp-for="Password" />
@@ -29,7 +28,7 @@
 
                         <div class="mb-3">
                             <label asp-for="DateOfBirth" class="form-label">Date of Birth</label>
-                            <input asp-for="DateOfBirth" class="form-control" type="date" />
+                            <input asp-for="DateOfBirth" class="form-control" type="date" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
                             <span asp-validation-for="DateOfBirth" class="text-danger"></span>
                         </div>
 
