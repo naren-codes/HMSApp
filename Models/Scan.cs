@@ -9,7 +9,7 @@ namespace HMSApp.Models
         // The [Key] attribute explicitly defines this as the primary key.
         [Key]
         public int Id { get; set; }
-
+        public int PatientId { get; set; }
         public string PatientName { get; set; }
 
         public DateTime AppointmentDate { get; set; }

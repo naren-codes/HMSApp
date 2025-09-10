@@ -4,9 +4,10 @@ using HMSApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using HMSApp.ViewModels;
 
 namespace HMSApp.Controllers
 {
@@ -27,40 +28,81 @@ namespace HMSApp.Controllers
             var patients = _patientService.GetAllPatients();
             return View(patients);
         }
+
+        // =========================================================================
+        // START: THIS IS THE CORRECTED AND FINAL APPOINTMENT HISTORY ACTION
+        // =========================================================================
         public async Task<IActionResult> AppointmentHistory()
         {
-            // Step 1: Get the username from the session to identify the logged-in patient.
             var username = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(username))
             {
-                // If not logged in, redirect to the login page.
                 return RedirectToAction("PatientLogin", "Account");
             }
 
-            // Step 2: Find the patient's record in the database using their username.
             var patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
             if (patient == null)
             {
-                // If no patient profile is found, they should log in again.
                 return RedirectToAction("PatientLogin", "Account");
             }
 
-            // Step 3: Fetch all appointments for this patient using your existing PatientService.
+            // 1. Fetch appointments for the patient
             var appointments = await _patientService.GetPatientAppointmentsAsync(patient.PatientId);
-
-            // Step 4: Sort the appointments to show the most recent ones first.
             var sortedAppointments = appointments
                 .OrderByDescending(a => a.AppointmentDate)
                 .ThenByDescending(a => a.TimeSlot)
                 .ToList();
 
-            // Step 5: Pass the final sorted list of appointments to the view.
-            return View(sortedAppointments);
+            // 2. Fetch scans for the patient using the reliable PatientId
+            var scans = await _context.Scan
+                                      .Where(s => s.PatientId == patient.PatientId)
+                                      .OrderByDescending(s => s.AppointmentDate)
+                                      .ToListAsync();
+
+            // 3. Create the ViewModel to hold both lists
+            var viewModel = new AppointmentHistoryViewModel
+            {
+                Appointment = sortedAppointments,
+                Scan = scans
+            };
+
+            // 4. Pass the single viewModel to the view
+            return View(viewModel);
         }
+        // =======================================================================
+        // END: APPOINTMENT HISTORY ACTION
+        // =======================================================================
+
+
+        // =======================================================================
+        // START: NEW ACTION FOR VIEWING SCAN FILES
+        // =======================================================================
+        public async Task<IActionResult> ViewScanDocument(int id)
+        {
+            var scan = await _context.Scan.FindAsync(id);
+            if (scan == null || string.IsNullOrEmpty(scan.FileName))
+            {
+                return NotFound("File not found.");
+            }
+
+            // Assumes files are in a folder named "uploads" inside "wwwroot"
+            var physicalPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", scan.FileName);
+
+            if (!System.IO.File.Exists(physicalPath))
+            {
+                return NotFound("File does not exist on the server.");
+            }
+
+            // Returns the file for viewing in the browser. 
+            // Adjust "application/pdf" to "image/jpeg", etc., if you have different file types.
+            return PhysicalFile(physicalPath, "application/pdf");
+        }
+        // =======================================================================
+        // END: NEW ACTION
+        // =======================================================================
+
         private int GetCurrentPatientId()
         {
-            // Example: Getting the ID from a session variable.
-            // Your implementation may be different.
             return HttpContext.Session.GetInt32("PatientId") ?? 0;
         }
 
@@ -147,31 +189,54 @@ namespace HMSApp.Controllers
                 .ToListAsync();
 
             List<PatientApptDashboardRow> enriched = new();
-            var usedBillIds = new HashSet<int>();
 
             foreach (var appt in appointments)
             {
                 Bill? matchedBill = null;
 
-                matchedBill = bills.FirstOrDefault(b =>
-                    b.AppointmentId == appt.AppointmentId &&
-                    !usedBillIds.Contains(b.BillId));
+                // Strategy 1: Direct appointment ID matching (best for same environment)
+                matchedBill = bills.FirstOrDefault(b => b.AppointmentId == appt.AppointmentId);
 
+                // Strategy 2: Multi-criteria matching (works across different environments)
                 if (matchedBill == null)
                 {
                     matchedBill = bills.FirstOrDefault(b =>
-                        !usedBillIds.Contains(b.BillId) &&
                         b.AppointmentDate.HasValue &&
                         b.AppointmentDate.Value.Date == appt.AppointmentDate.Date &&
                         b.DoctorName == appt.DoctorName &&
                         b.TimeSlot == appt.TimeSlot &&
-                        b.PatientName == appt.PatientName &&
-                        (appt.Status == "Completed" || b.PaymentStatus == "Paid"));
+                        b.PatientName == appt.PatientName);
                 }
 
-                if (matchedBill != null)
+                // Strategy 3: Date and patient matching (broader fallback)
+                if (matchedBill == null)
                 {
-                    usedBillIds.Add(matchedBill.BillId);
+                    var appointmentDate = appt.AppointmentDate.Date;
+
+                    var relevantBills = bills.Where(b =>
+                        b.AppointmentDate.HasValue &&
+                        b.AppointmentDate.Value.Date == appointmentDate &&
+                        b.PatientName == appt.PatientName &&
+                        b.DoctorName == appt.DoctorName).ToList();
+
+                    if (relevantBills.Any())
+                    {
+                        matchedBill = relevantBills.OrderBy(b => Math.Abs((b.BillDate - appt.AppointmentDate).TotalHours)).FirstOrDefault();
+                    }
+                }
+
+                // Strategy 4: Legacy date-based matching for older bills
+                if (matchedBill == null && string.Equals(appt.Status, "Completed", StringComparison.OrdinalIgnoreCase))
+                {
+                    var usedBillIds = enriched.Where(e => e.Bill != null).Select(e => e.Bill!.BillId).ToList();
+                    var appointmentDate = appt.AppointmentDate.Date;
+
+                    matchedBill = bills
+                        .Where(b => !usedBillIds.Contains(b.BillId) &&
+                                    (!b.AppointmentDate.HasValue || b.AppointmentDate.Value.Date == appointmentDate) &&
+                                    b.PatientName == appt.PatientName)
+                        .OrderByDescending(b => b.BillDate)
+                        .FirstOrDefault();
                 }
 
                 enriched.Add(new PatientApptDashboardRow
@@ -180,10 +245,13 @@ namespace HMSApp.Controllers
                     Bill = matchedBill
                 });
             }
+
+            // Show latest appointments first in UI
             enriched = enriched.OrderByDescending(r => r.Appointment.AppointmentDate).ToList();
             return View(enriched);
         }
 
+        // Patient-facing "Book Appointment" page (GET)
         public IActionResult BookAppointment()
         {
             var username = HttpContext.Session.GetString("Username");
@@ -195,16 +263,16 @@ namespace HMSApp.Controllers
                 return RedirectToAction("PatientLogin", "Account");
 
             ViewBag.PatientName = patient.Name;
-            
+
             // Get all doctors with availability status
             var allDoctors = _context.Doctor
                 .OrderBy(d => d.Name)
                 .ToList();
 
-            var doctorOptions = allDoctors.Select(d => new SelectListItem 
-            { 
-                Value = d.DoctorId.ToString(), 
-                Text = d.IsAvailable 
+            var doctorOptions = allDoctors.Select(d => new SelectListItem
+            {
+                Value = d.DoctorId.ToString(),
+                Text = d.IsAvailable
                     ? (d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization})" : d.Name)
                     : (d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization}) - Unavailable" : $"{d.Name} - Unavailable"),
                 Disabled = !d.IsAvailable
@@ -214,7 +282,7 @@ namespace HMSApp.Controllers
             return View();
         }
 
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult BookAppointment(Appointment model, string PatientDescription, string PatientName)
@@ -228,7 +296,7 @@ namespace HMSApp.Controllers
             model.PatientName = string.IsNullOrWhiteSpace(PatientName) ? patient.Name : PatientName.Trim();
             model.Symptoms = PatientDescription;
             model.Status = "Pending";
-            
+
             // Check if selected doctor is available
             var selectedDoctor = _context.Doctor.FirstOrDefault(d => d.DoctorId == model.DoctorId);
             if (selectedDoctor == null)
@@ -239,20 +307,20 @@ namespace HMSApp.Controllers
             {
                 ModelState.AddModelError("DoctorId", "This doctor is currently unavailable. Please select another doctor.");
             }
-            
+
             if (!ModelState.IsValid)
             {
                 ViewBag.PatientName = model.PatientName;
-                
+
                 // Get all doctors with availability status for validation errors
                 var allDoctors = _context.Doctor
                     .OrderBy(d => d.Name)
                     .ToList();
 
-                var doctorOptions = allDoctors.Select(d => new SelectListItem 
-                { 
-                    Value = d.DoctorId.ToString(), 
-                    Text = d.IsAvailable 
+                var doctorOptions = allDoctors.Select(d => new SelectListItem
+                {
+                    Value = d.DoctorId.ToString(),
+                    Text = d.IsAvailable
                         ? (d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization})" : d.Name)
                         : (d.Specialization != null && d.Specialization != "" ? $"{d.Name} ({d.Specialization}) - Unavailable" : $"{d.Name} - Unavailable"),
                     Disabled = !d.IsAvailable
@@ -336,9 +404,12 @@ namespace HMSApp.Controllers
 
             if (bill.PaymentStatus == "Paid")
             {
+                if (bill.Prescription?.Contains("[ON-SPOT]") == true)
+                    return RedirectToAction("OnSpotBill", new { billId = bill.BillId });
                 return RedirectToAction("Bill", new { billId });
             }
 
+            const string offlineTag = "";
             if (mode == "Online")
             {
                 if (string.IsNullOrWhiteSpace(upiId))
@@ -346,46 +417,20 @@ namespace HMSApp.Controllers
                     ModelState.AddModelError("UpiId", "UPI Id required for online payment");
                     return View("Payment", bill);
                 }
-                // Use "Paid" status that complies with database constraint
-                // Store payment method info in prescription field for tracking
                 bill.PaymentStatus = "Paid";
-                if (!string.IsNullOrWhiteSpace(bill.Prescription))
-                {
-                    bill.Prescription += " [PAYMENT: UPI]";
-                }
-                else
-                {
-                    bill.Prescription = "[PAYMENT: UPI]";
-                }
             }
             else
             {
-                // Use "Paid" status that complies with database constraint
                 bill.PaymentStatus = "Paid";
-                if (!string.IsNullOrWhiteSpace(bill.Prescription))
+                if (bill.Prescription == null || !bill.Prescription.Contains(offlineTag))
                 {
-                    bill.Prescription += " [PAYMENT: Cash]";
-                }
-                else
-                {
-                    bill.Prescription = "[PAYMENT: Cash]";
+                    bill.Prescription = (bill.Prescription == null ? offlineTag : bill.Prescription + "\n" + offlineTag);
                 }
             }
             bill.BillDate = DateTime.UtcNow;
-
-            // UPDATE APPOINTMENT STATUS TO COMPLETED WHEN PAYMENT IS SUCCESSFUL
-            if (bill.AppointmentId.HasValue)
-            {
-                var appointment = await _context.Appointment.FirstOrDefaultAsync(a => a.AppointmentId == bill.AppointmentId.Value);
-                if (appointment != null)
-                {
-                    appointment.Status = "Completed";
-                }
-            }
-
             await _context.SaveChangesAsync();
-            
-            // All payments redirect to regular Bill.cshtml
+            if (bill.Prescription?.Contains("[ON-SPOT]") == true)
+                return RedirectToAction("OnSpotBill", new { billId = bill.BillId });
             return RedirectToAction("Bill", new { billId = bill.BillId });
         }
 
@@ -422,32 +467,12 @@ namespace HMSApp.Controllers
             if (bill == null || patient == null) return NotFound();
             if (bill.PaymentStatus != "Paid")
             {
-                // Use "Paid" status that complies with database constraint
                 bill.PaymentStatus = "Paid";
-                // Store payment method info in prescription field for tracking
-                if (!string.IsNullOrWhiteSpace(bill.Prescription))
-                {
-                    bill.Prescription += " [PAYMENT: GPay]";
-                }
-                else
-                {
-                    bill.Prescription = "[PAYMENT: GPay]";
-                }
                 bill.BillDate = DateTime.UtcNow;
-
-                // UPDATE APPOINTMENT STATUS TO COMPLETED WHEN QR PAYMENT IS CONFIRMED
-                if (bill.AppointmentId.HasValue)
-                {
-                    var appointment = await _context.Appointment.FirstOrDefaultAsync(a => a.AppointmentId == bill.AppointmentId.Value);
-                    if (appointment != null)
-                    {
-                        appointment.Status = "Completed";
-                    }
-                }
-
                 await _context.SaveChangesAsync();
             }
-            // Redirect to regular Bill.cshtml for QR/GPay payments
+            if (bill.Prescription?.Contains("[ON-SPOT]") == true)
+                return RedirectToAction("OnSpotBill", new { billId = bill.BillId });
             return RedirectToAction("Bill", new { billId = bill.BillId });
         }
 
@@ -458,8 +483,6 @@ namespace HMSApp.Controllers
             var doctorId = HttpContext.Session.GetInt32("DoctorId");
             Bill? bill = null;
             Patient? patient = null;
-            bool isDoctorMode = false;
-            
             if (!string.IsNullOrEmpty(username))
             {
                 patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
@@ -468,7 +491,6 @@ namespace HMSApp.Controllers
             }
             else if (doctorId != null)
             {
-                isDoctorMode = true;
                 bill = await _context.Bill.FirstOrDefaultAsync(b => b.BillId == billId);
                 if (bill != null)
                     patient = await _context.Patient.FirstOrDefaultAsync(p => p.PatientId == bill.PatientId);
@@ -478,10 +500,10 @@ namespace HMSApp.Controllers
                 return RedirectToAction("PatientLogin", "Account");
             }
             if (bill == null || patient == null) return NotFound();
-            
-            ViewData["DoctorMode"] = isDoctorMode;
+            if (bill.Prescription?.Contains("[ON-SPOT]") != true)
+                return RedirectToAction("Bill", new { billId });
             var vm = new BillDisplayViewModel { Bill = bill, Patient = patient };
-            return View("Bill_2", vm); // Use Bill_2.cshtml for online payments
+            return View("Bill_2", vm);
         }
 
         [HttpGet]
@@ -543,7 +565,7 @@ namespace HMSApp.Controllers
                 }
                 return RedirectToAction(nameof(Dashboard));
             }
-           
+
             return View("Profile", patient);
         }
 
@@ -553,8 +575,6 @@ namespace HMSApp.Controllers
             var username = HttpContext.Session.GetString("Username");
             var doctorId = HttpContext.Session.GetInt32("DoctorId");
             Bill? bill = null; Patient? patient = null;
-            bool isDoctorMode = false;
-            
             if (!string.IsNullOrEmpty(username))
             {
                 patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
@@ -563,7 +583,6 @@ namespace HMSApp.Controllers
             }
             else if (doctorId != null)
             {
-                isDoctorMode = true;
                 bill = await _context.Bill.FirstOrDefaultAsync(b => b.BillId == billId);
                 if (bill != null)
                     patient = await _context.Patient.FirstOrDefaultAsync(p => p.PatientId == bill.PatientId);
@@ -573,8 +592,8 @@ namespace HMSApp.Controllers
                 return RedirectToAction("PatientLogin", "Account");
             }
             if (bill == null || patient == null) return NotFound();
-            
-            ViewData["DoctorMode"] = isDoctorMode;
+            if (bill.Prescription?.Contains("[ON-SPOT]") == true)
+                return RedirectToAction("OnSpotBill", new { billId });
             var vm = new BillDisplayViewModel { Bill = bill, Patient = patient };
             return View("Bill", vm);
         }
@@ -592,23 +611,20 @@ namespace HMSApp.Controllers
             return View("Mri", scan);
         }
         [HttpPost]
-        public async Task<IActionResult> AddMri(Scan scanFromForm) // Renamed for clarity
+        public async Task<IActionResult> AddMri(Scan scanFromForm)
         {
-            // 1. Create a new, clean Scan object
+            var username = HttpContext.Session.GetString("Username");
+            var patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
+            if (patient == null) return RedirectToAction("PatientLogin", "Account");
+
             var newScan = new Scan
             {
-                // 2. Copy the values you actually need from the form
                 PatientName = scanFromForm.PatientName,
-                AppointmentDate = scanFromForm.AppointmentDate
-                // Note: Any other properties from the form would be copied here
+                AppointmentDate = scanFromForm.AppointmentDate,
+                PatientId = patient.PatientId,
+                LabName = "Lab A",
+                ScanType = "MRI"
             };
-
-            // 3. Manually set the values for this specific action
-            newScan.LabName = "Lab A";
-            newScan.ScanType = "MRI";
-
-            // 4. Add the new object and save it
-            // We don't need to check ModelState.IsValid because we built the object ourselves
             _context.Scan.Add(newScan);
             await _context.SaveChangesAsync();
 
@@ -623,12 +639,14 @@ namespace HMSApp.Controllers
             return View("CTScan", scan);
         }
 
-        // In PatientController.cs
-
         [HttpPost]
         public async Task<IActionResult> CTScan(Scan scan)
         {
-            // These lines are crucial to ensure the correct values are saved.
+            var username = HttpContext.Session.GetString("Username");
+            var patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
+            if (patient == null) return RedirectToAction("PatientLogin", "Account");
+
+            scan.PatientId = patient.PatientId;
             scan.LabName = "Lab B";
             scan.ScanType = "CTScan";
 
@@ -636,8 +654,7 @@ namespace HMSApp.Controllers
             {
                 _context.Scan.Add(scan);
                 await _context.SaveChangesAsync();
-                // Change the redirect destination here
-                return RedirectToAction("Dashboard"); // Redirects to the Patient Dashboard
+                return RedirectToAction("Dashboard");
             }
 
             return View("CTScan", scan);
@@ -650,25 +667,22 @@ namespace HMSApp.Controllers
             return View("XRay", scan);
         }
 
-        // In PatientController.cs
-
         [HttpPost]
         public async Task<IActionResult> XRay(Scan scan)
         {
+            var username = HttpContext.Session.GetString("Username");
+            var patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
+            if (patient == null) return RedirectToAction("PatientLogin", "Account");
+
             var newScan = new Scan
             {
-                // 2. Copy the values you actually need from the form
                 PatientName = scan.PatientName,
-                AppointmentDate = scan.AppointmentDate
-                // Note: Any other properties from the form would be copied here
+                AppointmentDate = scan.AppointmentDate,
+                PatientId = patient.PatientId,
+                LabName = "Lab C",
+                ScanType = "X-RAY"
             };
 
-            // 3. Manually set the values for this specific action
-            newScan.LabName = "Lab C";
-            newScan.ScanType = "X-RAY";
-
-            // 4. Add the new object and save it
-            // We don't need to check ModelState.IsValid because we built the object ourselves
             _context.Scan.Add(newScan);
             await _context.SaveChangesAsync();
 
@@ -683,6 +697,11 @@ namespace HMSApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddUltrasound(Scan scan)
         {
+            var username = HttpContext.Session.GetString("Username");
+            var patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
+            if (patient == null) return RedirectToAction("PatientLogin", "Account");
+
+            scan.PatientId = patient.PatientId;
             scan.LabName = "Lab C";
 
             if (scan.AppointmentDate == default(DateTime))
@@ -700,10 +719,6 @@ namespace HMSApp.Controllers
             return View("Ultrasound", scan);
         }
 
-
-
-
-
         public class PatientApptDashboardRow
         {
             public Appointment Appointment { get; set; } = null!;
@@ -715,6 +730,5 @@ namespace HMSApp.Controllers
             public Bill Bill { get; set; } = null!;
             public Patient Patient { get; set; } = null!;
         }
-    
-}}
-
+    }
+}
