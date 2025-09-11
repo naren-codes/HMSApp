@@ -15,8 +15,7 @@
             </div>
             <div class="nav-quick">
                 <a class="btn btn-sm btn-light px-3" asp-controller="Patient" asp-action="AppointmentHistory"><i class="bi bi-calendar-event me-1"></i>Appointments</a>
-                <a class="btn btn-sm btn-light px-3" href="#"><i class="bi bi-capsule-pill me-1"></i>Prescriptions</a>
-                <a class="btn btn-sm btn-light px-3" href="#"><i class="bi bi-person-badge me-1"></i>Profile</a>
+                <a class="btn btn-sm btn-light px-3" asp-controller="Patient" asp-action="Profile"><i class="bi bi-person-badge me-1"></i>Profile</a>
             </div>
         </div>
     </div>
@@ -24,41 +23,38 @@
     <div class="container main-content">
         <div class="row g-4 justify-content-center">
 
+            <!-- MRI Card -->
             <div class="col-md-4">
                 <div class="stat-card p-3 dd-header-bar h-100">
-                    <div class="card-body text-center p-4">
+                    <div class="card-body text-center p-4 d-flex flex-column align-items-center">
                         <i class="bi bi-life-preserver display-4 text-info mb-3"></i>
                         <h5 class="card-title fw-bold">MRI Scan</h5>
-                        <p class="card-text text-muted">
-                            A non-invasive imaging technique using a magnetic field and radio waves.
-                        </p>
-                        <a asp-controller="Patient" asp-action="Mri" class="btn btn-info text-white mt-3">Book Now</a>
+                        <p class="card-text text-muted mb-3">A non-invasive imaging technique using a magnetic field and radio waves.</p>
+                        <a asp-controller="Patient" asp-action="Mri" class="btn btn-info text-white mt-auto">Book Now</a>
                     </div>
                 </div>
             </div>
 
+            <!-- CT Scan Card -->
             <div class="col-md-4">
                 <div class="stat-card p-3 h-100" style="background:var(--dd-green-grad)">
-                    <div class="card-body text-center p-4">
-                        <i class="bi bi-radioactive display-4 text-white mb-3 text-glow"></i>
+                    <div class="card-body text-center p-4 d-flex flex-column align-items-center">
+                        <img src="~/images/ct-scan.png" alt="CT Scan Logo" class="ct-scan-logo mb-3" />
                         <h5 class="card-title fw-bold">CT Scan</h5>
-                        <p class="card-text text-muted">
-                            Produces detailed images of internal organs, bones, soft tissue, and blood vessels.
-                        </p>
-                        <a asp-controller="Patient" asp-action="CtScan" class="btn btn-success mt-3">Book Now</a>
+                        <p class="card-text text-muted mb-3">Produces detailed images of internal organs, bones, soft tissue, and blood vessels.</p>
+                        <a asp-controller="Patient" asp-action="CtScan" class="btn btn-success mt-auto">Book Now</a>
                     </div>
                 </div>
             </div>
 
+            <!-- X-Ray Card -->
             <div class="col-md-4">
                 <div class="stat-card p-3 h-100" style="background:var(--dd-accent-grad)">
-                    <div class="card-body text-center p-4">
-                        <i class="bi bi-shield-fill display-4 text-white mb-3 text-glow"></i>
+                    <div class="card-body text-center p-4 d-flex flex-column align-items-center">
+                        <i class="bi bi-radioactive display-4 text-white mb-3 text-glow"></i>
                         <h5 class="card-title fw-bold">X-Ray</h5>
-                        <p class="card-text text-muted">
-                            Quick and painless medical imaging to create pictures of the structures inside your body.
-                        </p>
-                        <a asp-controller="Patient" asp-action="XRay" class="btn btn-light mt-3">Book Now</a>
+                        <p class="card-text text-muted mb-3">Quick and painless medical imaging to create pictures of the structures inside your body.</p>
+                        <a asp-controller="Patient" asp-action="XRay" class="btn btn-light mt-auto">Book Now</a>
                     </div>
                 </div>
             </div>
