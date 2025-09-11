@@ -71,6 +71,15 @@
                     $(this).toggle(text.indexOf(term) > -1);
                 });
             });
+            var errorMessage = '@(TempData["ErrorMessage"])';
+            if (errorMessage) {
+                alert(errorMessage);
+            }
+
+            var successMessage = '@(TempData["SuccessMessage"])';
+            if (successMessage) {
+                alert(successMessage);
+            }
         });
     </script>
 }

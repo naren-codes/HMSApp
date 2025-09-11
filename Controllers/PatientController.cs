@@ -154,12 +154,27 @@ namespace HMSApp.Controllers
 
         // Admin-facing delete confirmation (POST)
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken] // Good practice to add this for POST actions
         public IActionResult DeleteConfirmed(int id)
         {
-            _patientService.DeletePatient(id);
-            return RedirectToAction("Index");
-        }
+            try
+            {
+                // 1. Attempt to delete the patient
+                _patientService.DeletePatient(id);
 
+                // 2. (Optional) If successful, set a success message
+                TempData["SuccessMessage"] = "Patient deleted successfully.";
+            }
+            catch (DbUpdateException)
+            {
+                // 3. If a database error occurs (like a foreign key conflict),
+                //    set a user-friendly error message.
+                TempData["ErrorMessage"] = "Cannot delete this patient because they have existing appointments linked to them.";
+            }
+
+            // 4. Redirect back to the patient list page in either case.
+            return RedirectToAction(nameof(Index));
+        }
         // Patient-facing dashboard
         public async Task<IActionResult> Dashboard()
         {
