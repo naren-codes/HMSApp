@@ -4,7 +4,6 @@
     Layout = "_Layout";
 }
 
-<!-- Animated Background Elements from Landing Page -->
 <div id="particles-container" aria-hidden="true"></div>
 
 <div class="floating-shapes" aria-hidden="true">
@@ -15,16 +14,14 @@
     <div class="shape shape-5"></div>
 </div>
 
-<section class="hero-section text-white d-flex align-items-center" style="min-height: 100vh;">
+<section class="hero-section text-white d-flex align-items-center justify-content-center vh-100">
     <div class="hero-background-animation"></div>
     <div class="glass-overlay"></div>
-    
+
     <div class="container position-relative">
         <div class="row justify-content-center">
-            <div class="col-lg-5 col-md-7 col-sm-9">
-                <!-- Login Card with Glass Effect -->
+            <div class="col-lg-6 col-md-7 col-sm-9">
                 <div class="glass-card p-4 p-md-5 text-center">
-                    <!-- Header -->
                     <div class="mb-4">
                         <div class="portal-icon patient-gradient mx-auto mb-3" style="width: 80px; height: 80px;">
                             <i class="bi bi-person-heart"></i>
@@ -34,7 +31,6 @@
                         <p class="text-light opacity-75">Sign in to access your health dashboard</p>
                     </div>
 
-                    <!-- Error Display -->
                     @if (ViewBag.Error != null)
                     {
                         <div class="alert alert-danger glass-card mb-4" style="background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.3); color: #fff;">
@@ -42,25 +38,23 @@
                         </div>
                     }
 
-                    <!-- Login Form -->
                     <form asp-action="LoginPatient" method="post" class="text-start">
                         <div class="mb-3">
                             <label for="username" class="form-label text-light">Username</label>
                             <input name="username" type="text" class="form-control glass-input" id="username" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
                         </div>
-                        
+
                         <div class="mb-4">
                             <label for="password" class="form-label text-light">Password</label>
                             <input name="password" type="password" class="form-control glass-input" id="password" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
                         </div>
 
-                        <!-- Action Buttons -->
                         <div class="d-grid gap-3">
                             <button type="submit" class="btn btn-portal-patient btn-lg hover-lift">
                                 <i class="bi bi-box-arrow-in-right me-2"></i>
                                 Sign In
                             </button>
-                            
+
                             <div class="text-center">
                                 <span class="text-light opacity-75">Don't have an account?</span>
                                 <a asp-action="PatientRegister" class="btn btn-glass btn-sm ms-2 hover-lift">
@@ -84,7 +78,7 @@
         // Particle system using jQuery
         function createParticles() {
             const $container = $('#particles-container');
-            if (!$container.length) return; 
+            if (!$container.length) return;
             const particleCount = 50;
 
             for (let i = 0; i < particleCount; i++) {
@@ -128,7 +122,7 @@
     .text-accent {
         color: var(--accent-color) !important;
     }
-    
+
     .input-focused {
         transform: scale(1.02);
     }

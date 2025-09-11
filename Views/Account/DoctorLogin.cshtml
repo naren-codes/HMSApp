@@ -4,7 +4,6 @@
     Layout = "_Layout";
 }
 
-<!-- Animated Background Elements from Landing Page -->
 <div id="particles-container" aria-hidden="true"></div>
 
 <div class="floating-shapes" aria-hidden="true">
@@ -15,62 +14,53 @@
     <div class="shape shape-5"></div>
 </div>
 
-<section class="hero-section text-white d-flex align-items-center" style="min-height: 100vh;">
+<section class="hero-section text-white" style="min-height: 100vh; position: relative;">
     <div class="hero-background-animation"></div>
     <div class="glass-overlay"></div>
-    
-    <div class="container position-relative">
-        <div class="row justify-content-center">
-            <div class="col-lg-5 col-md-7 col-sm-9">
-                <!-- Login Card with Glass Effect -->
-                <div class="glass-card p-4 p-md-5 text-center">
-                    <!-- Header -->
-                    <div class="mb-4">
-                        <div class="portal-icon doctor-gradient mx-auto mb-3" style="width: 80px; height: 80px;">
-                            <div class="doctor-logo-container">
-                                <img src="~/images/doctor-logo.png" alt="Doctor Logo" class="doctor-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="doctor-logo-fallback">
-                                    <i class="bi bi-person-fill-gear"></i>
-                                </div>
-                            </div>
-                            <div class="icon-ripple"></div>
+
+    <div class="login-container">
+        <div class="glass-card p-4 p-md-5 text-center">
+            <div class="mb-4">
+                <div class="portal-icon doctor-gradient mx-auto mb-3" style="width: 80px; height: 80px;">
+                    <div class="doctor-logo-container">
+                        <img src="~/images/doctor-logo.png" alt="Doctor Logo" class="doctor-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="doctor-logo-fallback">
+                            <i class="bi bi-person-fill-gear"></i>
                         </div>
-                        <h2 class="gradient-text mb-2" style="font-size: 2.5rem;">Doctor Portal</h2>
-                        <p class="text-light opacity-75">Access your clinical dashboard</p>
                     </div>
-
-                    <!-- Error Display -->
-                    @if (ViewBag.Error != null)
-                    {
-                        <div class="alert alert-danger glass-card mb-4" style="background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.3); color: #fff;">
-                            <i class="bi bi-exclamation-triangle me-2"></i>@ViewBag.Error
-                        </div>
-                    }
-
-                    <!-- Login Form -->
-                    <form asp-action="LoginDoctor" asp-controller="Account" method="post" class="text-start">
-                        <input type="hidden" name="userType" value="doctor" />
-                        
-                        <div class="mb-3">
-                            <label for="username" class="form-label text-light">Username</label>
-                            <input type="text" class="form-control glass-input" id="username" name="username" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label for="password" class="form-label text-light">Password</label>
-                            <input type="password" class="form-control glass-input" id="password" name="password" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="d-grid gap-3">
-                            <button type="submit" class="btn btn-portal-doctor btn-lg hover-lift">
-                                <i class="bi bi-box-arrow-in-right me-2"></i>
-                                Sign In
-                            </button>
-                        </div>
-                    </form>
+                    <div class="icon-ripple"></div>
                 </div>
+                <h2 class="gradient-text mb-2" style="font-size: 2.5rem;">Doctor Portal</h2>
+                <p class="text-light opacity-75">Access your clinical dashboard</p>
             </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger glass-card mb-4" style="background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.3); color: #fff;">
+                    <i class="bi bi-exclamation-triangle me-2"></i>@ViewBag.Error
+                </div>
+            }
+
+            <form asp-action="LoginDoctor" asp-controller="Account" method="post" class="text-start">
+                <input type="hidden" name="userType" value="doctor" />
+
+                <div class="mb-3">
+                    <label for="username" class="form-label text-light">Username</label>
+                    <input type="text" class="form-control glass-input" id="username" name="username" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label text-light">Password</label>
+                    <input type="password" class="form-control glass-input" id="password" name="password" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
+                </div>
+
+                <div class="d-grid gap-3">
+                    <button type="submit" class="btn btn-portal-doctor btn-lg hover-lift">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        Sign In
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </section>
@@ -81,7 +71,7 @@
         // Particle system using jQuery
         function createParticles() {
             const $container = $('#particles-container');
-            if (!$container.length) return; 
+            if (!$container.length) return;
             const particleCount = 50;
 
             for (let i = 0; i < particleCount; i++) {
@@ -122,10 +112,21 @@
 }
 
 <style>
+    .login-container {
+        /* This is the magic for centering */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        /* This ensures the card has a responsive width */
+        width: 90%;
+        max-width: 520px;
+    }
+
     .text-accent {
         color: var(--accent-color) !important;
     }
-    
+
     .input-focused {
         transform: scale(1.02);
     }

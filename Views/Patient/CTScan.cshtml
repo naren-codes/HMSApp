@@ -12,8 +12,7 @@
             </div>
             <div class="nav-quick">
                 <a class="btn btn-sm btn-light px-3" asp-controller="Patient" asp-action="AppointmentHistory"><i class="bi bi-calendar-event me-1"></i>Appointments</a>
-                <a class="btn btn-sm btn-light px-3" href="#"><i class="bi bi-capsule-pill me-1"></i>Prescriptions</a>
-                <a class="btn btn-sm btn-light px-3" href="#"><i class="bi bi-person-badge me-1"></i>Profile</a>
+                <a class="btn btn-sm btn-light px-3" asp-controller="Patient"  asp-action="Profile"><i class="bi bi-person-badge me-1"></i>Profile</a>
             </div>
         </div>
     </div>
@@ -22,7 +21,7 @@
         <div class="col-md-6 col-lg-6">
             <div class="card">
                 <div class="card-header bg-primary">
-                    <h5 class="card-title text-center text-white">CTScan Appointment Booking</h5>
+                    <h5 class="card-title text-center text-white">CT Scan Appointment Booking</h5>
                 </div>
                 <div class="card-body">
                     <form asp-action="CTScan" method="post">
