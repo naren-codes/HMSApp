@@ -24,6 +24,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
     options.IdleTimeout = TimeSpan.FromMinutes(30);
 });
+builder.Services.AddApplicationInsightsTelemetry();
 
 var app = builder.Build();
 

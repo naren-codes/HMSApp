@@ -619,7 +619,7 @@ namespace HMSApp.Controllers
             var username = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(username))
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("PatientLogin", "Account");
             }
 
             var patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
