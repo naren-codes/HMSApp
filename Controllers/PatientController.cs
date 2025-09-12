@@ -67,14 +67,7 @@ namespace HMSApp.Controllers
             // 4. Pass the single viewModel to the view
             return View(viewModel);
         }
-        // =======================================================================
-        // END: APPOINTMENT HISTORY ACTION
-        // =======================================================================
-
-
-        // =======================================================================
-        // START: NEW ACTION FOR VIEWING SCAN FILES
-        // =======================================================================
+        
         public async Task<IActionResult> ViewScanDocument(int id)
         {
             var scan = await _context.Scan.FindAsync(id);
@@ -116,10 +109,7 @@ namespace HMSApp.Controllers
                     return "application/octet-stream"; // Generic binary file type
             }
         }
-        // =======================================================================
-        // END: NEW ACTION
-        // =======================================================================
-
+        
         private int GetCurrentPatientId()
         {
             return HttpContext.Session.GetInt32("PatientId") ?? 0;
@@ -526,7 +516,9 @@ namespace HMSApp.Controllers
             {
                 bill = await _context.Bill.FirstOrDefaultAsync(b => b.BillId == billId);
                 if (bill != null)
+                {
                     patient = await _context.Patient.FirstOrDefaultAsync(p => p.PatientId == bill.PatientId);
+                }
             }
             else
             {

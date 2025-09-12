@@ -1,76 +1,51 @@
 ﻿@model HMSApp.Models.Scan
-
 @{
-    ViewData["Title"] = "Appointment Details";
+    ViewData["Title"] = "Upload Scan";
 }
-
 <div class="container my-5">
-    <div class="card shadow p-4">
-        <div class="card-body text-center">
-            <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
-            <h1 class="card-title mb-4 fw-bold">Appointment Accepted!</h1>
-            <p class="card-text fs-5">Here are the details for the confirmed appointment:</p>
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Upload Scan Document</h2>
+        </div>
+        <div class="card-body">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+            }
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            }
 
-            <div class="text-start mt-4">
-                <p><strong>ID:</strong> @Model.Id</p>
-                <p><strong>Patient Name:</strong> @Model.PatientName</p>
-                <p><strong>Appointment Date:</strong> @Model.AppointmentDate.ToShortDateString()</p>
-                <p><strong>Lab Name:</strong> @Model.LabName</p>
-                <p><strong>Scan Type:</strong> @Model.ScanType</p>
+            <dl class="row">
+                <dt class="col-sm-3">Patient</dt>
+                <dd class="col-sm-9">@Model.PatientName</dd>
+                <dt class="col-sm-3">Scan Type</dt>
+                <dd class="col-sm-9">@Model.ScanType</dd>
+                <dt class="col-sm-3">Appointment Date</dt>
+                <dd class="col-sm-9">@Model.AppointmentDate.ToString("dd MMM yyyy")</dd>
+                <dt class="col-sm-3">Current File</dt>
+                <dd class="col-sm-9">
+                    @if (!string.IsNullOrEmpty(Model.FileName))
+                    {
+                        <a href="~/uploads/@Model.FileName" target="_blank" class="btn btn-info btn-sm">View</a>
+                    }
+                    else
+                    {
+                        <span>No File</span>
+                    }
+                </dd>
+            </dl>
 
-                <hr class="my-4">
-                <h5 class="fw-bold">Upload Scan Document</h5>
-
-                <form asp-action="Upload" method="post" enctype="multipart/form-data">
-
-                    <input type="hidden" name="patientName" value="@Model.PatientName" />
-
-                    <div class="input-group">
-                        <input type="file"
-                               name="scanFile"
-                               class="form-control"
-                               id="scanFileInput"
-                               accept=".pdf,.png,.jpeg,.jpg" />
-                        <button type="submit" class="btn btn-primary">Upload</button>
-                    </div>
-                </form>
-                <div class="mt-4">
-                    <a asp-action="BookedScans" class="btn btn-secondary">Back to Scan List</a>
+            <form asp-action="Upload" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <div class="mb-3">
+                    <label for="scanFile" class="form-label">Select file (PDF/JPG/PNG)</label>
+                    <input type="file" name="scanFile" id="scanFile" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required />
                 </div>
-            </div>
+                <button type="submit" class="btn btn-success">@(!string.IsNullOrEmpty(Model.FileName) ? "Re-upload" : "Upload")</button>
+                <a asp-action="BookedScans" asp-controller="Admin" class="btn btn-secondary ms-2">Back</a>
+            </form>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        // Wait for the page to be fully loaded
-        document.addEventListener('DOMContentLoaded', function () {
-
-            // Get the file input element by its ID
-            const fileInput = document.getElementById('scanFileInput');
-
-            // Add an event listener that runs when the user selects a file
-            fileInput.addEventListener('change', function () {
-                const file = this.files[0];
-                if (file) {
-                    const fileName = file.name;
-                    // Get the file extension and convert to lowercase
-                    const fileExtension = fileName.split('.').pop().toLowerCase();
-
-                    // List of allowed extensions
-                    const allowedExtensions = ['pdf', 'png', 'jpeg', 'jpg'];
-
-                    // Check if the selected file's extension is NOT in the allowed list
-                    if (!allowedExtensions.includes(fileExtension)) {
-                        // If it's not allowed, show the popup
-                        alert('You can\'t upload a .' + fileExtension + ' file.\n\nPlease upload only PNG, JPEG, JPG, or PDF files.');
-
-                        // Clear the selected file so it can't be submitted
-                        this.value = '';
-                    }
-                }
-            });
-        });
-    </script>
-}

@@ -15,6 +15,22 @@
         <p>Review your past, present, and future appointments. Use the filters to navigate your history.</p>
     </div>
 
+    @* Display success/error messages *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     @if (Model != null && (Model.Appointment.Any() || Model.Scan.Any()))
     {
         <ul class="nav nav-pills ah-filter-pills mb-4">
@@ -78,18 +94,20 @@
                                         <td>@scan.LabName</td>
                                         <td>@scan.ScanType</td>
                                         <td>
-                                            @* --- START: This is the logic to add --- *@
                                             @if (!string.IsNullOrEmpty(scan.FileName))
                                             {
                                                 @* If a filename exists in the database, show the "View" button *@
-                                                <a asp-action="ViewScanDocument" asp-controller="Patient" asp-route-id="@scan.Id" class="btn btn-info btn-sm" target="_blank">View</a>
+                                                <a asp-action="ViewScanDocument" asp-controller="Patient" asp-route-id="@scan.Id" class="btn btn-info btn-sm me-2" target="_blank">
+                                                    <i class="bi bi-eye"></i> View
+                                                </a>
+       
+                                                
                                             }
                                             else
                                             {
                                                 @* Otherwise, show a simple text message *@
                                                 <span>Not Uploaded</span>
                                             }
-                                            @* --- END: This is the logic to add --- *@
                                         </td>
                                     </tr>
                                 }

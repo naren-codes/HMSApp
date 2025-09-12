@@ -36,19 +36,17 @@ namespace HMSApp.Controllers
             return View(allScansFromDb);
         }
 
-        // The correct version of Accept, using patientName
-        public async Task<IActionResult> Accept(string patientName)
+        // Accept: open upload page for a specific scan by id
+        public async Task<IActionResult> Accept(int id)
         {
-            // The value from the link (e.g., "mani") is now in the patientName variable
-            var appointment = await _context.Scan
-                                      .FirstOrDefaultAsync(a => a.PatientName == patientName);
+            var scan = await _context.Scan.FirstOrDefaultAsync(a => a.Id == id);
 
-            if (appointment == null)
+            if (scan == null)
             {
                 return NotFound();
             }
 
-            return View(appointment);
+            return View(scan);
         }
 
         [HttpPost]
@@ -67,12 +65,12 @@ namespace HMSApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upload(string patientName, IFormFile scanFile)
+        public async Task<IActionResult> Upload(int id, IFormFile scanFile)
         {
             if (scanFile == null || scanFile.Length == 0)
             {
                 TempData["ErrorMessage"] = "Please select a file to upload.";
-                return RedirectToAction("BookedScans", new { patientName });
+                return RedirectToAction(nameof(Accept), new { id });
             }
 
             // --- START: Added File Type Validation ---
@@ -82,12 +80,11 @@ namespace HMSApp.Controllers
             if (!allowedExtensions.Contains(extension))
             {
                 TempData["ErrorMessage"] = "Invalid file type. Please upload a PDF, JPG, or PNG file.";
-                return RedirectToAction("BookedScans", new { patientName });
+                return RedirectToAction(nameof(Accept), new { id });
             }
             // --- END: Added File Type Validation ---
 
-            var scanToUpdate = await _context.Scan
-                .FirstOrDefaultAsync(s => s.PatientName == patientName);
+            var scanToUpdate = await _context.Scan.FirstOrDefaultAsync(s => s.Id == id);
 
             if (scanToUpdate == null)
             {
@@ -97,7 +94,24 @@ namespace HMSApp.Controllers
             string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
             Directory.CreateDirectory(uploadsFolder);
 
-            string uniqueFileName = Guid.NewGuid().ToString() + "_" + scanFile.FileName;
+            // Delete old file if exists
+            if (!string.IsNullOrWhiteSpace(scanToUpdate.FileName))
+            {
+                var oldFilePath = Path.Combine(uploadsFolder, scanToUpdate.FileName);
+                try
+                {
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to delete old scan file: {Path}", oldFilePath);
+                }
+            }
+
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(scanFile.FileName);
             string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
             using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -113,12 +127,13 @@ namespace HMSApp.Controllers
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "File uploaded successfully!";
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
+                _logger.LogError(ex, "Error occurred while saving the uploaded file to the database for ScanId {ScanId}", id);
                 TempData["ErrorMessage"] = "An error occurred while saving the file.";
             }
 
-            return RedirectToAction("BookedScans", new { patientName = scanToUpdate.PatientName });
+            return RedirectToAction(nameof(BookedScans));
         }
     }
 }

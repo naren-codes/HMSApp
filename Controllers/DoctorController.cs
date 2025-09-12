@@ -555,6 +555,7 @@ namespace HMSApp.Controllers
             catch (Exception ex)
             {
                 return Json(new { success = false, message = $"Error cancelling appointment: {ex.Message}" });
+
             }
         }
 
