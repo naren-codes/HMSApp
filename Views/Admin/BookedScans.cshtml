@@ -12,7 +12,6 @@
             <table class="table table-striped table-bordered">
                 <thead class="bg-dark text-white">
                     <tr>
-                        <th scope="col">Id</th>
                         <th scope="col">Patient Name</th>
                         <th scope="col">Appointment Date</th>
                         <th scope="col">Lab Name</th>
@@ -25,7 +24,6 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@item.Id</td>
 
                             <td>@(item.PatientName ?? "")</td>
 
@@ -62,5 +60,8 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="mt-4 text-center">
+        <a asp-action="Index" asp-controller="Admin" class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i> Back</a>
     </div>
 </div>
