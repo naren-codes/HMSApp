@@ -18,7 +18,7 @@
 <section class="hero-section text-white d-flex align-items-center" style="min-height: 100vh; padding-top: 2rem; padding-bottom: 2rem;">
     <div class="hero-background-animation"></div>
     <div class="glass-overlay"></div>
-    
+
     <div class="container position-relative">
         <div class="row justify-content-center">
             <div class="col-lg-7 col-md-9 col-sm-11">
@@ -43,19 +43,19 @@
                                     <i class="bi bi-person-fill me-2"></i>Personal Information
                                 </h5>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <label asp-for="Name" class="form-label text-light">Full Name</label>
                                 <input asp-for="Name" class="form-control glass-input" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);" />
                                 <span asp-validation-for="Name" class="text-danger small"></span>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <label asp-for="DateOfBirth" class="form-label text-light">Date of Birth</label>
                                 <input asp-for="DateOfBirth" class="form-control glass-input" type="date" max="@DateTime.Now.ToString("yyyy-MM-dd")" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);" />
                                 <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <label asp-for="Gender" class="form-label text-light">Gender</label>
                                 <select asp-for="Gender" class="form-control glass-input" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
@@ -66,13 +66,13 @@
                                 </select>
                                 <span asp-validation-for="Gender" class="text-danger small"></span>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <label asp-for="ContactNumber" class="form-label text-light">Contact Number</label>
-                                <input asp-for="ContactNumber" class="form-control glass-input" type="tel" pattern="[0-9]{10}" placeholder="10-digit phone number" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);" />
+                                <input asp-for="ContactNumber" class="form-control glass-input" type="tel" minlength="10" maxlength="10" placeholder="Enter 10-digit phone number" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);" />
                                 <span asp-validation-for="ContactNumber" class="text-danger small"></span>
                             </div>
-                            
+
                             <div class="col-12">
                                 <label asp-for="Address" class="form-label text-light">Address</label>
                                 <textarea asp-for="Address" class="form-control glass-input" rows="3" placeholder="Enter your complete address" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3); resize: vertical;"></textarea>
@@ -85,13 +85,13 @@
                                     <i class="bi bi-shield-lock me-2"></i>Account Security
                                 </h5>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <label asp-for="Username" class="form-label text-light">Username</label>
                                 <input asp-for="Username" class="form-control glass-input" placeholder="Choose a unique username" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);" />
                                 <span asp-validation-for="Username" class="text-danger small"></span>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <label asp-for="Password" class="form-label text-light">Password</label>
                                 <input asp-for="Password" type="password" class="form-control glass-input" placeholder="Create a strong password" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);" />
@@ -105,7 +105,7 @@
                                 <i class="bi bi-person-plus-fill me-2"></i>
                                 Create Account
                             </button>
-                            
+
                             <div class="text-center">
                                 <span class="text-light opacity-75">Already have an account?</span>
                                 <a asp-action="PatientLogin" class="btn btn-glass btn-sm ms-2 hover-lift">
@@ -129,7 +129,7 @@
         // Particle system using jQuery
         function createParticles() {
             const $container = $('#particles-container');
-            if (!$container.length) return; 
+            if (!$container.length) return;
             const particleCount = 50;
 
             for (let i = 0; i < particleCount; i++) {
@@ -170,7 +170,7 @@
             $('form').on('submit', function(e) {
                 const $submitBtn = $(this).find('button[type="submit"]');
                 $submitBtn.prop('disabled', true).html('<i class="bi bi-hourglass-split me-2"></i>Creating Account...');
-                
+
                 // Re-enable button after 3 seconds in case of validation errors
                 setTimeout(function() {
                     $submitBtn.prop('disabled', false).html('<i class="bi bi-person-plus-fill me-2"></i>Create Account');
@@ -216,7 +216,7 @@
     .text-accent {
         color: var(--accent-color) !important;
     }
-    
+
     .input-focused {
         transform: scale(1.02);
     }
@@ -225,7 +225,7 @@
     .form-control:valid {
         border-color: var(--success) !important;
     }
-    
+
     .form-control:invalid:not(:placeholder-shown) {
         border-color: var(--danger) !important;
     }
