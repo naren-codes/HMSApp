@@ -25,7 +25,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label asp-for="ContactNumber" class="form-label fw-semibold"></label>
-                                <input asp-for="ContactNumber" class="form-control" placeholder="Phone" />
+                                <input asp-for="ContactNumber" class="form-control" minlength="10" maxlength="10" placeholder="Phone" />
                                 <span asp-validation-for="ContactNumber" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6">

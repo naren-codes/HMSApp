@@ -3,6 +3,13 @@
     ViewData["Title"] = "Patient Registration";
     Layout = "_Layout";
 }
+@if (ViewBag.RegistrationSuccess != null && ViewBag.RegistrationSuccess)
+{
+    <div id="success-toast" class="toast-notification">
+        <i class="bi bi-check-circle-fill me-3"></i>
+        <span><strong>Registration Successful!</strong> Redirecting you to login...</span>
+    </div>
+}
 
 <!-- Animated Background Elements from Landing Page -->
 <div id="particles-container" aria-hidden="true"></div>
@@ -165,6 +172,18 @@
 
             // Add reveal animation to form
             $('.glass-card').addClass('text-reveal reveal-in');
+            const $successToast = $('#success-toast');
+            if ($successToast.length) {
+                // Show the toast with an animation
+                setTimeout(function() {
+                    $successToast.addClass('show');
+                }, 100);
+
+                // Redirect after a short delay to the login page
+                setTimeout(function () {
+                    window.location.href = '@Url.Action("PatientLogin", "Account")';
+                }, 3000); // Redirect after 3 seconds
+            }
 
             // Form validation enhancements
             $('form').on('submit', function(e) {
@@ -235,4 +254,29 @@
         color: rgba(255, 255, 255, 0.9) !important;
         font-weight: 600;
     }
+
+    .toast-notification {
+        position: fixed;
+        top: 25px;
+        left: 50%;
+        transform: translate(-50%, -150%);
+        background-color: #27ae60;
+        color: white;
+        padding: 14px 24px;
+        border-radius: 50px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+        z-index: 2000;
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+        .toast-notification i {
+            font-size: 1.5rem;
+        }
+
+        .toast-notification.show {
+            transform: translate(-50%, 0);
+        }
 </style>

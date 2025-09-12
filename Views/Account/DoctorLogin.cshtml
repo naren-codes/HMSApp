@@ -4,6 +4,13 @@
     Layout = "_Layout";
 }
 
+@if (ViewBag.Success != null && ViewBag.Success)
+{
+    <div id="success-toast" class="toast-notification">
+        <i class="bi bi-check-circle-fill me-3"></i>
+        <span><strong>Login Successful!</strong> Redirecting to your dashboard...</span>
+    </div>
+}
 <div id="particles-container" aria-hidden="true"></div>
 
 <div class="floating-shapes" aria-hidden="true">
@@ -46,12 +53,12 @@
 
                 <div class="mb-3">
                     <label for="username" class="form-label text-light">Username</label>
-                    <input type="text" class="form-control glass-input" id="username" name="username" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
+                    <input type="text" class="form-control glass-input" id="username" name="username" required>
                 </div>
 
                 <div class="mb-4">
                     <label for="password" class="form-label text-light">Password</label>
-                    <input type="password" class="form-control glass-input" id="password" name="password" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
+                    <input type="password" class="form-control glass-input" id="password" name="password" required>
                 </div>
 
                 <div class="d-grid gap-3">
@@ -63,24 +70,6 @@
             </form>
         </div>
     </div>
-
-    @if (ViewBag.Success != null && ViewBag.Success)
-    {
-        <div id="success-modal-overlay">
-            <div id="success-modal" class="glass-card text-center p-4 p-md-5">
-                <div class="modal-icon-container">
-                    <i class="bi bi-check-circle-fill"></i>
-                </div>
-                <h3 class="gradient-text mb-2">Login Successful!</h3>
-                <p class="text-light opacity-75">Welcome back. Redirecting you to the dashboard...</p>
-                <div class="mt-4">
-                    <a href="@Url.Action("Index", "DoctorDashboard")" class="btn btn-portal-doctor">
-                        <i class="bi bi-speedometer2 me-2"></i>Continue
-                    </a>
-                </div>
-            </div>
-        </div>
-    }
 </section>
 
 @section Scripts {
@@ -108,36 +97,26 @@
 
             // Enhanced input focus effects
             $('.glass-input').on('focus', function() {
-                $(this).addClass('input-focused').css({
-                    'background': 'rgba(255, 255, 255, 0.95)',
-                    'border-color': 'var(--primary-color)',
-                    'box-shadow': '0 0 0 3px rgba(44, 110, 186, 0.1)',
-                    'transform': 'translateY(-2px)'
-                });
+                $(this).addClass('input-focused');
             }).on('blur', function() {
-                $(this).removeClass('input-focused').css({
-                    'background': 'rgba(255, 255, 255, 0.9)',
-                    'border-color': 'rgba(255, 255, 255, 0.3)',
-                    'box-shadow': 'none',
-                    'transform': 'translateY(0)'
-                });
+                $(this).removeClass('input-focused');
             });
 
             // Add reveal animation to form
             $('.glass-card').addClass('text-reveal reveal-in');
 
-            // --- NEW: SUCCESS MODAL SCRIPT ---
-            const $successModal = $('#success-modal-overlay');
-            if ($successModal.length) {
-                // Show the modal with an animation
+            // --- NEW: SUCCESS TOAST SCRIPT ---
+            const $successToast = $('#success-toast');
+            if ($successToast.length) {
+                // Show the toast with an animation
                 setTimeout(function() {
-                    $successModal.addClass('active');
-                }, 100); // Small delay to allow CSS transition
+                    $successToast.addClass('show');
+                }, 100);
 
-                // Redirect after 3 seconds
+                // Redirect after a short delay to the DOCTOR'S dashboard
                 setTimeout(function () {
-                    window.location.href = '@Url.Action("Index", "DoctorDashboard")'; // CHANGE THIS to your doctor dashboard URL
-                }, 3000);
+                    window.location.href = '@Url.Action("DoctorDashboard", "Doctor")';
+                }, 1000); // Redirect after 2.5 seconds
             }
             // --- END NEW SCRIPT ---
         });
@@ -146,69 +125,50 @@
 
 <style>
     .login-container {
-        /* This is the magic for centering */
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        /* This ensures the card has a responsive width */
         width: 90%;
         max-width: 520px;
     }
 
-    .text-accent {
-        color: var(--accent-color) !important;
+    .glass-input {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-    .input-focused {
-        transform: scale(1.02);
-    }
-
-    /* --- NEW: SUCCESS MODAL STYLES --- */
-    #success-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(10, 25, 47, 0.7); /* Dark blue overlay */
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1050;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0s linear 0.3s;
-    }
-
-        #success-modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-            transition-delay: 0s;
+        .glass-input.input-focused {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(44, 110, 186, 0.1);
+            transform: translateY(-2px);
         }
 
-    #success-modal {
-        width: 90%;
-        max-width: 450px;
-        border-top: 5px solid #27ae60; /* Green accent color on top */
-        transform: scale(0.9) translateY(20px);
-        opacity: 0;
-        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    /* --- NEW: SUCCESS TOAST STYLES --- */
+    .toast-notification {
+        position: fixed;
+        top: 25px;
+        left: 50%;
+        transform: translate(-50%, -150%); /* Start hidden above the screen */
+        background-color: #27ae60; /* Success Green */
+        color: white;
+        padding: 14px 24px;
+        border-radius: 50px; /* Pill shape */
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+        z-index: 2000;
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    #success-modal-overlay.active #success-modal {
-        transform: scale(1) translateY(0);
-        opacity: 1;
-    }
+        .toast-notification i {
+            font-size: 1.5rem;
+        }
 
-    .modal-icon-container {
-        font-size: 4.5rem;
-        color: #27ae60; /* Green icon color */
-        margin-bottom: 1rem;
-        line-height: 1;
-    }
+        .toast-notification.show {
+            transform: translate(-50%, 0); /* Slide into view */
+        }
     /* --- END NEW STYLES --- */
-
 </style>

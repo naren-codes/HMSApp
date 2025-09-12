@@ -3,7 +3,6 @@ using HMSApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using HMSApp.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
 
 public class AccountController : Controller
 {
@@ -50,14 +49,43 @@ public class AccountController : Controller
             {
                 HttpContext.Session.SetString("Username", user.Username!);
             }
-            return RedirectToAction("Dashboard", "Patient");
+            ViewBag.Success = true;
+            // Return the same login view to show the success toast notification.
+            return View("PatientLogin");
+            // --- MODIFICATION END --- //
         }
         ViewBag.Error = "Invalid login credentials.";
         return View("PatientLogin");
     }
+    //        return RedirectToAction("Dashboard", "Patient");
+    //    }
+    //    ViewBag.Error = "Invalid login credentials.";
+    //    return View("PatientLogin");
+    //}
+
+    
 
     [HttpPost]
-    public IActionResult LoginAdmin(string username, string password) => HandleLogin(username, password, "admin", "Admin");
+    public IActionResult LoginAdmin(string username, string password)
+    {
+        // First, authenticate the user
+        var user = _accountService.Authenticate(username, password);
+
+        
+        if (user != null && user.role?.ToLower() == "admin")
+        {
+            // This is the key step: Set the success flag for the pop-up
+            ViewBag.Success = true;
+
+            // Return the login view, which will now show the notification
+            return View("AdminLogin");
+        }
+
+        // If login fails, set an error message and return the view
+        ViewBag.Error = "Invalid admin credentials.";
+        return View("AdminLogin");
+    }
+
 
 
 
@@ -73,13 +101,18 @@ public class AccountController : Controller
                 HttpContext.Session.SetInt32("DoctorId", doctor.DoctorId);
             }
             ViewBag.Success = true;
+            // Return the same login view to show the success modal pop-up.
             return View("DoctorLogin");
-
-            return RedirectToAction("DoctorDashboard", "Doctor");
+            // --- MODIFICATION END --- //
         }
         ViewBag.Error = "Invalid login credentials.";
         return View("DoctorLogin");
     }
+    //        return RedirectToAction("DoctorDashboard", "Doctor");
+    //    }
+    //    ViewBag.Error = "Invalid login credentials.";
+    //    return View("DoctorLogin");
+    //}
 
     [HttpGet]
     public IActionResult PatientRegister() => View();
@@ -95,8 +128,7 @@ public class AccountController : Controller
 
             if (usernameExists)
             {
-                // If the username exists, add an error to the ModelState.
-                // This error will be displayed by the <span asp-validation-for="Username"> tag in your view.
+                
                 ModelState.AddModelError("Username", "Username already exists. Please choose a different one.");
             }
             else
@@ -113,7 +145,7 @@ public class AccountController : Controller
                 _context.Patient.Add(patient);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("PatientLogin");
+                ViewBag.RegistrationSuccess = true;
             }
         }
 
