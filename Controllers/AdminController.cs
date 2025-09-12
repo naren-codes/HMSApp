@@ -72,8 +72,19 @@ namespace HMSApp.Controllers
             if (scanFile == null || scanFile.Length == 0)
             {
                 TempData["ErrorMessage"] = "Please select a file to upload.";
-                return RedirectToAction("Accept", new { patientName });
+                return RedirectToAction("BookedScans", new { patientName });
             }
+
+            // --- START: Added File Type Validation ---
+            var allowedExtensions = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
+            var extension = Path.GetExtension(scanFile.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(extension))
+            {
+                TempData["ErrorMessage"] = "Invalid file type. Please upload a PDF, JPG, or PNG file.";
+                return RedirectToAction("BookedScans", new { patientName });
+            }
+            // --- END: Added File Type Validation ---
 
             var scanToUpdate = await _context.Scan
                 .FirstOrDefaultAsync(s => s.PatientName == patientName);
@@ -107,7 +118,7 @@ namespace HMSApp.Controllers
                 TempData["ErrorMessage"] = "An error occurred while saving the file.";
             }
 
-            return RedirectToAction("Accept", new { patientName = scanToUpdate.PatientName });
+            return RedirectToAction("BookedScans", new { patientName = scanToUpdate.PatientName });
         }
     }
 }

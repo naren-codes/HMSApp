@@ -78,10 +78,22 @@
                                         <td>@scan.LabName</td>
                                         <td>@scan.ScanType</td>
                                         <td>
-                                            <a asp-action="ViewScanDocument" asp-controller="Patient" asp-route-id="@scan.Id" class="btn btn-info btn-sm" target="_blank">View</a>
+                                            @* --- START: This is the logic to add --- *@
+                                            @if (!string.IsNullOrEmpty(scan.FileName))
+                                            {
+                                                @* If a filename exists in the database, show the "View" button *@
+                                                <a asp-action="ViewScanDocument" asp-controller="Patient" asp-route-id="@scan.Id" class="btn btn-info btn-sm" target="_blank">View</a>
+                                            }
+                                            else
+                                            {
+                                                @* Otherwise, show a simple text message *@
+                                                <span>Not Uploaded</span>
+                                            }
+                                            @* --- END: This is the logic to add --- *@
                                         </td>
                                     </tr>
                                 }
+
                             </tbody>
                         </table>
                     </div>
@@ -102,7 +114,6 @@
     <a asp-action="Dashboard" asp-controller="Patient" class="btn btn-secondary">
         <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
     </a>
-</div>
 </div>
 
 @section Scripts {

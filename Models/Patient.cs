@@ -20,6 +20,7 @@ namespace HMSApp.Models
         public string? Gender { get; set; }
 
         [Phone]
+
         public string? ContactNumber { get; set; }
 
         public string? Address { get; set; }

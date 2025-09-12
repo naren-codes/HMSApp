@@ -360,7 +360,21 @@ namespace HMSApp.Controllers
                 _context.Doctor.Remove(doctor);
             }
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                // 1. Attempt to save the deletion to the database
+                await _context.SaveChangesAsync();
+
+                // 2. (Optional) If successful, set a success message
+                TempData["SuccessMessage"] = "Doctor deleted successfully.";
+            }
+            catch (DbUpdateException)
+            {
+                // 3. If a database constraint error occurs, set the friendly error message
+                TempData["ErrorMessage"] = "Cannot delete this doctor because they are linked to existing appointments or records.";
+            }
+
+            // 4. Redirect back to the doctor list page
             return RedirectToAction(nameof(Index));
         }
 

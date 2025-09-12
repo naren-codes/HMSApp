@@ -83,7 +83,6 @@ namespace HMSApp.Controllers
                 return NotFound("File not found.");
             }
 
-            // Assumes files are in a folder named "uploads" inside "wwwroot"
             var physicalPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", scan.FileName);
 
             if (!System.IO.File.Exists(physicalPath))
@@ -91,9 +90,31 @@ namespace HMSApp.Controllers
                 return NotFound("File does not exist on the server.");
             }
 
-            // Returns the file for viewing in the browser. 
-            // Adjust "application/pdf" to "image/jpeg", etc., if you have different file types.
-            return PhysicalFile(physicalPath, "application/pdf");
+            // Get the correct MIME type based on the file extension
+            var mimeType = GetMimeTypeForFileExtension(scan.FileName);
+
+            // Return the file with the DYNAMIC mime type
+            return PhysicalFile(physicalPath, mimeType);
+        }
+
+        // Helper function to get MIME type
+        private string GetMimeTypeForFileExtension(string filePath)
+        {
+            // This is a simplified example. For a real app, use a more robust library
+            // or a more comprehensive dictionary/switch statement.
+            var extension = Path.GetExtension(filePath).ToLowerInvariant();
+            switch (extension)
+            {
+                case ".pdf":
+                    return "application/pdf";
+                case ".jpg":
+                case ".jpeg":
+                    return "image/jpeg";
+                case ".png":
+                    return "image/png";
+                default:
+                    return "application/octet-stream"; // Generic binary file type
+            }
         }
         // =======================================================================
         // END: NEW ACTION
@@ -154,12 +175,27 @@ namespace HMSApp.Controllers
 
         // Admin-facing delete confirmation (POST)
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken] // Good practice to add this for POST actions
         public IActionResult DeleteConfirmed(int id)
         {
-            _patientService.DeletePatient(id);
-            return RedirectToAction("Index");
-        }
+            try
+            {
+                // 1. Attempt to delete the patient
+                _patientService.DeletePatient(id);
 
+                // 2. (Optional) If successful, set a success message
+                TempData["SuccessMessage"] = "Patient deleted successfully.";
+            }
+            catch (DbUpdateException)
+            {
+                // 3. If a database error occurs (like a foreign key conflict),
+                //    set a user-friendly error message.
+                TempData["ErrorMessage"] = "Cannot delete this patient because they have existing appointments linked to them.";
+            }
+
+            // 4. Redirect back to the patient list page in either case.
+            return RedirectToAction(nameof(Index));
+        }
         // Patient-facing dashboard
         public async Task<IActionResult> Dashboard()
         {
