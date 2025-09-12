@@ -3,6 +3,7 @@ using HMSApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using HMSApp.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 public class AccountController : Controller
 {
@@ -71,6 +72,9 @@ public class AccountController : Controller
             {
                 HttpContext.Session.SetInt32("DoctorId", doctor.DoctorId);
             }
+            ViewBag.Success = true;
+            return View("DoctorLogin");
+
             return RedirectToAction("DoctorDashboard", "Doctor");
         }
         ViewBag.Error = "Invalid login credentials.";
