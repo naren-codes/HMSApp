@@ -1,0 +1,44 @@
+﻿@model IEnumerable<HMSApp.Models.Scan>
+@{
+    ViewData["Title"] = "Received Scans";
+}
+
+<div class="container my-5">
+    <h1 class="text-primary">Received Scans</h1>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Patient Name</th>
+                <th>Scan Type</th>
+                <th>Scan Date</th>
+                <th>Doctor</th>
+                <th class="text-center">File</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var scan in Model)
+            {
+                <tr>
+                    <td>@scan.PatientName</td>
+                    <td>@scan.ScanType</td>
+                    <td>@scan.AppointmentDate.ToString("dd MMMM, yyyy")</td>
+                    <td>@(scan.DoctorName ?? "-")</td>
+                    <td class="text-center">
+                        @if (!string.IsNullOrEmpty(scan.FileName))
+                        {
+                            <a asp-action="ViewScanDocument" asp-controller="Patient" asp-route-id="@scan.Id" class="btn btn-info btn-sm" target="_blank">View File</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No file</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="mt-4 text-center">
+        <a asp-action="DoctorDashboard" asp-controller="Doctor" class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i> Back</a>
+    </div>
+</div>

@@ -19,6 +19,9 @@ namespace HMSApp.Models
         public string ScanType { get; set; }
         public string? FileName { get; set; }
 
+        public int? DoctorId { get; set; }
 
+        // Store doctor's display name instead of a complex object
+        public string? DoctorName { get; set; }
     }
 }
