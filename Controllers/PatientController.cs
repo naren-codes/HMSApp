@@ -29,7 +29,7 @@ namespace HMSApp.Controllers
             return View(patients);
         }
 
-        
+
         public async Task<IActionResult> AppointmentHistory()
         {
             var username = HttpContext.Session.GetString("Username");
@@ -57,24 +57,35 @@ namespace HMSApp.Controllers
                                       .OrderByDescending(s => s.AppointmentDate)
                                       .ToListAsync();
 
+            var allDoctors = await _context.Doctor.Where(d => d.IsAvailable).ToListAsync();
+
             // 3. Create the ViewModel to hold both lists
             var viewModel = new AppointmentHistoryViewModel
             {
                 Appointment = sortedAppointments,
-                Scan = scans
+                Scan = scans,
+                AvailableDoctors = allDoctors.Select(d => new SelectListItem
+                {
+                    Value = d.DoctorId.ToString(),
+                    Text = $"Dr. {d.Name} ({d.Specialization})"
+                }).ToList()
             };
 
             // 4. Pass the single viewModel to the view
             return View(viewModel);
         }
-        // =======================================================================
-        // END: APPOINTMENT HISTORY ACTION
-        // =======================================================================
 
 
-        // =======================================================================
-        // START: NEW ACTION FOR VIEWING SCAN FILES
-        // =======================================================================
+       
+
+         //=======================================================================
+         //END: APPOINTMENT HISTORY ACTION
+         //=======================================================================
+
+
+         //=======================================================================
+         //START: NEW ACTION FOR VIEWING SCAN FILES
+         //=======================================================================
         public async Task<IActionResult> ViewScanDocument(int id)
         {
             var scan = await _context.Scan.FindAsync(id);
@@ -619,7 +630,7 @@ namespace HMSApp.Controllers
             var username = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(username))
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("PatientLogin", "Account");
             }
 
             var patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
@@ -734,6 +745,7 @@ namespace HMSApp.Controllers
             var patient = await _context.Patient.FirstOrDefaultAsync(p => p.Username == username);
             if (patient == null) return RedirectToAction("PatientLogin", "Account");
 
+            scan.PatientName= patient.Name;
             scan.PatientId = patient.PatientId;
             scan.LabName = "Lab B";
             scan.ScanType = "CTScan";
