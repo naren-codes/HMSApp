@@ -17,7 +17,6 @@ namespace HMSApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _hostingEnvironment;
 
-        // Constructor with all necessary services injected
         public AdminController(ILogger<AdminController> logger, ApplicationDbContext context, IWebHostEnvironment hostingEnvironment)
         {
             _logger = logger;
@@ -36,59 +35,55 @@ namespace HMSApp.Controllers
             return View(allScansFromDb);
         }
 
-        // The correct version of Accept, using patientName
-        public async Task<IActionResult> Accept(string patientName)
+        // GET: Admin/Accept/5
+        // This action shows the upload page for a specific scan.
+        public async Task<IActionResult> Accept(int id)
         {
-            // The value from the link (e.g., "mani") is now in the patientName variable
-            var appointment = await _context.Scan
-                                      .FirstOrDefaultAsync(a => a.PatientName == patientName);
-
-            if (appointment == null)
+            var scan = await _context.Scan.FirstOrDefaultAsync(a => a.Id == id);
+            if (scan == null)
             {
                 return NotFound();
             }
-
-            return View(appointment);
+            return View(scan);
         }
 
+        // POST: Admin/Reject/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Reject(int id)
         {
-            var appointment = await _context.Scan.FindAsync(id);
-            if (appointment == null)
+            var scan = await _context.Scan.FindAsync(id);
+            if (scan == null)
             {
                 return NotFound();
             }
-            _context.Scan.Remove(appointment);
+
+            _context.Scan.Remove(scan);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(BookedScans));
         }
 
+        // POST: Admin/Upload/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upload(string patientName, IFormFile scanFile)
+        public async Task<IActionResult> Upload(int id, IFormFile scanFile)
         {
             if (scanFile == null || scanFile.Length == 0)
             {
                 TempData["ErrorMessage"] = "Please select a file to upload.";
-                return RedirectToAction("BookedScans", new { patientName });
+                return RedirectToAction(nameof(Accept), new { id });
             }
 
-            // --- START: Added File Type Validation ---
             var allowedExtensions = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
             var extension = Path.GetExtension(scanFile.FileName).ToLowerInvariant();
 
             if (!allowedExtensions.Contains(extension))
             {
                 TempData["ErrorMessage"] = "Invalid file type. Please upload a PDF, JPG, or PNG file.";
-                return RedirectToAction("BookedScans", new { patientName });
+                return RedirectToAction(nameof(Accept), new { id });
             }
-            // --- END: Added File Type Validation ---
 
-            var scanToUpdate = await _context.Scan
-                .FirstOrDefaultAsync(s => s.PatientName == patientName);
-
+            var scanToUpdate = await _context.Scan.FirstOrDefaultAsync(s => s.Id == id);
             if (scanToUpdate == null)
             {
                 return NotFound();
@@ -97,7 +92,25 @@ namespace HMSApp.Controllers
             string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
             Directory.CreateDirectory(uploadsFolder);
 
-            string uniqueFileName = Guid.NewGuid().ToString() + "_" + scanFile.FileName;
+            // Delete the old file if it exists
+            if (!string.IsNullOrWhiteSpace(scanToUpdate.FileName))
+            {
+                var oldFilePath = Path.Combine(uploadsFolder, scanToUpdate.FileName);
+                try
+                {
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to delete old scan file: {Path}", oldFilePath);
+                }
+            }
+
+            // Create a unique filename and save the new file
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(scanFile.FileName);
             string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
             using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -105,20 +118,21 @@ namespace HMSApp.Controllers
                 await scanFile.CopyToAsync(fileStream);
             }
 
+            // Update the database record with the new filename
             scanToUpdate.FileName = uniqueFileName;
-
             try
             {
                 _context.Update(scanToUpdate);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "File uploaded successfully!";
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
-                TempData["ErrorMessage"] = "An error occurred while saving the file.";
+                _logger.LogError(ex, "Error occurred while saving the uploaded file to the database for ScanId {ScanId}", id);
+                TempData["ErrorMessage"] = "An error occurred while saving the file information.";
             }
 
-            return RedirectToAction("BookedScans", new { patientName = scanToUpdate.PatientName });
+            return RedirectToAction(nameof(BookedScans));
         }
     }
 }

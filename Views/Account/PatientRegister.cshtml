@@ -101,7 +101,27 @@
 
                             <div class="col-md-6">
                                 <label asp-for="Password" class="form-label text-light">Password</label>
-                                <input asp-for="Password" type="password" class="form-control glass-input" placeholder="Create a strong password" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);" />
+                                <div class="position-relative">
+                                    <input asp-for="Password" type="password" class="form-control glass-input" placeholder="Create a strong password" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);" />
+                                    <button type="button" class="btn btn-sm position-absolute" style="right: 10px; top: 50%; transform: translateY(-50%); border: none; background: none; color: #666;" onclick="togglePasswordVisibility('Password')">
+                                        <i class="bi bi-eye" id="Password-icon"></i>
+                                    </button>
+                                </div>
+                                <div class="password-strength mt-2" id="Password-strength" style="display: none;">
+                                    <div class="strength-bar">
+                                        <div class="strength-fill" id="Password-strength-fill"></div>
+                                    </div>
+                                    <small class="strength-text" id="Password-strength-text"></small>
+                                </div>
+                                <div class="password-requirements mt-2" id="Password-requirements" style="display: none;">
+                                    <small class="text-light">
+                                        <div class="requirement" id="req-length">• 8-16 characters</div>
+                                        <div class="requirement" id="req-uppercase">• At least one uppercase letter</div>
+                                        <div class="requirement" id="req-lowercase">• At least one lowercase letter</div>
+                                        <div class="requirement" id="req-number">• At least one number</div>
+                                        <div class="requirement" id="req-special">• At least one special character</div>
+                                    </small>
+                                </div>
                                 <span asp-validation-for="Password" class="text-danger small"></span>
                             </div>
                         </div>
@@ -146,6 +166,19 @@
                     animationDelay: Math.random() * 20 + 's',
                     animationDuration: (Math.random() * 10 + 10) + 's'
                 }).appendTo($container);
+            }
+        }
+
+        function togglePasswordVisibility(inputId) {
+            const $input = $(`#${inputId}`);
+            const $icon = $(`#${inputId}-icon`);
+
+            if ($input.attr('type') === 'password') {
+                $input.attr('type', 'text');
+                $icon.removeClass('bi-eye').addClass('bi-eye-slash');
+            } else {
+                $input.attr('type', 'password');
+                $icon.removeClass('bi-eye-slash').addClass('bi-eye');
             }
         }
 
@@ -209,12 +242,63 @@
             // Password strength indicator
             $('#Password').on('input', function() {
                 const password = $(this).val();
+                let strength = 0;
+                $('#Password-strength').show();
+                $('#Password-requirements').show();
+
+                // Check password length
                 if (password.length >= 8) {
-                    $(this).css('border-color', 'var(--success)');
-                } else if (password.length >= 4) {
-                    $(this).css('border-color', 'var(--warning)');
-                } else if (password.length > 0) {
-                    $(this).css('border-color', 'var(--danger)');
+                    strength++;
+                    $('#req-length').css('color', 'green');
+                } else {
+                    $('#req-length').css('color', 'red');
+                }
+
+                // Check for uppercase letter
+                if (/(?=.*[A-Z])/.test(password)) {
+                    strength++;
+                    $('#req-uppercase').css('color', 'green');
+                } else {
+                    $('#req-uppercase').css('color', 'red');
+                }
+
+                // Check for lowercase letter
+                if (/(?=.*[a-z])/.test(password)) {
+                    strength++;
+                    $('#req-lowercase').css('color', 'green');
+                } else {
+                    $('#req-lowercase').css('color', 'red');
+                }
+
+                // Check for numeric character
+                if (/(?=.*\d)/.test(password)) {
+                    strength++;
+                    $('#req-number').css('color', 'green');
+                } else {
+                    $('#req-number').css('color', 'red');
+                }
+
+                // Check for special character
+                if (/(?=.*[!@@#$%^&*])/.test(password)) {
+                    strength++;
+                    $('#req-special').css('color', 'green');
+                } else {
+                    $('#req-special').css('color', 'red');
+                }
+
+                // Update strength bar and text
+                const $strengthFill = $('#Password-strength-fill');
+                const $strengthText = $('#Password-strength-text');
+                $strengthFill.removeClass('weak medium strong').addClass('')
+                if (strength === 5) {
+                    $strengthFill.addClass('strong').css('width', '100%');
+                    $strengthText.text('Strong').css('color', 'green');
+                } else if (strength >= 3) {
+                    $strengthFill.addClass('medium').css('width', '60%');
+                    $strengthText.text('Medium').css('color', 'orange');
+                } else {
+                    $strengthFill.addClass('weak').css('width', '30%');
+                    $strengthText.text('Weak').css('color', 'red');
                 }
             });
 
@@ -253,6 +337,35 @@
     .text-light h5 {
         color: rgba(255, 255, 255, 0.9) !important;
         font-weight: 600;
+    }
+
+    /* Password strength indicator styles */
+    .password-strength {
+        height: 8px;
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .strength-fill {
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+
+    .strength-text {
+        margin-top: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    /* Password requirements list */
+    .password-requirements {
+        font-size: 0.875rem;
+        margin-top: 8px;
+    }
+
+    .requirement {
+        margin-bottom: 4px;
     }
 
     .toast-notification {
