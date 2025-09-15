@@ -164,4 +164,11 @@ public class AccountController : Controller
         HttpContext.Session.Clear();
         return RedirectToAction("DoctorLogin");
     }
+
+    [HttpGet]
+    public IActionResult LogoutPatient()
+    {
+        HttpContext.Session.Clear();
+        return RedirectToAction("PatientLogin");
+    }
 }

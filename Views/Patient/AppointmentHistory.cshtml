@@ -60,7 +60,7 @@
                         <table class="table table-striped table-bordered align-middle">
                             <thead class="bg-dark text-white">
                                 <tr>
-                                    <th>Id</th>
+                                    @* <th>Id</th> *@
                                     <th>Patient Name</th>
                                     <th>Appointment Date</th>
                                     <th>Lab Name</th>
@@ -73,7 +73,7 @@
                                 @foreach (var scan in Model.Scan)
                                 {
                                     <tr>
-                                        <td>@scan.Id</td>
+                                        @* <td>@scan.Id</td> *@
                                         <td>@scan.PatientName</td>
                                         <td>@scan.AppointmentDate.ToString("dd MMMM, yyyy")</td>
                                         <td>@scan.LabName</td>

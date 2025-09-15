@@ -21,7 +21,6 @@
       <table class="table table-hover payments-table mb-0" id="paymentsTable">
         <thead>
           <tr>
-            <th>Bill #</th>
             <th>Patient</th>
             <th>Date (UTC)</th>
             <th>Amount (Rs.)</th>
@@ -39,7 +38,6 @@
               // Assuming offline payments don't have payment tags or have a specific offline tag
               bool isOfflinePayment = isPaid && !isCashPayment && !isOnlinePayment;
               <tr>
-                <td>#@b.BillId</td>
                 <td>@b.PatientName</td>
                 <td>@b.BillDate.ToString("dd MMM yyyy")</td>
                 <td><strong>@b.TotalAmount.ToString("0.00")</strong></td>
