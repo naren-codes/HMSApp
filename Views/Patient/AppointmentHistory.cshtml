@@ -100,6 +100,10 @@
                                                     <i class="bi bi-check-circle-fill"></i> Sent to Dr. @scan.DoctorName
                                                 </span>
                                             }
+                                            else if (string.IsNullOrEmpty(scan.FileName))
+                                            {
+                                                <span class="text-danger">Upload required to send</span>
+                                            }
                                             else
                                             {
                                                 @* Otherwise, show the form with the dropdown *@
