@@ -4,6 +4,13 @@
     Layout = "_Layout";
 }
 
+@if (ViewBag.Success != null && ViewBag.Success)
+{
+    <div id="success-toast" class="toast-notification">
+        <i class="bi bi-check-circle-fill me-3"></i>
+        <span><strong>Login Successful!</strong> Redirecting to your dashboard...</span>
+    </div>
+}
 <div id="particles-container" aria-hidden="true"></div>
 
 <div class="floating-shapes" aria-hidden="true">
@@ -46,12 +53,12 @@
 
                 <div class="mb-3">
                     <label for="username" class="form-label text-light">Username</label>
-                    <input type="text" class="form-control glass-input" id="username" name="username" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
+                    <input type="text" class="form-control glass-input" id="username" name="username" required>
                 </div>
 
                 <div class="mb-4">
                     <label for="password" class="form-label text-light">Password</label>
-                    <input type="password" class="form-control glass-input" id="password" name="password" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.3);">
+                    <input type="password" class="form-control glass-input" id="password" name="password" required>
                 </div>
 
                 <div class="d-grid gap-3">
@@ -90,44 +97,78 @@
 
             // Enhanced input focus effects
             $('.glass-input').on('focus', function() {
-                $(this).addClass('input-focused').css({
-                    'background': 'rgba(255, 255, 255, 0.95)',
-                    'border-color': 'var(--primary-color)',
-                    'box-shadow': '0 0 0 3px rgba(44, 110, 186, 0.1)',
-                    'transform': 'translateY(-2px)'
-                });
+                $(this).addClass('input-focused');
             }).on('blur', function() {
-                $(this).removeClass('input-focused').css({
-                    'background': 'rgba(255, 255, 255, 0.9)',
-                    'border-color': 'rgba(255, 255, 255, 0.3)',
-                    'box-shadow': 'none',
-                    'transform': 'translateY(0)'
-                });
+                $(this).removeClass('input-focused');
             });
 
             // Add reveal animation to form
             $('.glass-card').addClass('text-reveal reveal-in');
+
+            // --- NEW: SUCCESS TOAST SCRIPT ---
+            const $successToast = $('#success-toast');
+            if ($successToast.length) {
+                // Show the toast with an animation
+                setTimeout(function() {
+                    $successToast.addClass('show');
+                }, 100);
+
+                // Redirect after a short delay to the DOCTOR'S dashboard
+                setTimeout(function () {
+                    window.location.href = '@Url.Action("DoctorDashboard", "Doctor")';
+                }, 1000); // Redirect after 2.5 seconds
+            }
+            // --- END NEW SCRIPT ---
         });
     </script>
 }
 
 <style>
     .login-container {
-        /* This is the magic for centering */
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        /* This ensures the card has a responsive width */
         width: 90%;
         max-width: 520px;
     }
 
-    .text-accent {
-        color: var(--accent-color) !important;
+    .glass-input {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-    .input-focused {
-        transform: scale(1.02);
+        .glass-input.input-focused {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(44, 110, 186, 0.1);
+            transform: translateY(-2px);
+        }
+
+    /* --- NEW: SUCCESS TOAST STYLES --- */
+    .toast-notification {
+        position: fixed;
+        top: 25px;
+        left: 50%;
+        transform: translate(-50%, -150%); /* Start hidden above the screen */
+        background-color: #27ae60; /* Success Green */
+        color: white;
+        padding: 14px 24px;
+        border-radius: 50px; /* Pill shape */
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+        z-index: 2000;
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
+
+        .toast-notification i {
+            font-size: 1.5rem;
+        }
+
+        .toast-notification.show {
+            transform: translate(-50%, 0); /* Slide into view */
+        }
+    /* --- END NEW STYLES --- */
 </style>

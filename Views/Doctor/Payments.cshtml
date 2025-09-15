@@ -41,7 +41,7 @@
               <tr>
                 <td>#@b.BillId</td>
                 <td>@b.PatientName</td>
-                <td>@b.BillDate.ToString("dd MMM yyyy HH:mm")</td>
+                <td>@b.BillDate.ToString("dd MMM yyyy")</td>
                 <td><strong>@b.TotalAmount.ToString("0.00")</strong></td>
                 <td>
                   @if(isCashPayment)
@@ -89,6 +89,9 @@
       </table>
     </div>
   </div>
+    <div class="mt-4 text-center">
+        <a asp-action="DoctorDashboard" asp-controller="Doctor" class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i> Back</a>
+    </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>

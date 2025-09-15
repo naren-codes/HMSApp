@@ -27,7 +27,7 @@ namespace HMSApp.Controllers
             if (doctorId == null)
             {
 
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("DoctorLogin", "Account");
             }
 
             var doctor = await _context.Doctor.FindAsync(doctorId);
@@ -67,7 +67,7 @@ namespace HMSApp.Controllers
             // If the form data is not valid, return to the form with errors.
             return View("Profile", doctor);
         }
-
+        
         public IActionResult DoctorDashboard()
         {
             var doctorId = HttpContext.Session.GetInt32("DoctorId");
@@ -558,6 +558,7 @@ namespace HMSApp.Controllers
             }
         }
 
+
         public class SetAvailabilityRequest
         {
             public bool IsAvailable { get; set; }
@@ -571,6 +572,45 @@ namespace HMSApp.Controllers
         public class AppointmentCancelRequest
         {
             public int AppointmentId { get; set; }
+        }
+
+        // GET: Doctor/ViewScans - show scans assigned to this doctor
+        [HttpGet]
+        public async Task<IActionResult> ViewScans()
+        {
+            var doctorId = HttpContext.Session.GetInt32("DoctorId");
+            if (doctorId == null) return RedirectToAction("DoctorLogin", "Account");
+
+            var doctor = await _context.Doctor.FirstOrDefaultAsync(d => d.DoctorId == doctorId);
+            if (doctor == null) return RedirectToAction("DoctorLogin", "Account");
+
+            var scans = await _context.Scan
+                .Where(s => s.DoctorId == doctorId)
+                .OrderByDescending(s => s.AppointmentDate)
+                .ToListAsync();
+
+            return View("ViewScans", scans);
+        }
+
+        // POST: Doctor/ViewScans - assign a scan to a doctor (called from Patient view 'Send' form)
+        [HttpPost]
+        public async Task<IActionResult> ViewScans(int scanId, int doctorId)
+        {
+            // Validate inputs
+            var scan = await _context.Scan.FirstOrDefaultAsync(s => s.Id == scanId);
+            if (scan == null) return NotFound();
+
+            var doctor = await _context.Doctor.FirstOrDefaultAsync(d => d.DoctorId == doctorId);
+            if (doctor == null) return BadRequest("Doctor not found");
+
+            scan.DoctorId = doctor.DoctorId;
+            scan.DoctorName = doctor.Name;
+
+            _context.Scan.Update(scan);
+            await _context.SaveChangesAsync();
+
+            // After assigning redirect back to the patient's appointment history
+            return RedirectToAction("AppointmentHistory", "Patient");
         }
     }
 }

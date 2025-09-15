@@ -100,7 +100,8 @@
                     <a class="btn btn-sm btn-light px-3" href="#appointments"><i class="bi bi-calendar-event me-1"></i>Appointments</a>
                     <a class="btn btn-sm btn-light px-3" asp-controller="Doctor" asp-action="Profile"><i class="bi bi-person-badge me-1"></i>Profile</a>
                     <a class="btn btn-sm btn-light px-3" asp-controller="Doctor" asp-action="Payments"><i class="bi bi-cash-stack me-1"></i>View Payments</a>
-                    
+                    <a class="btn btn-sm btn-light px-3" asp-controller="Doctor" asp-action="ViewScans"><i class="bi bi-cash-stack me-1"></i>View Scans</a>
+
                     <!-- Availability Dropdown -->
                     @{
                         var isAvailable = ViewData["DoctorAvailability"] != null && (bool)ViewData["DoctorAvailability"];

@@ -66,6 +66,7 @@
                                     <th>Lab Name</th>
                                     <th>Scan Type</th>
                                     <th>File</th>
+                                    <th>Send to Doctor</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -90,6 +91,31 @@
                                                 <span>Not Uploaded</span>
                                             }
                                             @* --- END: This is the logic to add --- *@
+                                        </td>
+                                        <td>
+                                            @* If the scan already has a DoctorId, it has been sent *@
+                                            @if (scan.DoctorId.HasValue && scan.DoctorName != null)
+                                            {
+                                                <span class="text-success fw-bold">
+                                                    <i class="bi bi-check-circle-fill"></i> Sent to Dr. @scan.DoctorName
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                @* Otherwise, show the form with the dropdown *@
+                                                <form asp-action="ViewScans" asp-controller="Doctor" method="post" class="d-flex">
+                                                    <input type="hidden" name="scanId" value="@scan.Id" />
+                                                    <select name="doctorId" class="form-select form-select-sm me-2" required>
+                                                        <option value="">Select a doctor...</option>
+                                                        @* Populate the dropdown from the ViewModel *@
+                                                        @foreach (var doctor in Model.AvailableDoctors)
+                                                        {
+                                                            <option value="@doctor.Value">@doctor.Text</option>
+                                                        }
+                                                    </select>
+                                                    <button type="submit" class="btn btn-primary btn-sm">Send</button>
+                                                </form>
+                                            }
                                         </td>
                                     </tr>
                                 }
