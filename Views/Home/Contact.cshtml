@@ -31,6 +31,7 @@
 
 <div class="container py-4" style="position: relative; z-index: 10; background: rgba(255, 255, 255, 0.95); padding: 4rem 15px !important; border-radius: 20px; margin-top: -50px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
     <div class="row g-4">
+        <!-- Left: Contact Details -->
         <div class="col-lg-6">
             <div class="content-section glass-card h-100 p-4">
                 <h3 class="mb-3">Reach Out to Us</h3>
@@ -91,36 +92,67 @@
             </div>
         </div>
 
+        <!-- Right: Replace form with Help & Resources -->
         <div class="col-lg-6">
             <div class="content-section glass-card h-100 p-4">
-                <h3 class="mb-3">Send Us a Message</h3>
-                <p class="mb-4">Have a question or need assistance? Fill out the form below:</p>
-                <form id="contactForm" novalidate>
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control glass-input" id="name" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0, 0, 0, 0.1);">
-                        <div class="invalid-feedback">Please enter your name.</div>
+                <h3 class="mb-3">Help & Resources</h3>
+                <p class="mb-4">We don't accept messages via this page. Please use the resources below to find answers or reach the right team quickly.</p>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="glass-card p-3 hover-lift">
+                            <div class="d-flex align-items-center">
+                                <div class="contact-icon patient-gradient me-3"><i class="bi bi-clock-history"></i></div>
+                                <div>
+                                    <h5 class="mb-1">Support Hours</h5>
+                                    <div class="text-muted small">
+                                        Mon–Fri: 9:00 AM – 6:00 PM IST<br/>
+                                        Sat: 10:00 AM – 2:00 PM IST<br/>
+                                        Sun & Public Holidays: Emergency only
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control glass-input" id="email" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0, 0, 0, 0.1);">
-                        <div class="invalid-feedback">Please enter a valid email.</div>
+
+                    <div class="col-12">
+                        <div class="glass-card p-3 hover-lift">
+                            <div class="d-flex align-items-center">
+                                <div class="contact-icon doctor-gradient me-3"><i class="bi bi-question-circle-fill"></i></div>
+                                <div>
+                                    <h5 class="mb-1">Frequently Asked Questions</h5>
+                                    <div class="text-muted small">Find quick answers about appointments, billing, and records.</div>
+                                    <div class="mt-2">
+                                        <a class="btn btn-sm btn-glass me-2" asp-controller="Home" asp-action="About"><i class="bi bi-book"></i> Learn more</a>
+                                        <a class="btn btn-sm btn-glass" href="#features"><i class="bi bi-grid"></i> Features</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="subject" class="form-label">Subject (Optional)</label>
-                        <input type="text" class="form-control glass-input" id="subject" style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0, 0, 0, 0.1);">
+
+                    <div class="col-12">
+                        <div class="glass-card p-3 hover-lift">
+                            <div class="d-flex align-items-center">
+                                <div class="contact-icon admin-gradient me-3"><i class="bi bi-box-arrow-in-right"></i></div>
+                                <div>
+                                    <h5 class="mb-1">Quick Links</h5>
+                                    <div class="d-flex flex-wrap gap-2 mt-2">
+                                        <a asp-controller="Account" asp-action="PatientLogin" class="btn btn-portal-patient btn-sm"><i class="bi bi-person-heart me-1"></i> Patient Portal</a>
+                                        <a asp-controller="Account" asp-action="DoctorLogin" class="btn btn-portal-doctor btn-sm"><i class="bi bi-person-fill-gear me-1"></i> Doctor Portal</a>
+                                        <a asp-controller="Account" asp-action="AdminLogin" class="btn btn-portal-admin btn-sm"><i class="bi bi-sliders me-1"></i> Admin Portal</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="message" class="form-label">Message</label>
-                        <textarea class="form-control glass-input" id="message" rows="5" required style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0, 0, 0, 0.1); resize: vertical;"></textarea>
-                        <div class="invalid-feedback">Please enter your message.</div>
+
+                    <div class="col-12">
+                        <div class="alert glass-card p-3" style="background: rgba(44,110,186,.08); border: 1px solid rgba(44,110,186,.25);">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            For medical emergencies, please call the emergency line shown on this page.
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-portal-patient w-100 hover-lift">
-                        <i class="bi bi-send me-2"></i>Send Message
-                    </button>
-                </form>
-                <div id="formAlert" class="alert glass-card mt-3 d-none text-center" style="background: rgba(46, 204, 113, 0.15); border: 1px solid rgba(46, 204, 113, 0.3); color: var(--success);">
-                    <i class="bi bi-check-circle-fill me-2"></i>Message sent successfully! We'll get back to you soon.
                 </div>
             </div>
         </div>
@@ -150,63 +182,6 @@
         // Initialize particles
         createParticles();
 
-        // Enhanced input focus effects
-        $('.glass-input').on('focus', function() {
-            $(this).addClass('input-focused').css({
-                'background': 'rgba(255, 255, 255, 0.95)',
-                'border-color': 'var(--primary-color)',
-                'box-shadow': '0 0 0 3px rgba(44, 110, 186, 0.1)',
-                'transform': 'translateY(-2px)'
-            });
-        }).on('blur', function() {
-            $(this).removeClass('input-focused').css({
-                'background': 'rgba(255, 255, 255, 0.9)',
-                'border-color': 'rgba(0, 0, 0, 0.1)',
-                'box-shadow': 'none',
-                'transform': 'translateY(0)'
-            });
-        });
-
-        // Contact form submission
-        $('#contactForm').on('submit', function(e){
-            e.preventDefault();
-
-            const $form = $(this);
-            const $submitBtn = $form.find('button[type="submit"]');
-            let valid = true;
-
-            // Simple client-side validation using Bootstrap styles
-            ['#name', '#email', '#message'].forEach(function(sel){
-                const $el = $(sel);
-                if(!$el.val()){
-                    $el.addClass('is-invalid');
-                    valid = false;
-                } else {
-                    $el.removeClass('is-invalid');
-                }
-            });
-
-            if(!valid) return;
-
-            // Submit button loading state
-            $submitBtn.prop('disabled', true).html('<i class="bi bi-hourglass-split me-2"></i>Sending...');
-
-            setTimeout(function() {
-                $('#formAlert').removeClass('d-none');
-                $form[0].reset();
-                $submitBtn.prop('disabled', false).html('<i class="bi bi-send me-2"></i>Send Message');
-                
-                setTimeout(function(){ 
-                    $('#formAlert').addClass('d-none'); 
-                }, 5000);
-            }, 1000);
-        });
-
-        // Remove invalid state on input
-        $('#contactForm').on('input', 'input, textarea', function(){
-            $(this).removeClass('is-invalid');
-        });
-
         // Enhanced reveal animation
         function inViewport($el) {
             if ($el.length === 0) return false;
@@ -217,7 +192,7 @@
             return bottom > viewTop + 60 && top < viewBottom - 60;
         }
 
-        const $reveal = $('.contact-info-item, .stat-card, .glass-card');
+        const $reveal = $('.contact-info-item, .glass-card');
         $reveal.addClass('will-reveal');
 
         function processReveal() {
