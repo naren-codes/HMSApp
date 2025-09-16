@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using HMSApp.ViewModels;
+using System;
 
 namespace HMSApp.Controllers
 {
@@ -22,13 +23,34 @@ namespace HMSApp.Controllers
             _context = context;
         }
 
-       
         public IActionResult Index()
         {
             var patients = _patientService.GetAllPatients();
             return View(patients);
         }
 
+        // New: return latest appointment for a patient as JSON
+        [HttpGet]
+        public async Task<IActionResult> GetLatestAppointment(int patientId)
+        {
+            if (patientId <= 0) return BadRequest();
+
+            var appointment = await _context.Appointment
+                .Where(a => a.PatientId == patientId)
+                .OrderByDescending(a => a.AppointmentDate)
+                .FirstOrDefaultAsync();
+
+            if (appointment == null)
+                return NotFound();
+
+            return Json(new
+            {
+                appointmentId = appointment.AppointmentId,
+                patientName = appointment.PatientName,
+                appointmentDate = appointment.AppointmentDate.ToString("yyyy-MM-dd"),
+                prescription = appointment.Prescription ?? string.Empty
+            });
+        }
 
         public async Task<IActionResult> AppointmentHistory()
         {
