@@ -250,7 +250,6 @@ namespace HMSApp.Controllers
                 doctor.Role = "Doctor";
             }
 
-
             if (!string.IsNullOrWhiteSpace(doctor.Username))
             {
                 bool usernameExists = await _context.User.AnyAsync(u => u.Username == doctor.Username) ||
@@ -260,9 +259,9 @@ namespace HMSApp.Controllers
                     ModelState.AddModelError("Username", "Username already exists.");
                 }
             }
+            
             if (ModelState.IsValid)
             {
-
                 _context.Add(doctor);
                 await _context.SaveChangesAsync();
                 if (!string.IsNullOrWhiteSpace(doctor.Username) && !string.IsNullOrWhiteSpace(doctor.Password))
